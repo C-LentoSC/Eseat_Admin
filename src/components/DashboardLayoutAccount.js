@@ -19,6 +19,9 @@ import Dashboard1 from './Dashboard1'; //Dummy
 import UserRegistrationPage from './UserRegistrationPage';
 import ManageBusFacilities from './ManageBusFacilities';
 
+import CustomAlert from './Parts/CustomAlert';
+
+
 const NAVIGATION = {
   SuperAdmin: [
     {
@@ -102,6 +105,10 @@ function DemoPageContent({ pathname }) {
   return (
     <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {content}
+
+      {/* Alert */}
+      <CustomAlert severity="error" message="Sample alert message" />
+      
     </Box>
   );
 }
@@ -131,7 +138,7 @@ function DashboardLayoutAccount({ window, onLogout }) {
           user: {
             name: 'Nuwan Dhanushka',
             email: 'nuwanhelp@gmail.com',
-            type: 'SuperAdmin', 
+            type: 'SuperAdmin',
             // image: 'https://avatars.githubusercontent.com/u/19550456',
           },
         });
