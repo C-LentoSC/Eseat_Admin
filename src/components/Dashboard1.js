@@ -6,7 +6,7 @@ const Dashboard1 = () => {
   return (
     <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <Typography variant="h4">Dashboard 1</Typography>
-      <Typography>Welcome to the first dashboard page!</Typography>
+      <Typography>Welcome to the first dashboard page!z</Typography>
     </Box>
   );
 };
