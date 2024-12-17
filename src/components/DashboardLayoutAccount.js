@@ -8,6 +8,8 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import LoyaltyIcon from '@mui/icons-material/Loyalty';
+import MapIcon from '@mui/icons-material/Map';
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -18,6 +20,8 @@ import { ReactComponent as Logo } from '../resources/eseat.svg';
 import Dashboard1 from './Dashboard1'; //Dummy
 import UserRegistrationPage from './UserRegistrationPage';
 import ManageBusFacilities from './ManageBusFacilities';
+import PointsManagement from './PointsManagement';
+import RouteManagement from './RouteManagement';
 
 import CustomAlert from './Parts/CustomAlert';
 
@@ -38,6 +42,16 @@ const NAVIGATION = {
       segment: 'busFacilities',
       title: 'Bus Facilities',
       icon: <AddCircleIcon />,
+    },
+    {
+      segment: 'points-management',
+      title: 'Points Management',
+      icon: <LoyaltyIcon />,
+    },
+    {
+      segment: 'route-management',
+      title: 'Route Management',
+      icon: <MapIcon />,
     },
     {
       segment: 'sales',
@@ -98,6 +112,12 @@ function DemoPageContent({ pathname }) {
     case '/busFacilities':
       content = <ManageBusFacilities />;
       break;
+    case '/points-management':
+      content = <PointsManagement />;
+      break;
+    case '/route-management':
+      content = <RouteManagement />;
+      break;
     default:
       content = <Typography>No page found</Typography>;
   }
@@ -108,7 +128,7 @@ function DemoPageContent({ pathname }) {
 
       {/* Alert */}
       <CustomAlert severity="error" message="Sample alert message" />
-      
+
     </Box>
   );
 }
