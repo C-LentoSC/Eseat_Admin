@@ -5,6 +5,8 @@ import SignInPage from "./components/SignIn";
 import OtpEntryPage from "./components/OtpEntryPage";
 import DashboardLayoutAccount from "./components/DashboardLayoutAccount";
 
+import api from "./model/API";
+
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem("isAuthenticated") === "true"
@@ -31,9 +33,18 @@ const App = () => {
   }, []);
 
   // Function to handle login
-  const handleSignIn = () => {
-    setIsAuthenticated(true);
-    localStorage.setItem("isAuthenticated", "true");
+  const handleSignIn = (username,password) => {
+      api.post("admin/sign-in", {username, password}).then(r  =>r.data)
+          .then(d=>{
+              if(d.status==="ok"){
+                  localStorage.setItem('token',d.token)
+                  setIsAuthenticated(true)
+                  localStorage.setItem('isAuthenticated','true')
+              }else{
+                  console.log(d)
+              }
+          }).catch(err=>alert(err.response.data.message))
+
   };
 
   // Function to handle logout
