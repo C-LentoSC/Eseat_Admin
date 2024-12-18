@@ -27,6 +27,8 @@ import RouteManagement from './RouteManagement';
 import ActiveRouteManagement from './ActiveRouteManagement';
 
 import CustomAlert from './Parts/CustomAlert';
+import {useEffect} from "react";
+import api from "../model/API";
 
 
 const NAVIGATION = {
@@ -159,7 +161,7 @@ DemoPageContent.propTypes = {
 };
 
 function DashboardLayoutAccount({ window, onLogout }) {
-  // const { window } = props;
+
 
   const [session, setSession] = React.useState({
     user: {
@@ -170,7 +172,17 @@ function DashboardLayoutAccount({ window, onLogout }) {
     },
   });
 
-
+  useEffect(() => {
+    api.get('/user').then(r=>{
+      setSession({
+        user:{
+          name: r.data.username,
+          email:r.data.email,
+          type: r.data.type.replace(" ","")
+        }
+      })
+    })
+  }, [])
 
   const authentication = React.useMemo(() => {
     return {

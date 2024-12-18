@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box,
     Button,
@@ -19,16 +19,25 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import api from "../model/API";
 
 const ManageBusFacilities = () => {
-    const [facilities, setFacilities] = useState([
-        { id: 1, name: 'Wi-Fi', icon: 'wifi.png' },
-        { id: 2, name: 'Air Conditioning', icon: 'ac.png' },
-    ]);
+    const [facilities, setFacilities] = useState([]);
     const [open, setOpen] = useState(false);
     const [currentFacility, setCurrentFacility] = useState(null);
     const [currentFacilityUpdate, setCurrentFacilityUpdate] = useState(null);
+    const [img1, setImg1] = useState()
+    const [img2, setImg2] = useState()
 
+    useEffect(() => {
+        loadFacility()
+    }, []);
+    const loadFacility = () => {
+        api.get("admin/facility/get-all").then(r => {
+            setFacilities(r.data)
+        })
+            .catch(console.log)
+    }
     const handleOpen = (facility) => {
         setCurrentFacilityUpdate(facility);
         setOpen(true);
@@ -36,35 +45,45 @@ const ManageBusFacilities = () => {
 
     const handleClose = () => {
         setCurrentFacilityUpdate(null);
+        setImg2(null)
         setOpen(false);
     };
 
+
     const handleSave = () => {
-        setFacilities((prev) =>
-            prev.map((facility) =>
-                facility.id === currentFacility.id ? currentFacility : facility
-            )
-        );
+        const form = new FormData()
+        if (img2) form.append('icon', img2,img2.name)
+        form.append('name',currentFacilityUpdate.name)
+        form.append('id',currentFacilityUpdate.id)
+        console.log(form)
+        api.post("admin/facility/edit", form,{headers:{'Content-type':'multipart/form-data'}})
+            .then(r => {
+                if (r.data.status) loadFacility()
+            })
+            .catch(console.log)
         handleClose();
     };
 
+
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setCurrentFacilityUpdate({ ...currentFacilityUpdate, [name]: value });
+        const {name, value} = e.target;
+        setCurrentFacilityUpdate({...currentFacilityUpdate, [name]: value});
     };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            setImg1(file)
             const imageUrl = URL.createObjectURL(file);
-            setCurrentFacility({ ...currentFacility, icon: imageUrl });
+            setCurrentFacility({...currentFacility, icon: imageUrl});
         }
     };
     const handleImageChange2 = (e) => {
         const file = e.target.files[0];
         if (file) {
+            setImg2(file)
             const imageUrl = URL.createObjectURL(file);
-            setCurrentFacilityUpdate({ ...currentFacilityUpdate, icon: imageUrl });
+            setCurrentFacilityUpdate({...currentFacilityUpdate, icon: imageUrl});
         }
     };
 
