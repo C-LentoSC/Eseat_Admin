@@ -293,6 +293,15 @@ const UserRegistrationPage = () => {
               onChange={handleInputChange}
               sx={{ marginBottom: '16px' }}
             />
+            <TextField
+              fullWidth
+              label="Password"
+              variant="outlined"
+              name="Password"
+              // value={currentUser?.username || ''}
+              // onChange={handleInputChange}
+              sx={{ marginBottom: '16px' }}
+            />
             <FormControl fullWidth variant="outlined" sx={{ marginBottom: '16px' }}>
               <InputLabel>Role</InputLabel>
               <Select
