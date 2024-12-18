@@ -37,7 +37,7 @@ const SignInPage = ({ onSignIn }) => {
                         <img src={favicon} alt="favicon" style={{ width: "60px", height: "60px" }} />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Sign In 2
+                        Sign In
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
                         <TextField
