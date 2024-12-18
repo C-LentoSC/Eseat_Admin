@@ -10,6 +10,8 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import MapIcon from '@mui/icons-material/Map';
+import AllInboxIcon from '@mui/icons-material/AllInbox';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -22,6 +24,7 @@ import UserRegistrationPage from './UserRegistrationPage';
 import ManageBusFacilities from './ManageBusFacilities';
 import PointsManagement from './PointsManagement';
 import RouteManagement from './RouteManagement';
+import ActiveRouteManagement from './ActiveRouteManagement';
 
 import CustomAlert from './Parts/CustomAlert';
 
@@ -52,6 +55,18 @@ const NAVIGATION = {
       segment: 'route-management',
       title: 'Route Management',
       icon: <MapIcon />,
+      children: [
+        {
+          segment: 'all-route',
+          title: 'All Routes',
+          icon: <AllInboxIcon />,
+        },
+        {
+          segment: 'active-route',
+          title: 'Active Routes',
+          icon: <DirectionsRunIcon />,
+        },
+      ],
     },
     {
       segment: 'sales',
@@ -117,6 +132,12 @@ function DemoPageContent({ pathname }) {
       break;
     case '/route-management':
       content = <RouteManagement />;
+      break;
+    case '/route-management/all-route':
+      content = <RouteManagement />;
+      break;
+    case '/route-management/active-route':
+      content = <ActiveRouteManagement />;
       break;
     default:
       content = <Typography>No page found</Typography>;
