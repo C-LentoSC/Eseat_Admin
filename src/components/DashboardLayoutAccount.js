@@ -8,6 +8,10 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import LoyaltyIcon from '@mui/icons-material/Loyalty';
+import MapIcon from '@mui/icons-material/Map';
+import AllInboxIcon from '@mui/icons-material/AllInbox';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -18,9 +22,12 @@ import { ReactComponent as Logo } from '../resources/eseat.svg';
 import Dashboard1 from './Dashboard1'; //Dummy
 import UserRegistrationPage from './UserRegistrationPage';
 import ManageBusFacilities from './ManageBusFacilities';
-import api from "../model/API";
+import PointsManagement from './PointsManagement';
+import RouteManagement from './RouteManagement';
+import ActiveRouteManagement from './ActiveRouteManagement';
 
-import {useEffect} from "react";
+import CustomAlert from './Parts/CustomAlert';
+
 
 const NAVIGATION = {
   SuperAdmin: [
@@ -38,6 +45,28 @@ const NAVIGATION = {
       segment: 'busFacilities',
       title: 'Bus Facilities',
       icon: <AddCircleIcon />,
+    },
+    {
+      segment: 'points-management',
+      title: 'Points Management',
+      icon: <LoyaltyIcon />,
+    },
+    {
+      segment: 'route-management',
+      title: 'Route Management',
+      icon: <MapIcon />,
+      children: [
+        {
+          segment: 'all-route',
+          title: 'All Routes',
+          icon: <AllInboxIcon />,
+        },
+        {
+          segment: 'active-route',
+          title: 'Active Routes',
+          icon: <DirectionsRunIcon />,
+        },
+      ],
     },
     {
       segment: 'sales',
@@ -98,6 +127,18 @@ function DemoPageContent({ pathname }) {
     case '/busFacilities':
       content = <ManageBusFacilities />;
       break;
+    case '/points-management':
+      content = <PointsManagement />;
+      break;
+    case '/route-management':
+      content = <RouteManagement />;
+      break;
+    case '/route-management/all-route':
+      content = <RouteManagement />;
+      break;
+    case '/route-management/active-route':
+      content = <ActiveRouteManagement />;
+      break;
     default:
       content = <Typography>No page found</Typography>;
   }
@@ -105,6 +146,10 @@ function DemoPageContent({ pathname }) {
   return (
     <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {content}
+
+      {/* Alert */}
+      <CustomAlert severity="error" message="Sample alert message" />
+
     </Box>
   );
 }
@@ -124,17 +169,6 @@ function DashboardLayoutAccount({ window, onLogout }) {
       // image: 'https://avatars.githubusercontent.com/u/19550456',
     },
   });
-  useEffect(() => {
-    api.get('/user').then(r=>{
-      setSession({
-        user:{
-          name: r.data.username,
-          email:r.data.email,
-          type: r.data.type.replace(" ","")
-        }
-      })
-    })
-  }, [])
 
 
 
@@ -145,7 +179,7 @@ function DashboardLayoutAccount({ window, onLogout }) {
           user: {
             name: 'Nuwan Dhanushka',
             email: 'nuwanhelp@gmail.com',
-            type: 'SuperAdmin', 
+            type: 'SuperAdmin',
             // image: 'https://avatars.githubusercontent.com/u/19550456',
           },
         });
