@@ -91,7 +91,7 @@ const UserRegistrationPage = () => {
         api.post('admin/manage-admin/update', currentUser)
             .then(r => {
                 if (r.data.status === "ok") {
-                    sendAlert("user is updated")
+                    sendAlert(r.data.message||"user is updated")
                     loadAllUsers();
                 }
             })
