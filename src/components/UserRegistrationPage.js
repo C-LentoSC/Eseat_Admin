@@ -345,11 +345,19 @@ const UserRegistrationPage = () => {
                     />
                     <TextField
                         fullWidth
-                        disabled={true}
                         label="Username"
                         variant="outlined"
                         name="username"
                         value={currentUser?.username || ''}
+                        onChange={handleInputChange}
+                        sx={{marginBottom: '16px'}}
+                    />
+                    <TextField
+                        fullWidth
+                        label="password"
+                        variant="outlined"
+                        name="password"
+                        value={currentUser?.password || ''}
                         onChange={handleInputChange}
                         sx={{marginBottom: '16px'}}
                     />
