@@ -63,6 +63,12 @@ const UserRegistrationPage = () => {
             if (r.data.status === "ok") {
                 sendAlert("new user added")
                 loadAllUsers()
+                setName("")
+                setUsername("")
+                setEmail("")
+                setMobile("")
+                setPassword("")
+
             } else {
                 console.log(r)
             }
