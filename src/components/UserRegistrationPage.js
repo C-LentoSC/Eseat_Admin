@@ -51,8 +51,8 @@ const UserRegistrationPage = () => {
         loadAllUsers()
 
     }, []);
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+     const sendAlert = (text) => setAlert({message: text, severity: "info"})
+     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
     const loadAllUsers = () => {
         api.get('admin/manage-admin/all').then(r => {
             setUsers(r.data)

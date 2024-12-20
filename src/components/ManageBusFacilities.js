@@ -20,6 +20,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
 const ManageBusFacilities = () => {
     const [facilities, setFacilities] = useState([]);
@@ -27,8 +28,9 @@ const ManageBusFacilities = () => {
     const [currentFacility, setCurrentFacility] = useState(null);
     const [currentFacilityUpdate, setCurrentFacilityUpdate] = useState(null);
     const [img1, setImg1] = useState()
+    const [newName, setNewName] = useState()
     const [img2, setImg2] = useState()
-
+    const [alert, setAlert] = useState(null)
     useEffect(() => {
         loadFacility()
     }, []);
@@ -52,15 +54,18 @@ const ManageBusFacilities = () => {
 
     const handleSave = () => {
         const form = new FormData()
-        if (img2) form.append('icon', img2,img2.name)
-        form.append('name',currentFacilityUpdate.name)
-        form.append('id',currentFacilityUpdate.id)
+        if (img2) form.append('icon', img2, img2.name)
+        form.append('name', currentFacilityUpdate.name)
+        form.append('id', currentFacilityUpdate.id)
         console.log(form)
-        api.post("admin/facility/edit", form,{headers:{'Content-type':'multipart/form-data'}})
+        api.post("admin/facility/edit", form, {headers: {'Content-type': 'multipart/form-data'}})
             .then(r => {
-                if (r.data.status) loadFacility()
+                if (r.data.status) {
+                    loadFacility()
+                }
+                sendAlert(r.data.message || "facility updated")
             })
-            .catch(console.log)
+            .catch(handleError)
         handleClose();
     };
 
@@ -72,6 +77,7 @@ const ManageBusFacilities = () => {
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
+        setImg1(file)
         if (file) {
             setImg1(file)
             const imageUrl = URL.createObjectURL(file);
@@ -88,19 +94,47 @@ const ManageBusFacilities = () => {
     };
 
     const handleDelete = (id) => {
-        setFacilities((prev) => prev.filter((facility) => facility.id !== id));
+        api.post('admin/facility/delete', {id})
+            .then(res => {
+                loadFacility()
+                sendAlert(res.data.message || "facility deleted")
+            })
+            .catch(handleError)
     };
+    const saveNewUser = () => {
+        const form = new FormData()
+        form.append('name', newName)
+        if (img1) {
+            form.append('icon', img1)
+        }
+        api.post('admin/facility/add', form, {headers: {"Content-Type": "multipart/form-data"}})
+            .then(res => {
+                if (res.data.status === "ok") {
+                    loadFacility()
+                }
+                sendAlert(res.data.message || "new user added")
+            })
+            .catch(handleError)
+        setCurrentFacility(null)
+        setImg1(null)
+        setNewName("")
+    }
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+
 
     return (
-        <Container component="main" maxWidth="lg" sx={{ py: 0 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <Container component="main" maxWidth="lg" sx={{py: 0}}>
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
                 {/* Title Section */}
-                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
+                <Typography variant="h5" sx={{fontWeight: 600, marginBottom: '20px'}}>
                     Manage Bus Facilities
                 </Typography>
 
                 {/* Facility Form Section */}
-                <Box component="form" sx={{ width: '100%' }}>
+                <Box component="form" sx={{width: '100%'}}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -108,6 +142,8 @@ const ManageBusFacilities = () => {
                                 label="Facility Name"
                                 variant="outlined"
                                 required
+                                value={newName}
+                                onChange={evt => setNewName(evt.target.value)}
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
@@ -117,7 +153,7 @@ const ManageBusFacilities = () => {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'row' }}>
+                        <Grid item xs={12} sm={6} sx={{display: 'flex', flexDirection: 'row'}}>
                             <Button
                                 variant="contained"
                                 component="label"
@@ -140,20 +176,21 @@ const ManageBusFacilities = () => {
                                 />
                             </Button>
                             {currentFacility?.icon && (
-                                <Box sx={{ marginLeft: '10px' }}>
+                                <Box sx={{marginLeft: '10px'}}>
                                     <img
                                         src={currentFacility.icon}
                                         alt="Facility Icon"
-                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                        style={{width: '50px', height: '50px', objectFit: 'cover'}}
                                     />
                                 </Box>
                             )}
                         </Grid>
                     </Grid>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '30px' }}>
+                    <Box sx={{display: 'flex', justifyContent: 'flex-end', marginTop: '30px'}}>
                         <Button
                             variant="contained"
                             color="primary"
+                            onClick={saveNewUser}
                             sx={{
                                 padding: '12px 24px',
                                 fontWeight: 'bold',
@@ -171,7 +208,7 @@ const ManageBusFacilities = () => {
                 </Box>
 
                 {/* Facility Table Section */}
-                <Typography variant="h6" sx={{ marginTop: '40px', marginBottom: '20px' }}>
+                <Typography variant="h6" sx={{marginTop: '40px', marginBottom: '20px'}}>
                     All Facilities
                 </Typography>
                 <TableContainer component={Paper}>
@@ -191,19 +228,19 @@ const ManageBusFacilities = () => {
                                         <img
                                             src={facility.icon}
                                             alt={facility.name}
-                                            style={{ width: '40px', height: '40px' }}
+                                            style={{width: '40px', height: '40px'}}
                                         />
                                     </TableCell>
                                     <TableCell align="right">
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleOpen(facility)}
-                                            sx={{ marginRight: '8px' }}
+                                            sx={{marginRight: '8px'}}
                                         >
-                                            <EditIcon />
+                                            <EditIcon/>
                                         </IconButton>
                                         <IconButton color="error" onClick={() => handleDelete(facility.id)}>
-                                            <DeleteIcon />
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
@@ -238,9 +275,9 @@ const ManageBusFacilities = () => {
                             name="name"
                             value={currentFacilityUpdate?.name || ''}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: '16px' }}
+                            sx={{marginBottom: '16px'}}
                         />
-                        <Box sx={{ display: 'flex', flexDirection: 'row', marginBottom:'30px'}}>
+                        <Box sx={{display: 'flex', flexDirection: 'row', marginBottom: '30px'}}>
                             <Button
                                 variant="contained"
                                 component="label"
@@ -263,21 +300,21 @@ const ManageBusFacilities = () => {
                                 />
                             </Button>
                             {currentFacilityUpdate?.icon && (
-                                <Box sx={{ marginLeft: '10px' }}>
+                                <Box sx={{marginLeft: '10px'}}>
                                     <img
                                         src={currentFacilityUpdate.icon}
                                         alt="Facility Icon"
-                                        style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                        style={{width: '50px', height: '50px', objectFit: 'cover'}}
                                     />
                                 </Box>
                             )}
                         </Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSave}
-                                sx={{ marginRight: '8px' }}
+                                sx={{marginRight: '8px'}}
                             >
                                 Save
                             </Button>
@@ -285,7 +322,7 @@ const ManageBusFacilities = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleClose}
-                                sx={{ backgroundColor: 'gray' }}
+                                sx={{backgroundColor: 'gray'}}
                             >
                                 Cancel
                             </Button>
