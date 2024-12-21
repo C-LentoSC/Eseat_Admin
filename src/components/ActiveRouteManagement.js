@@ -14,8 +14,9 @@ import {
     Menu,
     MenuItem,
 } from "@mui/material";
+
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-// import { DemoPageContent } from './DashboardLayoutAccount';
+import { setroutval } from "./DashboardLayoutAccount";
 
 const ActiveRouteManagement = () => {
 
@@ -38,7 +39,7 @@ const ActiveRouteManagement = () => {
         },
     ]);
 
-    // const [currentPath, setCurrentPath] = useState('/dashboard'); 
+
     // State to manage the menu anchor
     const [menuAnchor, setMenuAnchor] = useState(null);
 
@@ -52,13 +53,12 @@ const ActiveRouteManagement = () => {
 
     // Handle dropdown menu item click
     const handleMenuItemClick = (option) => {
-        if (option === "sample01") {
-            // setCurrentPath('/busFacilities');
+        if (option === "Mange_Bus_points") {
+            setroutval('/route-management/manageBusPoints', '01');
 
 
-        } else if (option === "sample02") {
-            // setCurrentPath('/busFacilities');
-
+        } else if (option === "Manage_Bus_fare_breake") {
+            setroutval('/busFacilities', '01');
         }
         handleMenuClose();
     };
@@ -109,8 +109,8 @@ const ActiveRouteManagement = () => {
                     open={Boolean(menuAnchor)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem onClick={() => handleMenuItemClick("sample01")}>Sample 01</MenuItem>
-                    <MenuItem onClick={() => handleMenuItemClick("sample02")}>Sample 02</MenuItem>
+                    <MenuItem onClick={() => handleMenuItemClick("Mange_Bus_points")}>Mange Bus points</MenuItem>
+                    <MenuItem onClick={() => handleMenuItemClick("Manage_Bus_fare_breake")}>Manage Bus fare breake</MenuItem>
                 </Menu>
             </Box>
         </Container>

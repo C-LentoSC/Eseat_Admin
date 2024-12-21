@@ -40,6 +40,7 @@ const App = () => {
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem("isAuthenticated");
+    sessionStorage.clear();
   };
 
   return (

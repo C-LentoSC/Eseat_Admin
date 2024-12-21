@@ -25,6 +25,7 @@ import ManageBusFacilities from './ManageBusFacilities';
 import PointsManagement from './PointsManagement';
 import RouteManagement from './RouteManagement';
 import ActiveRouteManagement from './ActiveRouteManagement';
+import ManageBusPoints from './ManageBusPoints';
 
 import CustomAlert from './Parts/CustomAlert';
 
@@ -111,8 +112,10 @@ const demoTheme = createTheme({
   },
 });
 
+
 function DemoPageContent({ pathname }) {
-  console.log(pathname);
+  sessionStorage.setItem('currentPath', pathname);
+
   let content;
 
   switch (pathname) {
@@ -140,6 +143,9 @@ function DemoPageContent({ pathname }) {
     case '/route-management/active-route':
       content = <ActiveRouteManagement />;
       break;
+    case '/route-management/manageBusPoints':
+      content = <ManageBusPoints />;
+      break;
     default:
       content = <Typography>No page found</Typography>;
   }
@@ -159,8 +165,21 @@ DemoPageContent.propTypes = {
   pathname: PropTypes.string.isRequired,
 };
 
+
+let routval = sessionStorage.getItem('currentPath') || '/';
+
+export function setroutval(newRoute, RouteID) {
+  routval = newRoute;
+  sessionStorage.setItem('currentPath', newRoute);
+  sessionStorage.setItem('currentValueID', RouteID);
+  window.location.reload();
+}
+
 function DashboardLayoutAccount({ window, onLogout }) {
   // const { window } = props;
+
+
+
 
   const [session, setSession] = React.useState({
     user: {
@@ -192,7 +211,7 @@ function DashboardLayoutAccount({ window, onLogout }) {
     };
   }, [onLogout]);
 
-  const router = useDemoRouter('/dashboard');
+  const router = useDemoRouter(routval);
 
   const branding = {
     logo: (
