@@ -112,6 +112,7 @@ const demoTheme = createTheme({
 });
 
 function DemoPageContent({ pathname }) {
+  console.log(pathname);
   let content;
 
   switch (pathname) {

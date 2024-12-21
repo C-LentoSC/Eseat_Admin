@@ -22,6 +22,8 @@ import {
 import Autocomplete from '@mui/material/Autocomplete';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import UploadIcon from "@mui/icons-material/Upload";
+import DownloadIcon from "@mui/icons-material/Download";
 
 const RouteManagement = () => {
     const [routes, setRoutes] = useState([
@@ -114,6 +116,60 @@ const RouteManagement = () => {
                 route.id === id ? { ...route, active: !route.active } : route
             )
         );
+    };
+
+    // Export to CSV
+    const handleExport = () => {
+        const csvData = routes.map((route) =>
+            [
+                route.routeNo,
+                route.startPoint,
+                route.endPoint,
+                route.description,
+                route.busFare,
+                route.active ? "Active" : "Inactive",
+            ].join(",")
+        );
+        const csvContent = ["Route No,Start Point,End Point,Description,Bus Fare,Status"]
+            .concat(csvData)
+            .join("\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "routes.csv";
+        link.click();
+    };
+
+    // Import from CSV
+    const handleImport = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const csvRows = event.target.result.split("\n").slice(1);
+            const newRoutes = csvRows
+                .map((row) => {
+                    const [routeNo, startPoint, endPoint, description, busFare, status] =
+                        row.split(",");
+                    if (routeNo && startPoint && endPoint && description && busFare) {
+                        return {
+                            id: Date.now() + Math.random(),
+                            routeNo,
+                            startPoint,
+                            endPoint,
+                            description,
+                            busFare: parseFloat(busFare),
+                            active: status === "Active",
+                        };
+                    }
+                    return null;
+                })
+                .filter((route) => route !== null);
+            setRoutes((prev) => [...prev, ...newRoutes]);
+        };
+        reader.readAsText(file);
     };
 
     return (
@@ -256,10 +312,61 @@ const RouteManagement = () => {
                     </Box>
                 </Box>
 
-                {/* Table Section */}
-                <Typography variant="h6" sx={{ marginTop: "40px", marginBottom: "20px" }}>
-                    All Routes
-                </Typography>
+
+                <Box
+                    sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "row",
+                        marginTop: "50px",
+                        marginBottom: "20px",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
+                    <Typography variant="h6" sx={{}}>
+                        All Routes
+                    </Typography>
+
+                    <Box sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 2,
+                    }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<DownloadIcon />}
+                            onClick={handleExport}
+                            sx={{
+                                backgroundColor: "#3f51b5",
+                                color: "#fff",
+                                "&:hover": {
+                                  backgroundColor: "#303f9f",
+                                },
+                              }}
+                        >
+                            Export
+                        </Button>
+                        <Button
+                            variant="contained"
+                            component="label"
+                            startIcon={<UploadIcon />}
+                            sx={{
+                                backgroundColor: "#4caf50",
+                                color: "#fff",
+                                "&:hover": {
+                                    backgroundColor: "#388e3c",
+                                },
+                            }}
+                        >
+                            Import
+                            <input type="file" accept=".csv" hidden onChange={handleImport} />
+                        </Button>
+                    </Box>
+                </Box>
+
+
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>

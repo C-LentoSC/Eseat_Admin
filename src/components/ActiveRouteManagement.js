@@ -15,8 +15,10 @@ import {
     MenuItem,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+// import { DemoPageContent } from './DashboardLayoutAccount';
 
 const ActiveRouteManagement = () => {
+
     const [routes] = useState([
         {
             id: 1,
@@ -36,27 +38,27 @@ const ActiveRouteManagement = () => {
         },
     ]);
 
+    // const [currentPath, setCurrentPath] = useState('/dashboard'); 
     // State to manage the menu anchor
     const [menuAnchor, setMenuAnchor] = useState(null);
-    const [selectedRoute, setSelectedRoute] = useState(null);
 
     const handleMenuOpen = (event, route) => {
         setMenuAnchor(event.currentTarget);
-        setSelectedRoute(route);
     };
 
     const handleMenuClose = () => {
         setMenuAnchor(null);
-        setSelectedRoute(null);
     };
 
     // Handle dropdown menu item click
     const handleMenuItemClick = (option) => {
         if (option === "sample01") {
-            window.location.href = `https://example.com/sample01/${selectedRoute.id}`;
+            // setCurrentPath('/busFacilities');
+
 
         } else if (option === "sample02") {
-            window.location.href = `https://example.com/sample01/${selectedRoute.id}`;
+            // setCurrentPath('/busFacilities');
+
         }
         handleMenuClose();
     };
