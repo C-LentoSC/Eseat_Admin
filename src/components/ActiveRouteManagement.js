@@ -58,7 +58,7 @@ const ActiveRouteManagement = () => {
 
 
         } else if (option === "Manage_Bus_fare_breake") {
-            setroutval('/busFacilities', '01');
+            setroutval('/route-management/manageBusFareBreaks', '01');
         }
         handleMenuClose();
     };

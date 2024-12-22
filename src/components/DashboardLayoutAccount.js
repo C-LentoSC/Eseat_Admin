@@ -12,6 +12,8 @@ import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import MapIcon from '@mui/icons-material/Map';
 import AllInboxIcon from '@mui/icons-material/AllInbox';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import WarehouseIcon from '@mui/icons-material/Warehouse';
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -26,8 +28,11 @@ import PointsManagement from './PointsManagement';
 import RouteManagement from './RouteManagement';
 import ActiveRouteManagement from './ActiveRouteManagement';
 import ManageBusPoints from './ManageBusPoints';
+import ManageBusFareBreaks from './ManageBusFareBreaks';
+import ManageRegions from './ManageRegions';
+import ManageDepots from './ManageDepots';
 
-import CustomAlert from './Parts/CustomAlert';
+import CustomAlert from './Parts/CustomAlert'; 
 
 
 const NAVIGATION = {
@@ -70,7 +75,17 @@ const NAVIGATION = {
       ],
     },
     {
-      segment: 'sales',
+      segment: 'manage-regions',
+      title: 'Manage Regions',
+      icon: <LocationOnIcon />,
+    },
+    {
+      segment: 'manage_depots',
+      title: 'Manage Depots',
+      icon: <WarehouseIcon />,
+    },
+    {
+      segment: 'manageRegions',
       title: 'Reports',
       icon: <BarChartIcon />,
       children: [
@@ -145,6 +160,15 @@ function DemoPageContent({ pathname }) {
       break;
     case '/route-management/manageBusPoints':
       content = <ManageBusPoints />;
+      break;
+    case '/route-management/manageBusFareBreaks':
+      content = <ManageBusFareBreaks />;
+      break;
+    case '/manage-regions':
+      content = <ManageRegions />;
+      break;
+    case '/manage_depots':
+      content = <ManageDepots />;
       break;
     default:
       content = <Typography>No page found</Typography>;
