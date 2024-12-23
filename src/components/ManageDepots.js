@@ -482,13 +482,7 @@ const ManageDepots = () => {
                                         variant="contained"
                                         color="primary"
                                         onClick={handleSave}
-                                        sx={{
-                                            marginRight: '8px',
-                                            backgroundColor: "#3f51b5",
-                                            "&:hover": {
-                                                backgroundColor: "#303f9f",
-                                            },
-                                        }}
+                                        sx={{ marginRight: "8px" }}
                                     >
                                         Save
                                     </Button>

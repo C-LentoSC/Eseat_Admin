@@ -14,6 +14,9 @@ import AllInboxIcon from '@mui/icons-material/AllInbox';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
+// import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import ViewComfyIcon from '@mui/icons-material/ViewComfy';
+
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -31,8 +34,9 @@ import ManageBusPoints from './ManageBusPoints';
 import ManageBusFareBreaks from './ManageBusFareBreaks';
 import ManageRegions from './ManageRegions';
 import ManageDepots from './ManageDepots';
+import BusLayoutManagement from './BusLayoutManagement';
 
-import CustomAlert from './Parts/CustomAlert'; 
+import CustomAlert from './Parts/CustomAlert';
 
 
 const NAVIGATION = {
@@ -83,6 +87,11 @@ const NAVIGATION = {
       segment: 'manage_depots',
       title: 'Manage Depots',
       icon: <WarehouseIcon />,
+    },
+    {
+      segment: 'busLayoutManagement',
+      title: 'Bus Layout Management',
+      icon: <ViewComfyIcon />,
     },
     {
       segment: 'manageRegions',
@@ -169,6 +178,9 @@ function DemoPageContent({ pathname }) {
       break;
     case '/manage_depots':
       content = <ManageDepots />;
+      break;
+    case '/busLayoutManagement':
+      content = <BusLayoutManagement />;
       break;
     default:
       content = <Typography>No page found</Typography>;

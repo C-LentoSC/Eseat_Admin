@@ -83,7 +83,7 @@ const ManageBusFacilities = () => {
                 {/* Facility Form Section */}
                 <Box component="form" sx={{ width: '100%' }}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={9}>
                             <TextField
                                 fullWidth
                                 label="Facility Name"
@@ -98,7 +98,7 @@ const ManageBusFacilities = () => {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'row' }}>
+                        <Grid item xs={12} sm={3} sx={{ display: 'flex', flexDirection: 'row' }}>
                             <Button
                                 variant="contained"
                                 component="label"
