@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -26,71 +26,53 @@ import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ReorderIcon from "@mui/icons-material/Reorder";
-import { setroutval } from "./DashboardLayoutAccount";
-import { Reorder } from "framer-motion";
-import { Item } from "./Parts/ItemPart";
+import {setroutval} from "./DashboardLayoutAccount";
+import {Reorder} from "framer-motion";
+import {Item} from "./Parts/ItemPart";
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
 const ManageBusPoints = () => {
 
-    //   const RoutID = sessionStorage.getItem('currentValueID');
+    const RouteID = sessionStorage.getItem('currentValueID');
+    const [details, setDetails] = useState({
+        routID: RouteID,
+        CityName: "",
+    })
 
-    const details =
-    {
-        routID: 1,
-        CityName: "Colombo-Ampara",
-    };
+    const [allPoints, setAllPoints] = useState([])
+    const [alert, setAlert] = useState(null)
 
-    const [busPoints, setBusPoints] = useState([
-        {
-            key: "1",
-            id: 1,
-            direction: "Boarding",
-            routePoint: "City A",
-            active: true,
-        },
-        {
-            key: "2",
-            id: 2,
-            direction: "Dropping",
-            routePoint: "City B",
-            active: false,
-        },
-        {
-            key: "3",
-            id: 3,
-            direction: "Boarding",
-            routePoint: "City B",
-            active: true,
-        },
-        {
-            key: "4",
-            id: 4,
-            direction: "Dropping",
-            routePoint: "City C",
-            active: false,
-        },
-        {
-            key: "5",
-            id: 5,
-            direction: "Boarding",
-            routePoint: "City C",
-            active: true,
-        },
-        {
-            key: "6",
-            id: 6,
-            direction: "Boarding",
-            routePoint: "City A",
-            active: true,
-        },
-        {
-            key: "7",
-            id: 7,
-            direction: "Dropping",
-            routePoint: "City A",
-            active: false,
-        },
-    ]);
+    useEffect(() => {
+        loadAllPoints()
+        getInfo()
+        allPointGet()
+    }, [])
+    const allPointGet = () => {
+        api.get('admin/routes/points/get-all?id=' + RouteID)
+            .then(res => {
+                setBusPoints(res.data)
+            })
+            .catch(handleError)
+    }
+    const getInfo = () => {
+        api.get('admin/routes/points/info?id=' + RouteID)
+            .then(res => {
+                setDetails(res.data)
+            })
+            .catch(handleError)
+    }
+    const loadAllPoints = () => {
+        api.get("admin/points/get-all")
+            .then(res => setAllPoints(res.data.map(o => o.name)))
+            .catch(handleError)
+
+    }
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+
+
+    const [busPoints, setBusPoints] = useState([]);
 
     const [direction, setDirection] = useState("");
     const [routePoint, setRoutePoint] = useState("");
@@ -102,13 +84,15 @@ const ManageBusPoints = () => {
     const handleAddBusPoint = () => {
         if (direction && routePoint) {
             const newBusPoint = {
-                key: Date.now(),
-                id: Date.now(),
                 direction,
                 routePoint,
-                active: true,
+                route: RouteID
             };
-            setBusPoints((prev) => [...prev, newBusPoint]);
+            api.post("admin/routes/points/add", newBusPoint)
+                .then(res => {
+                    allPointGet()
+                })
+                .catch(handleError)
             setDirection("");
             setRoutePoint("");
         }
@@ -128,32 +112,38 @@ const ManageBusPoints = () => {
 
     // Save Edited Bus Point
     const handleSaveBusPoint = () => {
-        setBusPoints((prev) =>
-            prev.map((busPoint) =>
-                busPoint.id === currentBusPoint.id ? { ...currentBusPoint } : busPoint
-            )
-        );
+        api.post('admin/routes/points/edit', currentBusPoint)
+            .then(res => {
+                sendAlert("done")
+            })
+            .catch(handleError)
+        allPointGet()
         handleCloseModal();
     };
 
     // Handle Input Changes for Edit Modal
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setCurrentBusPoint({ ...currentBusPoint, [name]: value });
+        const {name, value} = e.target;
+        setCurrentBusPoint({...currentBusPoint, [name]: value});
     };
 
     // Delete Bus Point
     const handleDeleteBusPoint = (id) => {
-        setBusPoints((prev) => prev.filter((busPoint) => busPoint.id !== id));
+        api.post('admin/routes/points/delete', {id})
+            .then(res => {
+                sendAlert("done")
+                allPointGet()
+            })
+            .catch(handleError)
     };
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        setBusPoints((prev) =>
-            prev.map((busPoint) =>
-                busPoint.id === id ? { ...busPoint, active: !busPoint.active } : busPoint
-            )
-        );
+        api.post('admin/routes/points/toggle-status', {id})
+            .then(res => {
+                allPointGet()
+            })
+            .catch(handleError)
     };
 
     // Export to CSV
@@ -167,7 +157,7 @@ const ManageBusPoints = () => {
         );
         const csvContent = ["Direction,Route Point,Status"].concat(csvData).join("\n");
 
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const blob = new Blob([csvContent], {type: "text/csv;charset=utf-8;"});
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "bus_points.csv";
@@ -212,6 +202,17 @@ const ManageBusPoints = () => {
 
     // Save the reordered bus points
     const handleSaveOrder = () => {
+        const newOrder = busPoints.map((p, i) => {
+            return {
+                id: p.id,
+                order: i
+            }
+        })
+        api.post('admin/routes/points/change-order', {data: newOrder})
+            .then(res => {
+                allPointGet()
+            })
+            .catch(handleError)
         setOpenOrderModal(false);
     };
 
@@ -233,19 +234,27 @@ const ManageBusPoints = () => {
 
     return (
         <Container component="main" maxWidth="lg">
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
 
-                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginBottom: "20px", justifyContent: "center" }}>
-                    <IconButton onClick={handleBackClick} sx={{ marginRight: "10px", padding: '0' }}>
-                        <ArrowBackIcon />
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                    justifyContent: "center"
+                }}>
+                    <IconButton onClick={handleBackClick} sx={{marginRight: "10px", padding: '0'}}>
+                        <ArrowBackIcon/>
                     </IconButton>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    <Typography variant="h5" sx={{fontWeight: 600}}>
                         Manage Bus Points ({details.CityName})
                     </Typography>
                 </Box>
 
                 {/* Form Section */}
-                <Box component="form" sx={{ width: "100%" }}>
+                <Box component="form" sx={{width: "100%"}}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6}>
                             <Autocomplete
@@ -274,7 +283,7 @@ const ManageBusPoints = () => {
                             <Autocomplete
                                 value={routePoint}
                                 onChange={(event, newValue) => setRoutePoint(newValue)}
-                                options={["City A", "City B", "City C"]}
+                                options={allPoints}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -294,7 +303,7 @@ const ManageBusPoints = () => {
                         </Grid>
                     </Grid>
 
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
+                    <Box sx={{display: "flex", justifyContent: "flex-end", marginTop: "30px"}}>
                         <Button
                             variant="contained"
                             color="primary"
@@ -316,36 +325,45 @@ const ManageBusPoints = () => {
                 </Box>
 
                 {/* Bus Points Table Section */}
-                <Box sx={{ width: "100%", display: "flex", flexDirection: "row", marginTop: "50px", marginBottom: "20px", justifyContent: "space-between", alignItems: "center" }}>
+                <Box sx={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "row",
+                    marginTop: "50px",
+                    marginBottom: "20px",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                }}>
                     <Typography variant="h6">All Bus Points</Typography>
 
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                        <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleExport} sx={{
-                            backgroundColor: "#3f51b5",
-                            color: "#fff",
-                            "&:hover": {
-                                backgroundColor: "#303f9f",
-                            },
-                        }}
+                    <Box sx={{display: "flex", justifyContent: "flex-end", gap: 2}}>
+                        <Button variant="contained" color="primary" startIcon={<DownloadIcon/>} onClick={handleExport}
+                                sx={{
+                                    backgroundColor: "#3f51b5",
+                                    color: "#fff",
+                                    "&:hover": {
+                                        backgroundColor: "#303f9f",
+                                    },
+                                }}
                         >
                             Export
                         </Button>
-                        <Button variant="contained" component="label" startIcon={<UploadIcon />}
-                            sx={{
-                                backgroundColor: "#4caf50",
-                                color: "#fff",
-                                "&:hover": {
-                                    backgroundColor: "#388e3c",
-                                },
-                            }}
+                        <Button variant="contained" component="label" startIcon={<UploadIcon/>}
+                                sx={{
+                                    backgroundColor: "#4caf50",
+                                    color: "#fff",
+                                    "&:hover": {
+                                        backgroundColor: "#388e3c",
+                                    },
+                                }}
                         >
                             Import
-                            <input type="file" accept=".csv" hidden onChange={handleImport} />
+                            <input type="file" accept=".csv" hidden onChange={handleImport}/>
                         </Button>
                         <Button
                             variant="contained"
                             color="secondary"
-                            startIcon={<ReorderIcon />}
+                            startIcon={<ReorderIcon/>}
                             onClick={handleOpenOrderModal}
                             sx={{
                                 backgroundColor: "#3f51b5",
@@ -387,11 +405,12 @@ const ManageBusPoints = () => {
                                         />
                                     </TableCell>
                                     <TableCell align="right">
-                                        <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)} sx={{ marginRight: "8px" }}>
-                                            <EditIcon />
+                                        <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)}
+                                                    sx={{marginRight: "8px"}}>
+                                            <EditIcon/>
                                         </IconButton>
                                         <IconButton color="error" onClick={() => handleDeleteBusPoint(busPoint.id)}>
-                                            <DeleteIcon />
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
@@ -422,7 +441,12 @@ const ManageBusPoints = () => {
 
                         <Autocomplete
                             value={currentBusPoint?.direction || ""}
-                            onChange={(e, newValue) => handleInputChange({ target: { name: "direction", value: newValue } })}
+                            onChange={(e, newValue) => handleInputChange({
+                                target: {
+                                    name: "direction",
+                                    value: newValue
+                                }
+                            })}
                             options={["Boarding", "Dropping"]}
                             renderInput={(params) => (
                                 <TextField
@@ -430,32 +454,37 @@ const ManageBusPoints = () => {
                                     label="Direction"
                                     variant="outlined"
                                     required
-                                    sx={{ marginBottom: "16px" }}
+                                    sx={{marginBottom: "16px"}}
                                 />
                             )}
                         />
 
                         <Autocomplete
                             value={currentBusPoint?.routePoint || ""}
-                            onChange={(e, newValue) => handleInputChange({ target: { name: "routePoint", value: newValue } })}
-                            options={["City A", "City B", "City C"]}
+                            onChange={(e, newValue) => handleInputChange({
+                                target: {
+                                    name: "routePoint",
+                                    value: newValue
+                                }
+                            })}
+                            options={allPoints}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     label="Route Point"
                                     variant="outlined"
                                     required
-                                    sx={{ marginBottom: "16px" }}
+                                    sx={{marginBottom: "16px"}}
                                 />
                             )}
                         />
 
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSaveBusPoint}
-                                sx={{ marginRight: '8px' }}
+                                sx={{marginRight: '8px'}}
                             >
                                 Save
                             </Button>
@@ -463,7 +492,7 @@ const ManageBusPoints = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleCloseModal}
-                                sx={{ backgroundColor: 'gray' }}
+                                sx={{backgroundColor: 'gray'}}
                             >
                                 Cancel
                             </Button>
@@ -488,11 +517,11 @@ const ManageBusPoints = () => {
                             overflowY: "auto",
                         }}
                     >
-                        <Typography variant="h6" component="h2" sx={{ marginBottom: 2 }}>
+                        <Typography variant="h6" component="h2" sx={{marginBottom: 2}}>
                             Reorder Boarding and Dropping Points
                         </Typography>
 
-                        <Box >
+                        <Box>
                             <Grid container spacing={3}>
                                 <Grid item xs={12} sm={6}>
                                     <Typography variant="h6">Boarding List</Typography>
@@ -504,7 +533,7 @@ const ManageBusPoints = () => {
                                         {busPoints
                                             .filter((point) => point.direction === "Boarding")
                                             .map((busPoint) => (
-                                                <Item key={busPoint.key} busPoint={busPoint} />
+                                                <Item key={busPoint.key} busPoint={busPoint}/>
                                             ))}
                                     </Reorder.Group>
                                 </Grid>
@@ -519,14 +548,14 @@ const ManageBusPoints = () => {
                                         {busPoints
                                             .filter((point) => point.direction === "Dropping")
                                             .map((busPoint) => (
-                                                <Item key={busPoint.key} busPoint={busPoint} />
+                                                <Item key={busPoint.key} busPoint={busPoint}/>
                                             ))}
                                     </Reorder.Group>
                                 </Grid>
                             </Grid>
                         </Box>
 
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
+                        <Box sx={{display: "flex", justifyContent: "flex-end", marginTop: "30px"}}>
                             <Button variant="contained" color="primary" onClick={handleSaveOrder}>
                                 Save Order
                             </Button>
@@ -534,7 +563,7 @@ const ManageBusPoints = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleCloseOrderModal}
-                                sx={{ marginLeft: 2, backgroundColor: 'gray' }}
+                                sx={{marginLeft: 2, backgroundColor: 'gray'}}
 
                             >
                                 Cancel

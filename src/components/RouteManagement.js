@@ -28,26 +28,7 @@ import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
 
 const RouteManagement = () => {
-    const [routes, setRoutes] = useState([
-        // {
-        //     id: 1,
-        //     startPoint: "City A",
-        //     endPoint: "City B",
-        //     routeNo: "101",
-        //     description: "Main route",
-        //     busFare: 50,
-        //     active: true,
-        // },
-        // {
-        //     id: 2,
-        //     startPoint: "City B",
-        //     endPoint: "City C",
-        //     routeNo: "102",
-        //     description: "Express route",
-        //     busFare: 60,
-        //     active: false,
-        // },
-    ]);
+    const [routes, setRoutes] = useState([]);
 
     const [startPoint, setStartPoint] = useState("");
     const [endPoint, setEndPoint] = useState("");
