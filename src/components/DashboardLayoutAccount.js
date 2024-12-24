@@ -14,7 +14,7 @@ import AllInboxIcon from '@mui/icons-material/AllInbox';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
-// import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 
 
@@ -35,6 +35,8 @@ import ManageBusFareBreaks from './ManageBusFareBreaks';
 import ManageRegions from './ManageRegions';
 import ManageDepots from './ManageDepots';
 import BusLayoutManagement from './BusLayoutManagement';
+import ActiveDepot from './ActiveDepot';
+import BusManagement from './BusManagement';
 
 import CustomAlert from './Parts/CustomAlert';
 
@@ -92,6 +94,11 @@ const NAVIGATION = {
       segment: 'busLayoutManagement',
       title: 'Bus Layout Management',
       icon: <ViewComfyIcon />,
+    },
+    {
+      segment: 'activeDepot',
+      title: 'Bus Management',
+      icon: <DirectionsBusIcon />,
     },
     {
       segment: 'manageRegions',
@@ -181,6 +188,12 @@ function DemoPageContent({ pathname }) {
       break;
     case '/busLayoutManagement':
       content = <BusLayoutManagement />;
+      break;
+    case '/activeDepot':
+      content = <ActiveDepot />;
+      break;
+    case '/busManagement':
+      content = <BusManagement />;
       break;
     default:
       content = <Typography>No page found</Typography>;
