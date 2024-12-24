@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -21,30 +21,15 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 // import UploadIcon from "@mui/icons-material/Upload";
 // import DownloadIcon from "@mui/icons-material/Download";
 
 const ManageRegions = () => {
-    const [regions, setRegions] = useState([
-        {
-            id: 1,
-            regionName: "Western Region",
-            mobile: "0771234567",
-            address: "123 Main St, Colombo",
-            email: "western@example.com",
-            description: "Western province region",
-            active: true,
-        },
-        {
-            id: 2,
-            regionName: "Eastern Region",
-            mobile: "0777654321",
-            address: "456 Beach Rd, Batticaloa",
-            email: "eastern@example.com",
-            description: "Eastern province region",
-            active: false,
-        },
-    ]);
+    const [regions, setRegions] = useState([]);//
+    const [alert, setAlert] = useState(null)
+
 
     const [regionName, setRegionName] = useState("");
     const [mobile, setMobile] = useState("");
@@ -53,20 +38,36 @@ const ManageRegions = () => {
     const [description, setDescription] = useState("");
     const [open, setOpen] = useState(false);
     const [currentRegion, setCurrentRegion] = useState(null);
+    const loadRegions=()=>{
+        api.get('admin/region/all')
+            .then(res=>{
+                setRegions(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadRegions()
+    }, []);
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
     // Add new region
     const handleAddRegion = () => {
         if (regionName && mobile && address && email && description) {
             const newRegion = {
-                id: Date.now(),
                 regionName,
                 mobile,
                 address,
                 email,
                 description,
-                active: true,
+
             };
-            setRegions((prev) => [...prev, newRegion]);
+            api.post('admin/region/add',newRegion)
+                .then(res=>{
+                    sendAlert('done')
+                })
+                .catch(handleError)
+            loadRegions()
             setRegionName("");
             setMobile("");
             setAddress("");
@@ -89,32 +90,38 @@ const ManageRegions = () => {
 
     // Save Edited Region
     const handleSave = () => {
-        setRegions((prev) =>
-            prev.map((region) =>
-                region.id === currentRegion.id ? { ...currentRegion } : region
-            )
-        );
+        api.post('admin/region/edit',currentRegion)
+            .then(res=>{
+                loadRegions()
+                sendAlert('done')
+            })
+            .catch(handleError)
         handleClose();
     };
 
     // Handle Input Changes
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setCurrentRegion({ ...currentRegion, [name]: value });
+        const {name, value} = e.target;
+        setCurrentRegion({...currentRegion, [name]: value});
     };
 
     // Delete Region
     const handleDelete = (id) => {
-        setRegions((prev) => prev.filter((region) => region.id !== id));
+        api.post('admin/region/delete',{id})
+            .then(res=>{
+                loadRegions()
+                sendAlert('done')
+            })
+            .catch(handleError)
     };
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        setRegions((prev) =>
-            prev.map((region) =>
-                region.id === id ? { ...region, active: !region.active } : region
-            )
-        );
+        api.post('admin/region/toggle-status',{id})
+            .then(res=>{
+                loadRegions()
+            })
+            .catch(handleError)
     };
 
     // Export to CSV
@@ -222,14 +229,16 @@ const ManageRegions = () => {
 
     return (
         <Container component="main" maxWidth="lg">
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
                 {/* Title Section */}
-                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                <Typography variant="h5" sx={{fontWeight: 600, marginBottom: "20px"}}>
                     Manage Regions
                 </Typography>
 
                 {/* Form Section */}
-                <Box component="form" sx={{ width: "100%" }}>
+                <Box component="form" sx={{width: "100%"}}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -314,7 +323,7 @@ const ManageRegions = () => {
                         </Grid>
                     </Grid>
 
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
+                    <Box sx={{display: "flex", justifyContent: "flex-end", marginTop: "30px"}}>
                         <Button
                             variant="contained"
                             color="primary"
@@ -424,15 +433,15 @@ const ManageRegions = () => {
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleOpen(region)}
-                                            sx={{ marginRight: "8px" }}
+                                            sx={{marginRight: "8px"}}
                                         >
-                                            <EditIcon />
+                                            <EditIcon/>
                                         </IconButton>
                                         <IconButton
                                             color="error"
                                             onClick={() => handleDelete(region.id)}
                                         >
-                                            <DeleteIcon />
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
@@ -467,7 +476,7 @@ const ManageRegions = () => {
                             name="regionName"
                             value={currentRegion?.regionName || ""}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -482,7 +491,7 @@ const ManageRegions = () => {
                             name="mobile"
                             value={currentRegion?.mobile || ""}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -498,7 +507,7 @@ const ManageRegions = () => {
                             type="email"
                             value={currentRegion?.email || ""}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -513,7 +522,7 @@ const ManageRegions = () => {
                             name="address"
                             value={currentRegion?.address || ""}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -530,14 +539,14 @@ const ManageRegions = () => {
                             rows={4}
                             value={currentRegion?.description || ""}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
                         />
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSave}
-                                sx={{ marginRight: "8px" }}
+                                sx={{marginRight: "8px"}}
                             >
                                 Save
                             </Button>
