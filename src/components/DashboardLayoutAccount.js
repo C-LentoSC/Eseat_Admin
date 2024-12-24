@@ -10,6 +10,13 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import MapIcon from '@mui/icons-material/Map';
+import AllInboxIcon from '@mui/icons-material/AllInbox';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import WarehouseIcon from '@mui/icons-material/Warehouse';
+// import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import ViewComfyIcon from '@mui/icons-material/ViewComfy';
+
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -22,6 +29,12 @@ import UserRegistrationPage from './UserRegistrationPage';
 import ManageBusFacilities from './ManageBusFacilities';
 import PointsManagement from './PointsManagement';
 import RouteManagement from './RouteManagement';
+import ActiveRouteManagement from './ActiveRouteManagement';
+import ManageBusPoints from './ManageBusPoints';
+import ManageBusFareBreaks from './ManageBusFareBreaks';
+import ManageRegions from './ManageRegions';
+import ManageDepots from './ManageDepots';
+import BusLayoutManagement from './BusLayoutManagement';
 
 import CustomAlert from './Parts/CustomAlert';
 import {useEffect} from "react";
@@ -54,9 +67,36 @@ const NAVIGATION = {
       segment: 'route-management',
       title: 'Route Management',
       icon: <MapIcon />,
+      children: [
+        {
+          segment: 'all-route',
+          title: 'All Routes',
+          icon: <AllInboxIcon />,
+        },
+        {
+          segment: 'active-route',
+          title: 'Active Routes',
+          icon: <DirectionsRunIcon />,
+        },
+      ],
     },
     {
-      segment: 'sales',
+      segment: 'manage-regions',
+      title: 'Manage Regions',
+      icon: <LocationOnIcon />,
+    },
+    {
+      segment: 'manage_depots',
+      title: 'Manage Depots',
+      icon: <WarehouseIcon />,
+    },
+    {
+      segment: 'busLayoutManagement',
+      title: 'Bus Layout Management',
+      icon: <ViewComfyIcon />,
+    },
+    {
+      segment: 'manageRegions',
       title: 'Reports',
       icon: <BarChartIcon />,
       children: [
@@ -98,7 +138,10 @@ const demoTheme = createTheme({
   },
 });
 
+
 function DemoPageContent({ pathname }) {
+  sessionStorage.setItem('currentPath', pathname);
+
   let content;
 
   switch (pathname) {
@@ -120,6 +163,27 @@ function DemoPageContent({ pathname }) {
     case '/route-management':
       content = <RouteManagement />;
       break;
+    case '/route-management/all-route':
+      content = <RouteManagement />;
+      break;
+    case '/route-management/active-route':
+      content = <ActiveRouteManagement />;
+      break;
+    case '/route-management/manageBusPoints':
+      content = <ManageBusPoints />;
+      break;
+    case '/route-management/manageBusFareBreaks':
+      content = <ManageBusFareBreaks />;
+      break;
+    case '/manage-regions':
+      content = <ManageRegions />;
+      break;
+    case '/manage_depots':
+      content = <ManageDepots />;
+      break;
+    case '/busLayoutManagement':
+      content = <BusLayoutManagement />;
+      break;
     default:
       content = <Typography>No page found</Typography>;
   }
@@ -139,7 +203,20 @@ DemoPageContent.propTypes = {
   pathname: PropTypes.string.isRequired,
 };
 
+
+let routval = sessionStorage.getItem('currentPath') || '/';
+
+export function setroutval(newRoute, RouteID) {
+  routval = newRoute;
+  sessionStorage.setItem('currentPath', newRoute);
+  sessionStorage.setItem('currentValueID', RouteID);
+  window.location.reload();
+}
+
 function DashboardLayoutAccount({ window, onLogout }) {
+
+
+
 
 
   const [session, setSession] = React.useState({
@@ -182,7 +259,7 @@ function DashboardLayoutAccount({ window, onLogout }) {
     };
   }, [onLogout]);
 
-  const router = useDemoRouter('/dashboard');
+  const router = useDemoRouter(routval);
 
   const branding = {
     logo: (
