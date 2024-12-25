@@ -66,6 +66,7 @@ const ActiveRouteManagement = () => {
 
         } else if (option === "Manage_Bus_fare_breake") {
             setroutval('/route-management/manageBusFareBreaks', menuAnchorRoute);
+
         }
         handleMenuClose();
     };
@@ -102,6 +103,7 @@ const ActiveRouteManagement = () => {
                                     <TableCell align="right">
                                         <IconButton
                                             onClick={(event) => handleMenuOpen(event, route.id)}
+
                                         >
                                             <MoreVertIcon />
                                         </IconButton>
@@ -120,6 +122,7 @@ const ActiveRouteManagement = () => {
                 >
                     <MenuItem onClick={() => handleMenuItemClick("Mange_Bus_points")}>Mange Bus points</MenuItem>
                     <MenuItem onClick={() => handleMenuItemClick("Manage_Bus_fare_breake")}>Manage Bus fare breake</MenuItem>
+
                 </Menu>
             </Box>
         </Container>
