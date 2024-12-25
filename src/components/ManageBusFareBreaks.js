@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -29,52 +29,54 @@ import ReorderIcon from "@mui/icons-material/Reorder";
 import { setroutval } from "./DashboardLayoutAccount";
 import { Reorder } from "framer-motion";
 import { Item } from "./Parts/ItemPart";
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
 const ManageBusFareBreaks = () => {
 
-    //   const RoutID = sessionStorage.getItem('currentValueID');
+      const RouteID = sessionStorage.getItem('currentValueID');
 
-    const details =
-    {
-        routID: 1,
-        CityName: "Colombo-Ampara",
-    };
+    const [details,setDetails] =useState({
+        id:RouteID,
+        CityName:""
+    })
+    const [alert, setAlert] = useState(null)
+    const [d,setD]=useState([])
+    const [b,setB]=useState([])
+    useEffect(() => {
+        getInfo()
+        loadPoints()
+        loadAll()
+    }, []);
+    const getInfo = () => {
+        api.get('admin/routes/fare/info?id=' + RouteID)
+            .then(res => {
+                setDetails(res.data)
+            })
+            .catch(handleError)
+    }
+    const loadPoints = () => {
+        api.get('admin/routes/fare/get-points?id=' + RouteID)
+            .then(res => {
+                setD(res.data.d)
+                setB(res.data.b)
+            })
+            .catch(handleError)
+    }
+
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
     const [busPoints, setBusPoints] = useState([
-        {
-            key: "1",
-            id: 1,
-            direction: "City A",
-            routePoint: "City C",
-            fare: "180",
-            active: true,
-        },
-        {
-            key: "2",
-            id: 2,
-            direction: "City B",
-            routePoint: "City C",
-            fare: "200",
-            active: true,
-        },
-        {
-            key: "3",
-            id: 3,
-            direction: "City C",
-            routePoint: "City A",
-            fare: "150",
-            active: true,
-        },
-        {
-            key: "4",
-            id: 4,
-            direction: "City B",
-            routePoint: "City A",
-            fare: "100",
-            active: false,
-        },
-    ]);
 
+    ]);
+    const loadAll=()=>{
+        api.get('admin/routes/fare/all?id='+RouteID)
+            .then(res=>{
+                setBusPoints(res.data)
+            })
+            .catch(handleError)
+    }
     const [direction, setDirection] = useState("");
     const [routePoint, setRoutePoint] = useState("");
     const [fare, setFare] = useState("");
@@ -87,13 +89,18 @@ const ManageBusFareBreaks = () => {
         if (direction && routePoint && fare) {
             const newBusPoint = {
                 key: Date.now(),
-                id: Date.now(),
+                id: RouteID,
                 direction,
                 routePoint,
                 fare,
                 active: true,
             };
-            setBusPoints((prev) => [...prev, newBusPoint]);
+            // setBusPoints((prev) => [...prev, newBusPoint]);
+            api.post('admin/routes/fare/add',newBusPoint)
+                .then(res=>{
+                    loadAll()
+                })
+                .catch(handleError)
             setDirection("");
             setRoutePoint("");
             setFare("");
@@ -114,11 +121,11 @@ const ManageBusFareBreaks = () => {
 
     // Save Edited Bus Point
     const handleSaveBusPoint = () => {
-        setBusPoints((prev) =>
-            prev.map((busPoint) =>
-                busPoint.id === currentBusPoint.id ? { ...currentBusPoint } : busPoint
-            )
-        );
+        api.post('admin/routes/fare/edit',currentBusPoint)
+            .then(res=>{
+                loadAll()
+            })
+            .catch(handleError)
         handleCloseModal();
     };
 
@@ -136,11 +143,11 @@ const ManageBusFareBreaks = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        setBusPoints((prev) =>
-            prev.map((busPoint) =>
-                busPoint.id === id ? { ...busPoint, active: !busPoint.active } : busPoint
-            )
-        );
+        api.post('admin/routes/fare/toggle-status',{id})
+            .then(res=>{
+                loadAll()
+            })
+            .catch(handleError)
     };
 
     // Export to CSV
@@ -185,7 +192,12 @@ const ManageBusFareBreaks = () => {
                     return null;
                 })
                 .filter((busPoint) => busPoint !== null);
-            setBusPoints((prev) => [...prev, ...newBusPoints]);
+            // setBusPoints((prev) => [...prev, ...newBusPoints]);
+            api.post('admin/routes/fare/import',{id:RouteID,data:newBusPoints})
+                .then(res=>{
+                    loadAll()
+                })
+                .catch(handleError)
         };
         reader.readAsText(file);
     };
@@ -201,6 +213,15 @@ const ManageBusFareBreaks = () => {
 
     // Save the reordered bus points
     const handleSaveOrder = () => {
+        const nO=(busPoints.map((value, index) => {return {
+            id:value.id,
+            key:index
+        }}))
+        api.post('admin/routes/fare/change-order',{data:nO})
+            .then(res=>{
+                loadAll()
+            })
+            .catch(handleError)
         setOpenOrderModal(false);
     };
 
@@ -209,12 +230,15 @@ const ManageBusFareBreaks = () => {
     };
 
     const handleReorderBoarding = (newOrder) => {
+
         setBusPoints([...newOrder]);
     };
 
 
     return (
         <Container component="main" maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 
                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginBottom: "20px", justifyContent: "center" }}>
@@ -233,7 +257,7 @@ const ManageBusFareBreaks = () => {
                             <Autocomplete
                                 value={direction}
                                 onChange={(event, newValue) => setDirection(newValue)}
-                                options={["City A", "City B", "City C"]}
+                                options={b}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -256,7 +280,7 @@ const ManageBusFareBreaks = () => {
                             <Autocomplete
                                 value={routePoint}
                                 onChange={(event, newValue) => setRoutePoint(newValue)}
-                                options={["City A", "City B", "City C"]}
+                                options={d}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -426,7 +450,7 @@ const ManageBusFareBreaks = () => {
                         <Autocomplete
                             value={currentBusPoint?.direction || ""}
                             onChange={(e, newValue) => handleInputChange({ target: { name: "direction", value: newValue } })}
-                            options={["City A", "City B", "City C"]}
+                            options={b}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -441,7 +465,7 @@ const ManageBusFareBreaks = () => {
                         <Autocomplete
                             value={currentBusPoint?.routePoint || ""}
                             onChange={(e, newValue) => handleInputChange({ target: { name: "routePoint", value: newValue } })}
-                            options={["City A", "City B", "City C"]}
+                            options={d}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}

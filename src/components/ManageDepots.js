@@ -428,7 +428,7 @@ const ManageDepots = () => {
                                 <Autocomplete
                                     value={currentDepot?.region || null}
                                     onChange={handleEditRegionChange}
-                                    options={["City A", "City B", "City C"]}
+                                    options={regions}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
