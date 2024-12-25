@@ -21,104 +21,25 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 // import ChairIcon from "@mui/icons-material/Chair";
 
 
 const BusLayoutManagement = () => {
     // Sample data
-    const [layouts, setLayouts] = useState([
-        {
-            id: 1,
-            layoutName: "2x2 Luxury Layout",
-            busType: "Luxury Buses",
-            seatsCount: 40,
-            description: "Standard luxury bus layout with 2x2 configuration",
-            seatDetails: {
-                "seat-0-0": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                },
-                "seat-0-1": {
-                    seatNumber: "A2",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                },
-                "seat-1-0": {
-                    seatNumber: "B1",
-                    serviceChargeCTB: "120",
-                    serviceChargeHGH: "170",
-                    serviceChargeOther: "60",
-                    corporateTax: "30",
-                    vat: "18",
-                    discount: "15",
-                    otherCharges: "35",
-                    agentCommission: "80",
-                    bankCharges: "25"
-                }
-            }
-        },
-        {
-            id: 2,
-            layoutName: "3x2 Normal Layout",
-            busType: "Normal Buses",
-            seatsCount: 50,
-            description: "Standard normal bus layout with 3x2 configuration",
-            seatDetails: {
-                "seat-0-0": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                },
-                "seat-0-1": {
-                    seatNumber: "A2",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                },
-                "seat-1-0": {
-                    seatNumber: "B1",
-                    serviceChargeCTB: "120",
-                    serviceChargeHGH: "170",
-                    serviceChargeOther: "60",
-                    corporateTax: "30",
-                    vat: "18",
-                    discount: "15",
-                    otherCharges: "35",
-                    agentCommission: "80",
-                    bankCharges: "25"
-                }
-            }
-        },
+    const [layouts, setLayouts] = useState([]);
+    const loadLayOuts=()=>{
+        api.get('admin/seat-layout/get-all')
+            .then(res=>{
+                setLayouts(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(()=>{
+        loadLayOuts()
+    },[])
 
-    ]);
 
     // States
     const [selectedBusType, setSelectedBusType] = useState(null);
@@ -224,17 +145,25 @@ const BusLayoutManagement = () => {
 
     const handleSaveLayout = () => {
         if (isEditMode) {
-            setLayouts(prev =>
-                prev.map(layout =>
-                    layout.id === currentLayout.id ? { ...newLayout, id: layout.id } : layout
-                )
-            );
+            api.post('admin/seat-layout/edit',newLayout)
+                .then(res=>{
+                    loadLayOuts()
+                    sendAlert('done')
+                })
+                .catch(handleError)
         } else {
             const layoutToSave = {
                 ...newLayout,
                 id: layouts.length + 1,
             };
-            setLayouts(prev => [...prev, layoutToSave]);
+            // console.log(layoutToSave)
+            api.post('admin/seat-layout/add-new',layoutToSave)
+                .then(res=>{
+                    loadLayOuts()
+                    sendAlert('done')
+                })
+                .catch(handleError)
+            // setLayouts(prev => [...prev, layoutToSave]);
         }
         setCreateModalOpen(false);
         setIsEditMode(false);
@@ -516,11 +445,22 @@ const BusLayoutManagement = () => {
     };
 
     const handleDelete = (id) => {
-        setLayouts(prev => prev.filter(layout => layout.id !== id));
+        api.post('admin/seat-layout/delete',{id})
+            .then(res=>{
+                loadLayOuts()
+                sendAlert('done')
+            })
+            .catch(handleError)
     };
+    const [alert, setAlert] = useState(null)
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+
 
     return (
         <Container component="main" maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
                 <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
