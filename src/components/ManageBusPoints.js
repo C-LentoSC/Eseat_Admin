@@ -186,7 +186,11 @@ const ManageBusPoints = () => {
                     return null;
                 })
                 .filter((busPoint) => busPoint !== null);
-            setBusPoints((prev) => [...prev, ...newBusPoints]);
+            api.post('admin/routes/points/import', {route: RouteID, data: newBusPoints})
+                .then(res=>{
+                    allPointGet()
+                })
+                .catch(handleError)
         };
         reader.readAsText(file);
     };
