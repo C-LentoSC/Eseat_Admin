@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Container,
@@ -14,49 +14,59 @@ import {
     Menu,
     MenuItem,
 } from "@mui/material";
+
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { setroutval } from "./DashboardLayoutAccount";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 
 const ActiveRouteManagement = () => {
-    const [routes] = useState([
-        {
-            id: 1,
-            startPoint: "City A",
-            endPoint: "City B",
-            routeNo: "101",
-            description: "Main route",
-            busFare: 50,
-        },
-        {
-            id: 2,
-            startPoint: "City B",
-            endPoint: "City C",
-            routeNo: "102",
-            description: "Express route",
-            busFare: 60,
-        },
-    ]);
+
+    const [routes,setRoutes] = useState([ ]);
+    const [alert, setAlert] = useState(null)
+
+    useEffect(() => {
+        loadAllPoints()
+        loadAllRoutes()
+    }, [])
+    const loadAllRoutes = () => {
+        api.get('admin/routes/load-all')
+            .then(res => setRoutes(res.data.filter(r=>r.active)))
+            .catch(handleError)
+    }
+    const loadAllPoints = () => {
+        api.get("admin/points/get-all")
+            // .then(res => setAllPoints(res.data.map(o => o.name)))
+            .catch(handleError)
+
+    }
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+
+
 
     // State to manage the menu anchor
     const [menuAnchor, setMenuAnchor] = useState(null);
-    const [selectedRoute, setSelectedRoute] = useState(null);
+    const [menuAnchorRoute,setMenuAnchorRoute]=useState(null)
 
     const handleMenuOpen = (event, route) => {
         setMenuAnchor(event.currentTarget);
-        setSelectedRoute(route);
+        setMenuAnchorRoute(route)
     };
 
     const handleMenuClose = () => {
         setMenuAnchor(null);
-        setSelectedRoute(null);
     };
 
     // Handle dropdown menu item click
     const handleMenuItemClick = (option) => {
-        if (option === "sample01") {
-            window.location.href = `https://example.com/sample01/${selectedRoute.id}`;
+        if (option === "Mange_Bus_points") {
+            setroutval('/route-management/manageBusPoints', menuAnchorRoute);
 
-        } else if (option === "sample02") {
-            window.location.href = `https://example.com/sample01/${selectedRoute.id}`;
+
+        } else if (option === "Manage_Bus_fare_breake") {
+            setroutval('/route-management/manageBusFareBreaks', menuAnchorRoute);
+
         }
         handleMenuClose();
     };
@@ -64,6 +74,8 @@ const ActiveRouteManagement = () => {
     return (
         <Container component="main" maxWidth="lg">
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                      setOpen={setAlert}/> : <></>}
                 {/* Table Section */}
                 <Typography variant="h6" sx={{ marginBottom: "20px" }}>
                     All Active Routes
@@ -90,7 +102,8 @@ const ActiveRouteManagement = () => {
                                     <TableCell>LKR {route.busFare}</TableCell>
                                     <TableCell align="right">
                                         <IconButton
-                                            onClick={(event) => handleMenuOpen(event, route)}
+                                            onClick={(event) => handleMenuOpen(event, route.id)}
+
                                         >
                                             <MoreVertIcon />
                                         </IconButton>
@@ -107,8 +120,9 @@ const ActiveRouteManagement = () => {
                     open={Boolean(menuAnchor)}
                     onClose={handleMenuClose}
                 >
-                    <MenuItem onClick={() => handleMenuItemClick("sample01")}>Sample 01</MenuItem>
-                    <MenuItem onClick={() => handleMenuItemClick("sample02")}>Sample 02</MenuItem>
+                    <MenuItem onClick={() => handleMenuItemClick("Mange_Bus_points")}>Mange Bus points</MenuItem>
+                    <MenuItem onClick={() => handleMenuItemClick("Manage_Bus_fare_breake")}>Manage Bus fare breake</MenuItem>
+
                 </Menu>
             </Box>
         </Container>
