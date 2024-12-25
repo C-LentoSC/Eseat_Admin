@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -22,22 +22,46 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
 const ManageDepots = () => {
     // Sample initial data
     const [depots, setDepots] = useState([
-        {
-            id: 1,
-            region: "Western Region",
-            depotName: "Colombo Central",
-            dsName: "John Doe",
-            mobile: "0771234567",
-            address: "123 Main St, Colombo",
-            email: "colombo.central@example.com",
-            description: "Main depot in Colombo area",
-            active: true,
-        },
+        // {
+        //     id: 1,
+        //     region: "Western Region",
+        //     depotName: "Colombo Central",
+        //     dsName: "John Doe",
+        //     mobile: "0771234567",
+        //     address: "123 Main St, Colombo",
+        //     email: "colombo.central@example.com",
+        //     description: "Main depot in Colombo area",
+        //     active: true,
+        // },
     ]);
+    const [regions,setRegions]=useState([])
+    const loadAllDepots=()=>{
+        api.get('admin/depots/get-all-depots')
+            .then(res=>{
+                setDepots(res.data)
+            })
+            .catch(handleError)
+    }
+    const loadAllRegions=()=>{
+        api.get('admin/depots/get-regions')
+            .then(res=>{
+                setRegions(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(()=>{
+        loadAllDepots()
+        loadAllRegions()
+    },[])
+    const [alert, setAlert] = useState(null)
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
     // Form states
     const [formData, setFormData] = useState({
@@ -77,11 +101,16 @@ const ManageDepots = () => {
     const handleAddDepot = () => {
         if (formData.region && formData.depotName && formData.dsName) {
             const newDepot = {
-                id: Date.now(),
                 ...formData,
                 active: true,
             };
-            setDepots(prev => [...prev, newDepot]);
+            // setDepots(prev => [...prev, newDepot]);
+            api.post('admin/depots/add',newDepot)
+                .then(res=>{
+                    sendAlert('done')
+                    loadAllDepots()
+                })
+                .catch(handleError)
             // Reset form
             setFormData({
                 region: "",
@@ -109,11 +138,12 @@ const ManageDepots = () => {
 
     // Save edited depot
     const handleSave = () => {
-        setDepots(prev =>
-            prev.map(depot =>
-                depot.id === currentDepot.id ? currentDepot : depot
-            )
-        );
+        api.post('admin/depots/edit',currentDepot)
+            .then(res=>{
+                sendAlert('done')
+                loadAllDepots()
+            })
+            .catch(handleError)
         handleClose();
     };
 
@@ -136,20 +166,26 @@ const ManageDepots = () => {
 
     // Delete depot
     const handleDelete = (id) => {
-        setDepots(prev => prev.filter(depot => depot.id !== id));
+        api.post('admin/depots/delete',{id})
+            .then(res=>{
+                loadAllDepots()
+            })
+            .catch(handleError)
     };
 
     // Toggle active status
     const handleActiveChange = (id) => {
-        setDepots(prev =>
-            prev.map(depot =>
-                depot.id === id ? { ...depot, active: !depot.active } : depot
-            )
-        );
+        api.post('admin/depots/toggle-status',{id})
+            .then(res=>{
+                loadAllDepots()
+            })
+            .catch(handleError)
     };
 
     return (
         <Container component="main" maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
                 <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
@@ -163,7 +199,7 @@ const ManageDepots = () => {
                             <Autocomplete
                                 value={formData.region}
                                 onChange={handleRegionChange}
-                                options={["City A", "City B", "City C"]}
+                                options={regions}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
