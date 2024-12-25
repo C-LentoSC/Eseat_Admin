@@ -138,7 +138,10 @@ const ManageBusFareBreaks = () => {
 
     // Delete Bus Point
     const handleDeleteBusPoint = (id) => {
-        setBusPoints((prev) => prev.filter((busPoint) => busPoint.id !== id));
+        api.post('admin/routes/fare/delete',{id})
+            .then(res=>{
+                loadAll()
+            }).catch(handleError)
     };
 
     // Toggle Active/Inactive
