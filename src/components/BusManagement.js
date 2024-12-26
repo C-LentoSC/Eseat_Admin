@@ -40,7 +40,7 @@ const BusManagement = () => {
 
     const [mainImage, setMainImage] = useState(null);
     const [otherImages, setOtherImages] = useState([]);
-    
+
     const [routeData, setRouteData] = useState(null);
 
     const [selectedLayout, setSelectedLayout] = useState(null);
@@ -271,7 +271,7 @@ const BusManagement = () => {
             status: false
         }
     ]);
- 
+
     const busTypes = ["Luxury", "Semi-Luxury", "Normal"];
 
     const facilities = [
@@ -353,10 +353,12 @@ const BusManagement = () => {
 
     const handleManageSchedules = () => {
         handleMenuClose();
+        setroutval('/busSchedule', '01');
     };
 
     const handleManageCrew = () => {
         handleMenuClose();
+        setroutval('/crewManagement', '01');
     };
 
     const handleSaveBus = () => {
@@ -869,9 +871,9 @@ const BusManagement = () => {
                             <table className="w-full border-collapse">
                                 <thead>
                                     <tr className="bg-gray-500">
-                                        <th style={{color:'#FFFFFF'}} className="border pl-2 p-1 text-left">Boarding Point</th>
-                                        <th style={{color:'#FFFFFF'}} className="border pl-2 p-1 text-left">Dropping Point</th>
-                                        <th style={{color:'#FFFFFF'}} className="border pl-2 p-1 text-left">Price</th>
+                                        <th style={{ color: '#FFFFFF' }} className="border pl-2 p-1 text-left">Boarding Point</th>
+                                        <th style={{ color: '#FFFFFF' }} className="border pl-2 p-1 text-left">Dropping Point</th>
+                                        <th style={{ color: '#FFFFFF' }} className="border pl-2 p-1 text-left">Price</th>
                                     </tr>
                                 </thead>
                                 <tbody>

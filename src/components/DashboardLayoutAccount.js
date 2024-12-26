@@ -37,6 +37,8 @@ import ManageDepots from './ManageDepots';
 import BusLayoutManagement from './BusLayoutManagement';
 import ActiveDepot from './ActiveDepot';
 import BusManagement from './BusManagement';
+import BusSchedule from './BusSchedule';
+import CrewManagement from './CrewManagement';
 
 import CustomAlert from './Parts/CustomAlert';
 
@@ -194,6 +196,12 @@ function DemoPageContent({ pathname }) {
       break;
     case '/busManagement':
       content = <BusManagement />;
+      break;
+    case '/busSchedule':
+      content = <BusSchedule />;
+      break;
+    case '/crewManagement':
+      content = <CrewManagement />;
       break;
     default:
       content = <Typography>No page found</Typography>;
