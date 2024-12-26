@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {
     Box,
     Button,
@@ -29,16 +29,16 @@ import api from "../model/API";
 const BusLayoutManagement = () => {
     // Sample data
     const [layouts, setLayouts] = useState([]);
-    const loadLayOuts=()=>{
+    const loadLayOuts = () => {
         api.get('admin/seat-layout/get-all')
-            .then(res=>{
+            .then(res => {
                 setLayouts(res.data)
             })
             .catch(handleError)
     }
-    useEffect(()=>{
+    useEffect(() => {
         loadLayOuts()
-    },[])
+    }, [])
 
 
     // States
@@ -125,7 +125,7 @@ const BusLayoutManagement = () => {
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setSeatDetails((prev) => ({
             ...prev,
             [name]: value
@@ -144,9 +144,13 @@ const BusLayoutManagement = () => {
     };
 
     const handleSaveLayout = () => {
+        if (newLayout.layoutName === '' || newLayout.busType === '' || newLayout.description === '') {
+            sendAlert("Please fill in all required fields.")
+            return
+        }
         if (isEditMode) {
-            api.post('admin/seat-layout/edit',newLayout)
-                .then(res=>{
+            api.post('admin/seat-layout/edit', newLayout)
+                .then(res => {
                     loadLayOuts()
                     sendAlert('done')
                 })
@@ -157,8 +161,8 @@ const BusLayoutManagement = () => {
                 id: layouts.length + 1,
             };
             // console.log(layoutToSave)
-            api.post('admin/seat-layout/add-new',layoutToSave)
-                .then(res=>{
+            api.post('admin/seat-layout/add-new', layoutToSave)
+                .then(res => {
                     loadLayOuts()
                     sendAlert('done')
                 })
@@ -190,32 +194,34 @@ const BusLayoutManagement = () => {
         const rows = 6;
         const cols = 13;
         const grid = [];
-    
+
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 const seatId = `seat-${i}-${j}`;
                 const seatInfo = layout.seatDetails[seatId];
-    
+
                 // Add seat (selected or empty) to the grid
                 grid.push(
                     seatInfo ? (
-                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1" onClick={() => handleViewSeatDetails(seatInfo)}>
-                         <SeatIcon isSelected={!!seatInfo} />
-                         {seatInfo?.seatNumber && (
-                             <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }} className="absolute text-xs font-medium cursor-pointer">
+                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} key={seatId}
+                             className="relative m-1" onClick={() => handleViewSeatDetails(seatInfo)}>
+                            <SeatIcon isSelected={!!seatInfo}/>
+                            {seatInfo?.seatNumber && (
+                                <span style={{left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF"}}
+                                      className="absolute text-xs font-medium cursor-pointer">
                                  {seatInfo.seatNumber}
                              </span>
-                         )}
-                     </div>
+                            )}
+                        </div>
                     ) : (
-                        <div key={seatId} >
-                            <EmpltySeatIcon />
+                        <div key={seatId}>
+                            <EmpltySeatIcon/>
                         </div>
                     )
                 );
             }
         }
-    
+
         return (
             <div
                 style={{
@@ -223,14 +229,14 @@ const BusLayoutManagement = () => {
                     gridTemplateRows: `repeat(${rows}, 1fr)`,
                     gridTemplateColumns: `repeat(${cols}, 1fr)`,
                     // gap: '10px',
-                    marginTop:'10px'
+                    marginTop: '10px'
                 }}
             >
                 {grid}
             </div>
         );
     };
-    
+
 
     // Add handler for viewing seat details
     const [selectedViewSeat, setSelectedViewSeat] = useState(null);
@@ -242,7 +248,7 @@ const BusLayoutManagement = () => {
     // Add the seat details display component
     const SeatDetailsDisplay = () => {
         if (!selectedViewSeat) return (
-            <Box sx={{ mt: 0, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
+            <Box sx={{mt: 0, p: 2, border: '1px solid #ccc', borderRadius: '4px'}}>
                 <Typography variant="h6" gutterBottom>
                     Selected Seat Details -
                 </Typography>
@@ -264,7 +270,7 @@ const BusLayoutManagement = () => {
         );
 
         return (
-            <Box sx={{ mt: 0, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
+            <Box sx={{mt: 0, p: 2, border: '1px solid #ccc', borderRadius: '4px'}}>
                 <Typography variant="h6" gutterBottom>
                     Selected Seat Details - {selectedViewSeat.seatNumber}
                 </Typography>
@@ -272,7 +278,8 @@ const BusLayoutManagement = () => {
                     <Grid item xs={12}>
                         <Typography>Service Charge CTB: {selectedViewSeat.serviceChargeCTB}</Typography>
                         <Typography marginTop={1}>Service Charge HGH: {selectedViewSeat.serviceChargeHGH}</Typography>
-                        <Typography marginTop={1}>Service Charge Other: {selectedViewSeat.serviceChargeOther}</Typography>
+                        <Typography marginTop={1}>Service Charge
+                            Other: {selectedViewSeat.serviceChargeOther}</Typography>
                         <Typography marginTop={1}>Corporate Tax: {selectedViewSeat.corporateTax}</Typography>
                         <Typography marginTop={1}>VAT: {selectedViewSeat.vat}</Typography>
 
@@ -314,21 +321,21 @@ const BusLayoutManagement = () => {
 
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={8}>
-                        <Box sx={{ mb: 2 }}>
+                        <Box sx={{mb: 2}}>
                             {currentLayout && renderViewSeatGrid(currentLayout)}
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <SeatDetailsDisplay />
+                        <SeatDetailsDisplay/>
                     </Grid>
                 </Grid>
 
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                     <Button
                         variant="contained"
                         color="secondary"
                         onClick={handleClose}
-                        sx={{ backgroundColor: 'gray' }}
+                        sx={{backgroundColor: 'gray'}}
                     >
                         Cancel
                     </Button>
@@ -337,15 +344,17 @@ const BusLayoutManagement = () => {
         </Modal>
     );
 
-    const SeatIcon = ({ isSelected }) => (
+    const SeatIcon = ({isSelected}) => (
         <div className="relative flex flex-col items-center">
             <svg
                 viewBox="0 0 100 100"
                 className={`w-12 h-12 cursor-pointer transition-colors duration-200 ${isSelected ? 'text-green-600' : 'text-gray-000'
-                    }`}
+                }`}
             >
                 <g transform="translate(50,50) rotate(-90) translate(-50,-50)">
-                    <path d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z" fill="currentColor" />
+                    <path
+                        d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z"
+                        fill="currentColor"/>
                 </g>
             </svg>
         </div>
@@ -355,10 +364,12 @@ const BusLayoutManagement = () => {
             <svg
                 viewBox="0 0 100 100"
                 className={`w-12 h-12 cursor-pointer transition-colors duration-200}`}
-                style={{ visibility: "hidden" }}
+                style={{visibility: "hidden"}}
             >
                 <g transform="translate(50,50) rotate(-90) translate(-50,-50)">
-                    <path d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z" fill="currentColor" />
+                    <path
+                        d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z"
+                        fill="currentColor"/>
                 </g>
             </svg>
         </div>
@@ -376,10 +387,12 @@ const BusLayoutManagement = () => {
                 const seatId = `seat-${i}-${j}`;
                 const seatInfo = newLayout.seatDetails[seatId];
                 row.push(
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1" onClick={() => handleSeatClick(seatId)}>
-                        <SeatIcon isSelected={!!seatInfo} />
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} key={seatId}
+                         className="relative m-1" onClick={() => handleSeatClick(seatId)}>
+                        <SeatIcon isSelected={!!seatInfo}/>
                         {seatInfo?.seatNumber && (
-                            <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }} className="absolute text-xs font-medium cursor-pointer">
+                            <span style={{left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF"}}
+                                  className="absolute text-xs font-medium cursor-pointer">
                                 {seatInfo.seatNumber}
                             </span>
                         )}
@@ -418,7 +431,7 @@ const BusLayoutManagement = () => {
                 );
             }
             grid.push(
-                <Box key={i} sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Box key={i} sx={{display: 'flex', justifyContent: 'center'}}>
                     {row}
                 </Box>
             );
@@ -445,8 +458,8 @@ const BusLayoutManagement = () => {
     };
 
     const handleDelete = (id) => {
-        api.post('admin/seat-layout/delete',{id})
-            .then(res=>{
+        api.post('admin/seat-layout/delete', {id})
+            .then(res => {
                 loadLayOuts()
                 sendAlert('done')
             })
@@ -461,9 +474,9 @@ const BusLayoutManagement = () => {
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                   setOpen={setAlert}/> : <></>}
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
                 {/* Title Section */}
-                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                <Typography variant="h5" sx={{fontWeight: 600, marginBottom: "20px"}}>
                     Layout Management for Bus Seat Structures
                 </Typography>
 
@@ -476,7 +489,7 @@ const BusLayoutManagement = () => {
                     mb: 2,
                     mt: 3,
                 }}>
-                    <Box sx={{ width: "300px" }}>
+                    <Box sx={{width: "300px"}}>
                         <Autocomplete
                             value={selectedBusType}
                             onChange={handleBusTypeChange}
@@ -545,22 +558,22 @@ const BusLayoutManagement = () => {
                                         <IconButton
                                             color="info"
                                             onClick={() => handleView(layout)}
-                                            sx={{ marginRight: "8px" }}
+                                            sx={{marginRight: "8px"}}
                                         >
-                                            <VisibilityIcon />
+                                            <VisibilityIcon/>
                                         </IconButton>
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleEdit(layout)}
-                                            sx={{ marginRight: "8px" }}
+                                            sx={{marginRight: "8px"}}
                                         >
-                                            <EditIcon />
+                                            <EditIcon/>
                                         </IconButton>
                                         <IconButton
                                             color="error"
                                             onClick={() => handleDelete(layout.id)}
                                         >
-                                            <DeleteIcon />
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
@@ -603,7 +616,7 @@ const BusLayoutManagement = () => {
                             {isEditMode ? 'Edit Layout' : 'Create New Layout'}
                         </Typography>
 
-                        <Grid container spacing={2} sx={{ mb: 3 }}>
+                        <Grid container spacing={2} sx={{mb: 3}}>
                             <Grid item xs={12} sm={4}>
                                 <TextField
                                     fullWidth
@@ -624,7 +637,7 @@ const BusLayoutManagement = () => {
                                     }))}
                                     options={busTypes}
                                     renderInput={(params) => (
-                                        <TextField {...params} label="Bus Type" />
+                                        <TextField {...params} label="Bus Type"/>
                                     )}
                                 />
                             </Grid>
@@ -656,16 +669,16 @@ const BusLayoutManagement = () => {
                             Select Seats
                         </Typography>
 
-                        <Box sx={{ mb: 2 }}>
+                        <Box sx={{mb: 2}}>
                             {renderSeatGrid()}
                         </Box>
 
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSaveLayout}
-                                sx={{ marginRight: "8px" }}
+                                sx={{marginRight: "8px"}}
                             >
                                 {isEditMode ? 'Update Layout' : 'Save Layout'}
                             </Button>
@@ -683,7 +696,7 @@ const BusLayoutManagement = () => {
                                         seatDetails: {}
                                     });
                                 }}
-                                sx={{ backgroundColor: 'gray' }}
+                                sx={{backgroundColor: 'gray'}}
                             >
                                 Cancel
                             </Button>
@@ -816,11 +829,11 @@ const BusLayoutManagement = () => {
                             </Grid>
                         </Grid>
 
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                             <Button
                                 variant="contained"
                                 onClick={handleSaveSeatDetails}
-                                sx={{ marginRight: "8px" }}
+                                sx={{marginRight: "8px"}}
                             >
                                 Save Seat
                             </Button>
@@ -828,7 +841,7 @@ const BusLayoutManagement = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleClose}
-                                sx={{ backgroundColor: 'gray' }}
+                                sx={{backgroundColor: 'gray'}}
                             >
                                 Cancel
                             </Button>
@@ -836,7 +849,7 @@ const BusLayoutManagement = () => {
                     </Box>
                 </Modal>
 
-                <ViewModal />
+                <ViewModal/>
             </Box>
         </Container>
     );
