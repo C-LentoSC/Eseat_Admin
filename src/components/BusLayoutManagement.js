@@ -223,28 +223,32 @@ const BusLayoutManagement = () => {
     };
 
     const handleSaveLayout = () => {
-        if (isEditMode) {
-            setLayouts(prev =>
-                prev.map(layout =>
-                    layout.id === currentLayout.id ? { ...newLayout, id: layout.id } : layout
-                )
-            );
+        if (newLayout.layoutName === '' || newLayout.busType === '' || newLayout.description === '') {
+            console.log("Please fill in all required fields.");
         } else {
-            const layoutToSave = {
-                ...newLayout,
-                id: layouts.length + 1,
-            };
-            setLayouts(prev => [...prev, layoutToSave]);
+            if (isEditMode) {
+                setLayouts(prev =>
+                    prev.map(layout =>
+                        layout.id === currentLayout.id ? { ...newLayout, id: layout.id } : layout
+                    )
+                );
+            } else {
+                const layoutToSave = {
+                    ...newLayout,
+                    id: layouts.length + 1,
+                };
+                setLayouts(prev => [...prev, layoutToSave]);
+            }
+            setCreateModalOpen(false);
+            setIsEditMode(false);
+            setNewLayout({
+                layoutName: "",
+                busType: "",
+                seatsCount: 0,
+                description: "",
+                seatDetails: {}
+            });
         }
-        setCreateModalOpen(false);
-        setIsEditMode(false);
-        setNewLayout({
-            layoutName: "",
-            busType: "",
-            seatsCount: 0,
-            description: "",
-            seatDetails: {}
-        });
     };
 
     // Calculate seat count based on selected seats
@@ -261,23 +265,23 @@ const BusLayoutManagement = () => {
         const rows = 6;
         const cols = 13;
         const grid = [];
-    
+
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 const seatId = `seat-${i}-${j}`;
                 const seatInfo = layout.seatDetails[seatId];
-    
+
                 // Add seat (selected or empty) to the grid
                 grid.push(
                     seatInfo ? (
-                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1" onClick={() => handleViewSeatDetails(seatInfo)}>
-                         <SeatIcon isSelected={!!seatInfo} />
-                         {seatInfo?.seatNumber && (
-                             <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }} className="absolute text-xs font-medium cursor-pointer">
-                                 {seatInfo.seatNumber}
-                             </span>
-                         )}
-                     </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1" onClick={() => handleViewSeatDetails(seatInfo)}>
+                            <SeatIcon isSelected={!!seatInfo} />
+                            {seatInfo?.seatNumber && (
+                                <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }} className="absolute text-xs font-medium cursor-pointer">
+                                    {seatInfo.seatNumber}
+                                </span>
+                            )}
+                        </div>
                     ) : (
                         <div key={seatId} >
                             <EmpltySeatIcon />
@@ -286,7 +290,7 @@ const BusLayoutManagement = () => {
                 );
             }
         }
-    
+
         return (
             <div
                 style={{
@@ -294,14 +298,14 @@ const BusLayoutManagement = () => {
                     gridTemplateRows: `repeat(${rows}, 1fr)`,
                     gridTemplateColumns: `repeat(${cols}, 1fr)`,
                     // gap: '10px',
-                    marginTop:'10px'
+                    marginTop: '10px'
                 }}
             >
                 {grid}
             </div>
         );
     };
-    
+
 
     // Add handler for viewing seat details
     const [selectedViewSeat, setSelectedViewSeat] = useState(null);
