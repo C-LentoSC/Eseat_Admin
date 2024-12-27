@@ -16,7 +16,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
-
+import GroupIcon from '@mui/icons-material/Group';
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -39,6 +39,7 @@ import ActiveDepot from './ActiveDepot';
 import BusManagement from './BusManagement';
 import BusSchedule from './BusSchedule';
 import CrewManagement from './CrewManagement';
+import AgentManagement from './AgentManagement';
 
 import CustomAlert from './Parts/CustomAlert';
 
@@ -101,6 +102,11 @@ const NAVIGATION = {
       segment: 'activeDepot',
       title: 'Bus Management',
       icon: <DirectionsBusIcon />,
+    },
+    {
+      segment: 'agentManagement',
+      title: 'Agent Management',
+      icon: <GroupIcon />,
     },
     {
       segment: 'manageRegions',
@@ -203,6 +209,9 @@ function DemoPageContent({ pathname }) {
     case '/crewManagement':
       content = <CrewManagement />;
       break;
+    case '/agentManagement':
+      content = <AgentManagement />;
+      break;
     default:
       content = <Typography>No page found</Typography>;
   }
@@ -297,7 +306,21 @@ function DashboardLayoutAccount({ window, onLogout }) {
       branding={branding}
 
     >
-      <DashboardLayout defaultSidebarCollapsed>
+      <DashboardLayout defaultSidebarCollapsed
+        sx={{
+          '& .MuiDrawer-paper': {
+            '& > *': {
+              overflowY: 'auto !important',
+              scrollbarWidth: 'none !important',
+              msOverflowStyle: 'none !important',
+              '&::-webkit-scrollbar': {
+                width: '0 !important',
+                display: 'none !important'
+              }
+            }
+          }
+        }}
+      >
         <DemoPageContent pathname={router.pathname} />
       </DashboardLayout>
     </AppProvider>
