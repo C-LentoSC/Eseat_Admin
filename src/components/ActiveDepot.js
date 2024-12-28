@@ -18,9 +18,14 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { setroutval } from "./DashboardLayoutAccount";
+// import CustomAlert from "./Parts/CustomAlert";
 
 const ActiveDepot = () => {
-    
+
+    // const [alert, setAlert] = useState(null);
+    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+
     // Sample data
     const [depots] = useState([
         {
@@ -63,7 +68,7 @@ const ActiveDepot = () => {
 
     // View handler
     const handleView = (depotId) => {
-         setroutval('/busManagement', depotId);
+        setroutval('/busManagement', depotId);
     };
 
     // Filter depots based on selection
@@ -75,6 +80,9 @@ const ActiveDepot = () => {
 
     return (
         <Container component="main" maxWidth="lg">
+
+            {/* {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert} setOpen={setAlert} /> : <></>} */}
+
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
                 <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
