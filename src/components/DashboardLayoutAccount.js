@@ -18,6 +18,7 @@ import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import GroupIcon from '@mui/icons-material/Group';
 import AirlineSeatReclineNormalIcon from '@mui/icons-material/AirlineSeatReclineNormal';
+import { AttachMoney, PaymentsOutlined, RequestQuoteOutlined } from '@mui/icons-material';
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -42,6 +43,8 @@ import BusSchedule from './BusSchedule';
 import CrewManagement from './CrewManagement';
 import AgentManagement from './AgentManagement';
 import SeatTransfer from './SeatTransfer';
+import ManageFare from './ManageFare';
+import ManageBreakFare from './ManageBreakFare';
 
 import CustomAlert from './Parts/CustomAlert';
 
@@ -115,7 +118,23 @@ const NAVIGATION = {
       title: 'Seat Transfer',
       icon: <AirlineSeatReclineNormalIcon />,
     },
- 
+    {
+      segment: 'manageFare',
+      title: 'Manage Fare',
+      icon: <PaymentsOutlined />,
+      children: [
+        {
+          segment: 'manage-fare',
+          title: 'Manage Fare',
+          icon: <AttachMoney />,
+        },
+        {
+          segment: 'manage-break-fare',
+          title: 'Manage Break Fare',
+          icon: <RequestQuoteOutlined />,
+        },
+      ],
+    },
   ],
   Admin: [],
   OperationManager: [],
@@ -206,6 +225,15 @@ function DemoPageContent({ pathname }) {
     case '/seatTransfer':
       content = <SeatTransfer />;
       break;
+      case '/manageFare':
+        content = <ManageFare />;
+        break;
+      case '/manageFare/manage-fare':
+        content = <ManageFare />;
+        break;
+      case '/manageFare/manage-break-fare':
+        content = <ManageBreakFare />;
+        break;
     default:
       content = <Typography>No page found</Typography>;
   }

@@ -12,8 +12,15 @@ import {
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+// import CustomAlert from "./Parts/CustomAlert";
 
 const SeatTransfer = () => {
+
+    // const [alert, setAlert] = useState(null);
+    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+
+
     const [searchData, setSearchData] = useState({
         refNo: '',
         mobileNumber: ''
