@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { createTheme } from '@mui/material/styles';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import DescriptionIcon from '@mui/icons-material/Description';
+// import DashboardIcon from '@mui/icons-material/Dashboard';
+// import BarChartIcon from '@mui/icons-material/BarChart';
+// import DescriptionIcon from '@mui/icons-material/Description';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
@@ -17,6 +17,7 @@ import WarehouseIcon from '@mui/icons-material/Warehouse';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import GroupIcon from '@mui/icons-material/Group';
+import AirlineSeatReclineNormalIcon from '@mui/icons-material/AirlineSeatReclineNormal';
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -24,7 +25,7 @@ import { useDemoRouter } from '@toolpad/core/internal';
 import { ReactComponent as Logo } from '../resources/eseat.svg';
 
 
-import Dashboard1 from './Dashboard1'; //Dummy
+// import Dashboard1 from './Dashboard1'; //Dummy
 import UserRegistrationPage from './UserRegistrationPage';
 import ManageBusFacilities from './ManageBusFacilities';
 import PointsManagement from './PointsManagement';
@@ -40,17 +41,18 @@ import BusManagement from './BusManagement';
 import BusSchedule from './BusSchedule';
 import CrewManagement from './CrewManagement';
 import AgentManagement from './AgentManagement';
+import SeatTransfer from './SeatTransfer';
 
 import CustomAlert from './Parts/CustomAlert';
 
 
 const NAVIGATION = {
   SuperAdmin: [
-    {
-      segment: 'dashboard',
-      title: 'Dashboard',
-      icon: <DashboardIcon />,
-    },
+    // {
+    //   segment: 'dashboard',
+    //   title: 'Dashboard',
+    //   icon: <DashboardIcon />,
+    // },
     {
       segment: 'user-registration',
       title: 'User Registration',
@@ -109,22 +111,11 @@ const NAVIGATION = {
       icon: <GroupIcon />,
     },
     {
-      segment: 'manageRegions',
-      title: 'Reports',
-      icon: <BarChartIcon />,
-      children: [
-        {
-          segment: 'sales',
-          title: 'Sales',
-          icon: <DescriptionIcon />,
-        },
-        {
-          segment: 'traffic',
-          title: 'Traffic',
-          icon: <DescriptionIcon />,
-        },
-      ],
+      segment: 'seatTransfer',
+      title: 'Seat Transfer',
+      icon: <AirlineSeatReclineNormalIcon />,
     },
+ 
   ],
   Admin: [],
   OperationManager: [],
@@ -159,11 +150,11 @@ function DemoPageContent({ pathname }) {
 
   switch (pathname) {
     case '/':
-      content = <Dashboard1 />; //Dummy
+      content = <UserRegistrationPage />; //Dummy
       break;
-    case '/dashboard':
-      content = <Dashboard1 />; //Dummy
-      break;
+    // case '/dashboard':
+    //   content = <Dashboard1 />; //Dummy
+    //   break;
     case '/user-registration':
       content = <UserRegistrationPage />;
       break;
@@ -211,6 +202,9 @@ function DemoPageContent({ pathname }) {
       break;
     case '/agentManagement':
       content = <AgentManagement />;
+      break;
+    case '/seatTransfer':
+      content = <SeatTransfer />;
       break;
     default:
       content = <Typography>No page found</Typography>;
