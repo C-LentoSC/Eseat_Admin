@@ -53,7 +53,7 @@ const ManageRegions = () => {
 
     // Add new region
     const handleAddRegion = () => {
-        if (regionName && mobile && address && email && description) {
+        if (regionName && mobile && address && email ) {
             const newRegion = {
                 regionName,
                 mobile,
@@ -64,7 +64,7 @@ const ManageRegions = () => {
             };
             api.post('admin/region/add',newRegion)
                 .then(res=>{
-                    sendAlert('done')
+                    sendAlert('added')
                 })
                 .catch(handleError)
             loadRegions()
@@ -93,7 +93,7 @@ const ManageRegions = () => {
         api.post('admin/region/edit',currentRegion)
             .then(res=>{
                 loadRegions()
-                sendAlert('done')
+                sendAlert('updated')
             })
             .catch(handleError)
         handleClose();
@@ -110,7 +110,7 @@ const ManageRegions = () => {
         api.post('admin/region/delete',{id})
             .then(res=>{
                 loadRegions()
-                sendAlert('done')
+                sendAlert('deleted')
             })
             .catch(handleError)
     };

@@ -107,7 +107,7 @@ const ManageDepots = () => {
             // setDepots(prev => [...prev, newDepot]);
             api.post('admin/depots/add',newDepot)
                 .then(res=>{
-                    sendAlert('done')
+                    sendAlert('added new')
                     loadAllDepots()
                 })
                 .catch(handleError)
@@ -140,7 +140,7 @@ const ManageDepots = () => {
     const handleSave = () => {
         api.post('admin/depots/edit',currentDepot)
             .then(res=>{
-                sendAlert('done')
+                sendAlert('updated')
                 loadAllDepots()
             })
             .catch(handleError)
@@ -169,6 +169,7 @@ const ManageDepots = () => {
         api.post('admin/depots/delete',{id})
             .then(res=>{
                 loadAllDepots()
+                sendAlert('deleted')
             })
             .catch(handleError)
     };

@@ -62,6 +62,7 @@ const ManageBusFacilities = () => {
             .then(r => {
                 if (r.data.status) {
                     loadFacility()
+                    sendAlert('update saved')
                 }
                 sendAlert(r.data.message || "facility updated")
             })
@@ -112,7 +113,7 @@ const ManageBusFacilities = () => {
                 if (res.data.status === "ok") {
                     loadFacility()
                 }
-                sendAlert(res.data.message || "new user added")
+                sendAlert(res.data.message || "new facility added")
             })
             .catch(handleError)
         setCurrentFacility(null)

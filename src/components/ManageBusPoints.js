@@ -91,6 +91,7 @@ const ManageBusPoints = () => {
             api.post("admin/routes/points/add", newBusPoint)
                 .then(res => {
                     allPointGet()
+                    sendAlert('new point added')
                 })
                 .catch(handleError)
             setDirection("");
@@ -114,7 +115,7 @@ const ManageBusPoints = () => {
     const handleSaveBusPoint = () => {
         api.post('admin/routes/points/edit', currentBusPoint)
             .then(res => {
-                sendAlert("done")
+                sendAlert("updated")
             })
             .catch(handleError)
         allPointGet()
@@ -131,7 +132,7 @@ const ManageBusPoints = () => {
     const handleDeleteBusPoint = (id) => {
         api.post('admin/routes/points/delete', {id})
             .then(res => {
-                sendAlert("done")
+                sendAlert("deleted")
                 allPointGet()
             })
             .catch(handleError)
@@ -189,6 +190,7 @@ const ManageBusPoints = () => {
             api.post('admin/routes/points/import', {route: RouteID, data: newBusPoints})
                 .then(res=>{
                     allPointGet()
+                    sendAlert('import success')
                 })
                 .catch(handleError)
         };

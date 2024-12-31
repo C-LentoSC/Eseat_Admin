@@ -152,7 +152,7 @@ const BusLayoutManagement = () => {
             api.post('admin/seat-layout/edit', newLayout)
                 .then(res => {
                     loadLayOuts()
-                    sendAlert('done')
+                    sendAlert('layout is updated')
                 })
                 .catch(handleError)
         } else {
@@ -164,7 +164,7 @@ const BusLayoutManagement = () => {
             api.post('admin/seat-layout/add-new', layoutToSave)
                 .then(res => {
                     loadLayOuts()
-                    sendAlert('done')
+                    sendAlert('a new layout is added')
                 })
                 .catch(handleError)
             // setLayouts(prev => [...prev, layoutToSave]);
@@ -459,7 +459,7 @@ const BusLayoutManagement = () => {
         api.post('admin/seat-layout/delete', {id})
             .then(res => {
                 loadLayOuts()
-                sendAlert('done')
+                sendAlert('deleted')
             })
             .catch(handleError)
     };

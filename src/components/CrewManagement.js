@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -25,24 +25,35 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from 'dayjs';
 import { setroutval } from "./DashboardLayoutAccount";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 
 // import CustomAlert from "./Parts/CustomAlert";
 
 const CrewManagement = () => {
 
-    //   const BusID = sessionStorage.getItem('currentValueID');
+      const BusID = sessionStorage.getItem('currentValueID');
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
-
-    const details =
-    {
-        routID: 1,
-        ScheduleNum: "KN08-0600MC",
-        CityName: "Colombo-Ampara",
-    };
-
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const [editMode,setEditMode]=useState(false)
+    const [details,setDetailes] =
+    useState({
+        routID: BusID,
+        ScheduleNum: "",
+        CityName: "",
+    });
+    useEffect(() => {
+        loadInfo()
+    }, []);
+    const loadInfo=()=>{
+        api.get('admin/bus/crew/'+BusID+'/info')
+            .then(res=>{
+                setDetailes(res.data.main)
+                setCrew(res.data.crew)
+            }).catch(handleError)
+    }
 
     const [crew, setCrew] = useState([]);
     const [openAdd, setOpenAdd] = useState(false);
@@ -51,11 +62,6 @@ const CrewManagement = () => {
     const [currentCrew, setCurrentCrew] = useState(null);
 
     const [formData, setFormData] = useState({
-        conductorName: "",
-        busNumber: "",
-        contactNo: "",
-        userName: "",
-        travelDate: dayjs(),
     });
 
     const handleDateSelect = (date) => {
@@ -69,20 +75,28 @@ const CrewManagement = () => {
     };
 
     const handleSave = () => {
+        let arr=[]
         if (selectedDates.length > 0) {
             const newCrewEntries = selectedDates.map((date, index) => ({
-                id: Date.now() + index,
+                busId: BusID,
                 ...formData,
                 travelDate: date
             }));
-            setCrew([...crew, ...newCrewEntries]);
+            arr.push(...newCrewEntries)
         } else {
-            setCrew([...crew, {
-                id: Date.now(),
+
+            arr.push( {
+                busId: BusID,
                 ...formData,
                 travelDate: dayjs(formData.travelDate).format('YYYY-MM-DD')
-            }]);
+            });
         }
+        arr.forEach(o=>{
+            api.post('admin/bus/crew/add',o).then(res=>{
+                sendAlert('new member added')
+                loadInfo()
+            }).catch(handleError)
+        })
         handleCloseAdd();
     };
 
@@ -95,12 +109,19 @@ const CrewManagement = () => {
     };
 
     const handleSaveEdit = () => {
-        setCrew(crew.map(item =>
-            item.id === currentCrew.id ? {
-                ...currentCrew,
-                travelDate: dayjs(currentCrew.travelDate).format('YYYY-MM-DD')
-            } : item
-        ));
+        // setCrew(crew.map(item =>
+        //     item.id === currentCrew.id ? {
+        //         ...currentCrew,
+        //         travelDate: dayjs(currentCrew.travelDate).format('YYYY-MM-DD')
+        //     } : item
+        // ));
+        api.post('admin/bus/crew/edit',{
+            ...currentCrew,
+            travelDate: dayjs(currentCrew.travelDate).format('YYYY-MM-DD')
+        }).then(res=>{
+            sendAlert('updated')
+            loadInfo()
+        }).catch(handleError)
         setOpenEdit(false);
     };
 
@@ -119,7 +140,11 @@ const CrewManagement = () => {
     };
 
     const handleDelete = (id) => {
-        setCrew(crew.filter(item => item.id !== id));
+       api.post('admin/bus/crew/delete',{id})
+           .then(res=>{
+               sendAlert('deleted')
+               loadInfo()
+           }).catch(handleError)
     };
 
     const DateSelectionSection = () => (
@@ -150,6 +175,8 @@ const CrewManagement = () => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Container maxWidth="lg">
+                {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                      setOpen={setAlert}/> : <></>}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 3, py: 2 }}>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
   

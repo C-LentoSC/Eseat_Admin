@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -29,21 +29,34 @@ import EditIcon from "@mui/icons-material/Edit";
 import dayjs from 'dayjs';
 import { setroutval } from "./DashboardLayoutAccount";
 
-// import CustomAlert from "./Parts/CustomAlert";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 
 const BusSchedule = () => {
-    //   const BusID = sessionStorage.getItem('currentValueID');
+      const BusID = sessionStorage.getItem('currentValueID');
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
-    const details =
-    {
-        routID: 1,
-        ScheduleNum: "KN08-0600MC",
-        CityName: "Colombo-Ampara",
-    };
+    const [details,setDetails] =
+    useState({
+        routID: BusID,
+        ScheduleNum: "",
+        CityName: "",
+    });
+    const loadInfo=()=>{
+        api.get(`admin/bus/schedule/${BusID}/info`)
+            .then(res=>{
+                setDetails(res.data.main)
+                setCities(res.data.sub)
+                setSelected(res.data.layout)
+                setSchedule(res.data.all)
+            }).catch(handleError)
+    }
+    useEffect(() => {
+        loadInfo()
+    }, []);
 
     const [schedule, setSchedule] = useState([]);
     const [openAdd, setOpenAdd] = useState(false);
@@ -68,7 +81,7 @@ const BusSchedule = () => {
         blockedSeats: []
     });
 
-    const cities = ["Colombo", "Ampara", "Kandy", "Galle", "Jaffna"];
+    const [cities,setCities] = useState([]);
 
     const handleDateSelect = (date) => {
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -87,6 +100,7 @@ const BusSchedule = () => {
                 .filter(([_, isBlocked]) => isBlocked)
                 .map(([seatId]) => seatId)
         };
+        let arr=[]
 
         if (enableMultiDates && selectedDates.length > 0) {
             const baseTravel = dayjs(formData.travelDate);
@@ -97,24 +111,31 @@ const BusSchedule = () => {
             const closeDiff = baseClose.diff(baseTravel, 'day');
 
             const newSchedules = selectedDates.map((date, index) => ({
-                id: Date.now() + index,
+                id: BusID,
                 ...scheduleData,
                 travelDate: dayjs(date).format('YYYY-MM-DD'),
                 endDate: dayjs(date).add(endDiff, 'day').format('YYYY-MM-DD'),
                 closingDate: dayjs(date).add(closeDiff, 'day').format('YYYY-MM-DD')
             }));
 
-            setSchedule([...schedule, ...newSchedules]);
+
+            arr.push(...newSchedules);
         } else {
-            setSchedule([...schedule, {
-                id: Date.now(),
+            arr.push( {
+                id: BusID,
                 ...scheduleData,
                 travelDate: dayjs(formData.travelDate).format('YYYY-MM-DD'),
                 endDate: dayjs(formData.endDate).format('YYYY-MM-DD'),
                 closingDate: dayjs(formData.closingDate).format('YYYY-MM-DD')
-            }]);
+            });
         }
-
+        arr.forEach(i=>{
+            api.post('admin/bus/schedule/add',i)
+                .then(res=>{
+                    loadInfo()
+                })
+                .catch(handleError)
+        })
         handleCloseAdd();
     };
 
@@ -123,7 +144,7 @@ const BusSchedule = () => {
         item.blockedSeats?.forEach(seatId => {
             blockedSeatsObj[seatId] = true;
         });
-
+        setShowSeatLayout(item.blockedSeats.length!==0)
         setBlockedSeats(blockedSeatsObj);
         setCurrentSchedule({
             ...item,
@@ -146,9 +167,11 @@ const BusSchedule = () => {
             closingDate: dayjs(currentSchedule.closingDate).format('YYYY-MM-DD')
         };
 
-        setSchedule(schedule.map(item =>
-            item.id === currentSchedule.id ? updatedSchedule : item
-        ));
+        api.post('admin/bus/schedule/edit',updatedSchedule)
+            .then(res=>{
+                loadInfo()
+            })
+            .catch(handleError)
 
         setOpenEdit(false);
         setBlockedSeats({});
@@ -179,7 +202,11 @@ const BusSchedule = () => {
     };
 
     const handleDelete = (id) => {
-        setSchedule(schedule.filter(item => item.id !== id));
+        api.post('admin/bus/schedule/delete',{id})
+            .then(res=>{
+                loadInfo()
+            })
+            .catch(handleError)
     };
 
     const DateInputSection = ({ formData, setFormData, enableMultiDates }) => (
@@ -255,7 +282,7 @@ const BusSchedule = () => {
         </div>
     );
 
-    const [selectedLayout] = useState(
+    const [selectedLayout,setSelected] = useState(
         {
             id: 1,
             layoutName: "2x2 Luxury Layout",
@@ -263,117 +290,7 @@ const BusSchedule = () => {
             seatsCount: 40,
             description: "Standard luxury bus layout with 2x2 configuration",
             seatDetails: {
-                "seat-0-0": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }, "seat-0-12": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }, "seat-5-0": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }, "seat-5-12": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }, "seat-4-12": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }, "seat-3-12": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }, "seat-2-12": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }, "seat-1-12": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }, "seat-0-13": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }, "seat-0-1": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                }
+
             }
         }
     );
@@ -437,6 +354,8 @@ const BusSchedule = () => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Container maxWidth="lg">
+                {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                      setOpen={setAlert}/> : <></>}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 3, py: 2 }}>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
@@ -775,7 +694,11 @@ const BusSchedule = () => {
                                         <Button
                                             variant="contained"
                                             color="secondary"
-                                            onClick={() => setOpenEdit(false)}
+                                            onClick={() => {
+                                                setBlockedSeats({})
+                                                setShowSeatLayout(false)
+                                                setOpenEdit(false)
+                                            }}
                                             sx={{ backgroundColor: 'gray' }}
                                         >
                                             Cancel
