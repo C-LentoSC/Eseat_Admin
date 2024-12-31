@@ -152,7 +152,7 @@ const BusLayoutManagement = () => {
             api.post('admin/seat-layout/edit', newLayout)
                 .then(res => {
                     loadLayOuts()
-                    sendAlert('done')
+                    sendAlert('layout is updated')
                 })
                 .catch(handleError)
         } else {
@@ -164,7 +164,7 @@ const BusLayoutManagement = () => {
             api.post('admin/seat-layout/add-new', layoutToSave)
                 .then(res => {
                     loadLayOuts()
-                    sendAlert('done')
+                    sendAlert('a new layout is added')
                 })
                 .catch(handleError)
             // setLayouts(prev => [...prev, layoutToSave]);
@@ -203,16 +203,14 @@ const BusLayoutManagement = () => {
                 // Add seat (selected or empty) to the grid
                 grid.push(
                     seatInfo ? (
-                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} key={seatId}
-                             className="relative m-1" onClick={() => handleViewSeatDetails(seatInfo)}>
-                            <SeatIcon isSelected={!!seatInfo}/>
-                            {seatInfo?.seatNumber && (
-                                <span style={{left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF"}}
-                                      className="absolute text-xs font-medium cursor-pointer">
+                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1" onClick={() => handleViewSeatDetails(seatInfo)}>
+                         <SeatIcon isSelected={!!seatInfo} />
+                         {seatInfo?.seatNumber && (
+                             <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }} className="absolute text-xs font-medium cursor-pointer">
                                  {seatInfo.seatNumber}
                              </span>
-                            )}
-                        </div>
+                         )}
+                     </div>
                     ) : (
                         <div key={seatId}>
                             <EmpltySeatIcon/>
@@ -461,7 +459,7 @@ const BusLayoutManagement = () => {
         api.post('admin/seat-layout/delete', {id})
             .then(res => {
                 loadLayOuts()
-                sendAlert('done')
+                sendAlert('deleted')
             })
             .catch(handleError)
     };

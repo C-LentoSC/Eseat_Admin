@@ -124,6 +124,7 @@ const ManageBusFareBreaks = () => {
         api.post('admin/routes/fare/edit',currentBusPoint)
             .then(res=>{
                 loadAll()
+                sendAlert('updated')
             })
             .catch(handleError)
         handleCloseModal();
@@ -141,6 +142,7 @@ const ManageBusFareBreaks = () => {
         api.post('admin/routes/fare/delete',{id})
             .then(res=>{
                 loadAll()
+                sendAlert('deleted')
             }).catch(handleError)
     };
 
@@ -199,6 +201,7 @@ const ManageBusFareBreaks = () => {
             api.post('admin/routes/fare/import',{id:RouteID,data:newBusPoints})
                 .then(res=>{
                     loadAll()
+                    sendAlert('import succsess')
                 })
                 .catch(handleError)
         };

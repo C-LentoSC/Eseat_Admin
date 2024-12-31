@@ -60,7 +60,7 @@ const RouteManagement = () => {
 
     // Add new route
     const handleAddRoute = () => {
-        if (startPoint && endPoint && routeNo && description && busFare) {
+        if (startPoint && endPoint && routeNo &&  busFare) {
             const newRoute = {
                 id: Date.now(),
                 starting_point: startPoint,
@@ -102,7 +102,7 @@ const RouteManagement = () => {
         api.post('admin/routes/edit', currentRoute)
             .then(res => {
                 loadAllRoutes()
-                sendAlert("done")
+                sendAlert("updated")
             })
             .catch(handleError)
         handleClose();
@@ -119,7 +119,7 @@ const RouteManagement = () => {
         api.post('admin/routes/delete', {id})
             .then(res => {
                 loadAllRoutes()
-                sendAlert("done")
+                sendAlert("deleted")
             })
             .catch(handleError)
     };
@@ -188,7 +188,7 @@ const RouteManagement = () => {
             api.post('admin/routes/import',{data:newRoutes})
                 .then(res=>{
                     loadAllRoutes()
-                    sendAlert('done')
+                    sendAlert('success')
                 })
                 .catch(handleError)
         };

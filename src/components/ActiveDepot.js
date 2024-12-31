@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Container,
@@ -18,37 +18,41 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { setroutval } from "./DashboardLayoutAccount";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 
 const ActiveDepot = () => {
-    
-    // Sample data
-    const [depots] = useState([
-        {
-            id: "DEP001",
-            name: "Central Depot",
-            region: "Western",
-            activeBusCount: 25
-        },
-        {
-            id: "DEP002",
-            name: "Northern Hub",
-            region: "Northern",
-            activeBusCount: 18
-        },
-        {
-            id: "DEP003",
-            name: "Eastern Terminal",
-            region: "Eastern",
-            activeBusCount: 30
-        }
-    ]);
 
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+
+    // Sample data
+    const [depots,setDepots] = useState([]);
+    const loadAllDepots=()=>{
+        api.get('admin/bus/all-depot')
+            .then(res=>{
+                setDepots(res.data)
+            })
+            .catch(handleError)
+    }
+    const loadAllRegions=()=>{
+        api.get('admin/bus/all-regions')
+            .then(res=>{
+                setRegions(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadAllDepots()
+        loadAllRegions()
+    }, []);
     // States for filters
     const [selectedRegion, setSelectedRegion] = useState(null);
     const [selectedDepot, setSelectedDepot] = useState(null);
 
     // Sample regions and depots
-    const regions = ["Western", "Northern", "Eastern", "Southern"];
+    const [regions,setRegions] = useState([]);
     const depotNames = depots.map(depot => depot.name);
 
     // Filter handlers
@@ -63,7 +67,7 @@ const ActiveDepot = () => {
 
     // View handler
     const handleView = (depotId) => {
-         setroutval('/busManagement', depotId);
+        setroutval('/busManagement', depotId);
     };
 
     // Filter depots based on selection
@@ -75,6 +79,9 @@ const ActiveDepot = () => {
 
     return (
         <Container component="main" maxWidth="lg">
+
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert} setOpen={setAlert} /> : <></>}
+
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
                 <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
