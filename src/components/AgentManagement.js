@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Button,
@@ -10,27 +10,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import CloseIcon from '@mui/icons-material/Close';
 import BusIcon from '@mui/icons-material/DirectionsBus';
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 
 const AgentManagement = () => {
-    const [agents, setAgents] = useState([
-        {
-            id: 1,
-            name: "John Smith",
-            mobile: "0771234567",
-            username: "john_s",
-            status: true,
-            address: "123 Main St, Colombo",
-            nic: "991234567V",
-            password: "password123",
-            smsId: "SMS001",
-            agentType: "Premium",
-            paymentMethods: ["Cash", "Card"],
-            assignedBuses: [
-                { id: "KN08-0600MC", route: "Colombo-Kandy" },
-                { id: "KG06-0700GK", route: "Galle-Kandy" }
-            ]
-        }
-    ]);
+    const [agents, setAgents] = useState([]);
 
     const initialAgentState = {
         name: "",
@@ -55,15 +39,44 @@ const AgentManagement = () => {
     const [selectedBus, setSelectedBus] = useState(null);
 
     const agentTypes = ["HGH", "CTB", "Private"];
-    const paymentMethodOptions = ["Cash", "Visa Card", "Non"];
-    const availableBuses = [
-        { id: "KN08-0600MC", route: "Colombo-Kandy" },
-        { id: "KG06-0700GK", route: "Galle-Kandy" },
-        { id: "BT12-0800KD", route: "Batticaloa-Trincomalee" }
-    ];
-
+    const [paymentMethodOptions, setPaymentMethodsOptions] = useState([]);
+    const [availableBuses, setAvailableBuses] = useState([]);
+    const loadAllBuses = () => {
+        api.get('admin/agent/all-buses')
+            .then(res => {
+                setAvailableBuses(res.data)
+            })
+            .catch(handleError)
+    }
+    const loadAllPaymentMethods = () => {
+        api.get('admin/agent/all-payment-options')
+            .then(res => {
+                setPaymentMethodsOptions(res.data)
+            }).catch(handleError)
+    }
+    const loadAllAgents = () => {
+        api.get('admin/agent/all')
+            .then(res => {
+                setAgents(res.data)
+                if (selectedAgent) {
+                    res.data.forEach(a => {
+                        if (selectedAgent.id === a.id) setSelectedAgent(a)
+                    })
+                }
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadAllPaymentMethods()
+        loadAllBuses()
+        loadAllAgents()
+    }, []);
     const handleDelete = (agent) => {
-        setAgents(prev => prev.filter(a => a.id !== agent.id));
+        api.post('admin/agent/delete',agent)
+            .then(res=>{
+                loadAllAgents()
+            })
+            .catch(handleError)
     };
 
     const handleEdit = (agent) => {
@@ -77,49 +90,60 @@ const AgentManagement = () => {
     };
 
     const handleSaveAgent = () => {
-        setAgents(prev => {
-            if (newAgent.id) {
-                return prev.map(agent => agent.id === newAgent.id ? newAgent : agent);
-            }
-            return [...prev, { ...newAgent, id: Math.max(...prev.map(a => a.id)) + 1 }];
-        });
+
+        if (newAgent.id) {
+            api.post('admin/agent/edit', newAgent)
+                .then(res => {
+                    sendAlert('agent updated')
+                    loadAllAgents()
+                }).catch(handleError)
+        } else {
+            api.post('admin/agent/add', newAgent)
+                .then(res => {
+                    sendAlert('new agent added')
+                    loadAllAgents()
+                }).catch(handleError)
+        }
+
         handleModalClose();
     };
 
     const handleBusAssignment = useCallback((agent) => {
-        setSelectedAgent({ ...agent });
+        setSelectedAgent({...agent});
         setBusModalOpen(true);
     }, []);
 
     const assignBus = useCallback((bus) => {
         if (!bus) return;
 
-        setAgents(prev => prev.map(agent => {
-            if (agent.id === selectedAgent.id) {
-                const updatedAgent = {
-                    ...agent,
-                    assignedBuses: [...agent.assignedBuses, bus]
-                };
-                setSelectedAgent(updatedAgent); // Update local state
-                return updatedAgent;
-            }
-            return agent;
-        }));
+
+        const updatedAgent = {
+            id: selectedAgent.id,
+            assignedBuses: [...selectedAgent.assignedBuses, bus]
+        };
+        api.post('admin/agent/assign-bus', updatedAgent)
+            .then(res => {
+                loadAllAgents()
+            })
+            .catch(handleError)
+
+
         setSelectedBus(null); // Reset selection
     }, [selectedAgent]);
 
     const removeBus = useCallback((busId) => {
-        setAgents(prev => prev.map(agent => {
-            if (agent.id === selectedAgent.id) {
-                const updatedAgent = {
-                    ...agent,
-                    assignedBuses: agent.assignedBuses.filter(bus => bus.id !== busId)
-                };
-                setSelectedAgent(updatedAgent); // Update local state
-                return updatedAgent;
-            }
-            return agent;
-        }));
+
+        const updatedAgent = {
+            id:selectedAgent.id,
+            busId: busId
+        }
+        api.post('admin/agent/remove-bus',updatedAgent)
+            .then(res=>{
+                loadAllAgents()
+            })
+            .catch(handleError)
+
+
     }, [selectedAgent]);
     const filteredAgents = agents.filter(agent => {
         const nameMatch = !selectedName || agent.name.toLowerCase().includes(selectedName.toLowerCase());
@@ -131,13 +155,18 @@ const AgentManagement = () => {
         const assignedBusIds = selectedAgent?.assignedBuses.map(bus => bus.id) || [];
         return availableBuses.filter(bus => !assignedBusIds.includes(bus.id));
     };
+    const [alert, setAlert] = useState(null)
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
 
     return (
         <Container component="main" maxWidth="lg">
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+                <Box sx={{display: "flex", alignItems: "center", mb: 3}}>
+                    <Typography variant="h5" sx={{fontWeight: 600}}>
                         Agent Management
                     </Typography>
                 </Box>
@@ -152,7 +181,7 @@ const AgentManagement = () => {
                     flexWrap: "wrap",
                     gap: 2
                 }}>
-                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+                    <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
                         <TextField
                             label="Agent Name"
                             value={selectedName}
@@ -230,9 +259,11 @@ const AgentManagement = () => {
                                                 <Switch
                                                     checked={agent.status}
                                                     onChange={() => {
-                                                        setAgents(prev => prev.map(a =>
-                                                            a.id === agent.id ? { ...a, status: !a.status } : a
-                                                        ));
+                                                        api.post('admin/agent/toggle-status',agent)
+                                                            .then(res=>{
+                                                                loadAllAgents()
+                                                            })
+                                                            .catch(handleError)
                                                     }}
                                                 />
                                             }
@@ -241,23 +272,23 @@ const AgentManagement = () => {
                                     </TableCell>
                                     <TableCell align="right">
                                         <IconButton
-                                            sx={{ color: 'green' }}
+                                            sx={{color: 'green'}}
                                             onClick={() => handleBusAssignment(agent)}
                                         >
-                                            <DirectionsBusIcon />
+                                            <DirectionsBusIcon/>
                                         </IconButton>
 
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleEdit(agent)}
                                         >
-                                            <EditIcon />
+                                            <EditIcon/>
                                         </IconButton>
                                         <IconButton
                                             color="error"
                                             onClick={() => handleDelete(agent)}
                                         >
-                                            <DeleteIcon />
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
@@ -265,7 +296,6 @@ const AgentManagement = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-
 
 
                 {/* Add/Edit Modal */}
@@ -294,7 +324,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="Agent Name"
                                     value={newAgent.name}
-                                    onChange={(e) => setNewAgent(prev => ({ ...prev, name: e.target.value }))}
+                                    onChange={(e) => setNewAgent(prev => ({...prev, name: e.target.value}))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -302,7 +332,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="Mobile Number"
                                     value={newAgent.mobile}
-                                    onChange={(e) => setNewAgent(prev => ({ ...prev, mobile: e.target.value }))}
+                                    onChange={(e) => setNewAgent(prev => ({...prev, mobile: e.target.value}))}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -310,7 +340,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="Address"
                                     value={newAgent.address}
-                                    onChange={(e) => setNewAgent(prev => ({ ...prev, address: e.target.value }))}
+                                    onChange={(e) => setNewAgent(prev => ({...prev, address: e.target.value}))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -318,7 +348,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="NIC"
                                     value={newAgent.nic}
-                                    onChange={(e) => setNewAgent(prev => ({ ...prev, nic: e.target.value }))}
+                                    onChange={(e) => setNewAgent(prev => ({...prev, nic: e.target.value}))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -326,7 +356,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="SMS Sender ID"
                                     value={newAgent.smsId}
-                                    onChange={(e) => setNewAgent(prev => ({ ...prev, smsId: e.target.value }))}
+                                    onChange={(e) => setNewAgent(prev => ({...prev, smsId: e.target.value}))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -334,7 +364,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="Username"
                                     value={newAgent.username}
-                                    onChange={(e) => setNewAgent(prev => ({ ...prev, username: e.target.value }))}
+                                    onChange={(e) => setNewAgent(prev => ({...prev, username: e.target.value}))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -343,36 +373,36 @@ const AgentManagement = () => {
                                     type="password"
                                     label="Password"
                                     value={newAgent.password}
-                                    onChange={(e) => setNewAgent(prev => ({ ...prev, password: e.target.value }))}
+                                    onChange={(e) => setNewAgent(prev => ({...prev, password: e.target.value}))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Autocomplete
                                     value={newAgent.agentType}
-                                    onChange={(_, value) => setNewAgent(prev => ({ ...prev, agentType: value }))}
+                                    onChange={(_, value) => setNewAgent(prev => ({...prev, agentType: value}))}
                                     options={agentTypes}
-                                    renderInput={(params) => <TextField {...params} label="Agent Type" />}
+                                    renderInput={(params) => <TextField {...params} label="Agent Type"/>}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Autocomplete
                                     multiple
                                     value={newAgent.paymentMethods}
-                                    onChange={(_, value) => setNewAgent(prev => ({ ...prev, paymentMethods: value }))}
+                                    onChange={(_, value) => setNewAgent(prev => ({...prev, paymentMethods: value}))}
                                     options={paymentMethodOptions}
-                                    renderInput={(params) => <TextField {...params} label="Payment Methods" />}
+                                    renderInput={(params) => <TextField {...params} label="Payment Methods"/>}
                                 />
                             </Grid>
                         </Grid>
 
 
-                        <Grid item xs={12} sx={{ mt: 3 }}>
-                            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Grid item xs={12} sx={{mt: 3}}>
+                            <Box sx={{display: "flex", justifyContent: "flex-end"}}>
                                 <Button
                                     variant="contained"
                                     color="primary"
                                     onClick={handleSaveAgent}
-                                    sx={{ marginRight: "8px" }}
+                                    sx={{marginRight: "8px"}}
                                 >
                                     {newAgent.id ? 'Update' : 'Save'}
                                 </Button>
@@ -414,12 +444,12 @@ const AgentManagement = () => {
                         borderRadius: 2
                     }}>
                         <Stack spacing={3}>
-                            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                            <Typography variant="h5" sx={{fontWeight: 600}}>
                                 Manage Bus Assignments
                             </Typography>
 
                             <Box>
-                                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
+                                <Typography variant="subtitle1" sx={{mb: 2, fontWeight: 500}}>
                                     Assign New Bus:
                                 </Typography>
                                 <Stack direction="row" spacing={2} alignItems="center">
@@ -448,24 +478,24 @@ const AgentManagement = () => {
                                                 }}
                                             />
                                         )}
-                                        sx={{ flex: 1 }}
+                                        sx={{flex: 1}}
                                     />
                                     <Button
                                         variant="contained"
                                         onClick={() => assignBus(selectedBus)}
                                         disabled={!selectedBus}
-                                        sx={{ height: '40px' }}
-                                        startIcon={<BusIcon />}
+                                        sx={{height: '40px'}}
+                                        startIcon={<BusIcon/>}
                                     >
                                         Assign Bus
                                     </Button>
                                 </Stack>
                             </Box>
 
-                            <Divider />
+                            <Divider/>
 
                             <Box>
-                                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
+                                <Typography variant="subtitle1" sx={{mb: 2, fontWeight: 500}}>
                                     Currently Assigned Buses:
                                 </Typography>
                                 <Grid container spacing={2}>
@@ -484,7 +514,7 @@ const AgentManagement = () => {
                                             >
                                                 <IconButton
                                                     size="small"
-                                                    onClick={() => removeBus(bus.id)}
+                                                    onClick={() => removeBus(bus.bus_id)}
                                                     sx={{
                                                         position: 'absolute',
                                                         right: 8,
@@ -492,11 +522,11 @@ const AgentManagement = () => {
                                                         color: 'error.main'
                                                     }}
                                                 >
-                                                    <CloseIcon />
+                                                    <CloseIcon/>
                                                 </IconButton>
                                                 <Stack spacing={1}>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                        <BusIcon color="primary" />
+                                                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                                                        <BusIcon color="primary"/>
                                                         <Typography variant="subtitle2" color="primary">
                                                             {bus.route}
                                                         </Typography>
@@ -511,8 +541,8 @@ const AgentManagement = () => {
                                 </Grid>
                             </Box>
 
-                            <Grid item xs={12} sx={{ mt: 3 }}>
-                                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Grid item xs={12} sx={{mt: 3}}>
+                                <Box sx={{display: "flex", justifyContent: "flex-end"}}>
                                     <Button
                                         variant="contained"
                                         onClick={() => setBusModalOpen(false)}
