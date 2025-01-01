@@ -735,7 +735,9 @@ const BusManagement = () => {
                 <FormControlLabel
                     control={<Checkbox
                         checked={newBus.settings.manualClose || newBus.paymentMethods.manualClose}
+
                         onChange={(e) => {
+
                             setNewBus(prev => ({
                                 ...prev, paymentMethods: {
                                     ...prev.paymentMethods, manualClose: e.target.checked
