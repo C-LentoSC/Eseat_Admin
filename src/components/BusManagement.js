@@ -380,15 +380,7 @@ const BusManagement = () => {
             .then(res => {
                 sendAlert('updated')
                 loadInfo()
-            })
-            .catch(handleError); else api.post('admin/bus/add', formattedBus, {headers: {"Content-Type": "multipart/form-data"}})
-            .then(res => {
-                sendAlert('new bus is added')
-                loadInfo()
-            })
-            .catch(handleError)
-
-        // Reset form
+                 // Reset form
         setNewBus({
             scheduleNumber: "",
             busType: "",
@@ -417,6 +409,42 @@ const BusManagement = () => {
         setSelectedFacilities([])
         setRouteData(null);
         setAddModalOpen(false);
+            })
+            .catch(handleError); else api.post('admin/bus/add', formattedBus, {headers: {"Content-Type": "multipart/form-data"}})
+            .then(res => {
+                sendAlert('new bus is added')
+                loadInfo()
+                 // Reset form
+        setNewBus({
+            scheduleNumber: "",
+            busType: "",
+            route: "",
+            routeNo: "",
+            seats: "",
+            busModel: "",
+            status: true,
+            paymentMethods: {
+                card: false, cash: false, bank: false, ezcash: false, reload: false
+            },
+            facilities: {
+                wifi: false, usb: false, seatBelt: false, phoneCharger: false
+            },
+            settings: {
+                onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
+            }
+        });
+        setEditMode(false)
+        setSelectedLayout(null);
+        setMainImage(null);
+        setOtherImages([]);
+        // setSelectedFacilities(facilities.reduce((acc, facility) => ({
+        //     ...acc, [facility.id]: false
+        // }), {}));
+        setSelectedFacilities([])
+        setRouteData(null);
+        setAddModalOpen(false);
+            })
+            .catch(handleError)
     };
 
     const handleEdit = () => {
