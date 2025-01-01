@@ -735,10 +735,6 @@ const BusManagement = () => {
                 <FormControlLabel
                     control={<Checkbox
                         checked={newBus.settings.manualClose || newBus.paymentMethods.manualClose}
-                       <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.settings.manualClose || newBus.paymentMethods.manualClose}
                         onChange={(e) => {
                             setNewBus(prev => ({
                                 ...prev, paymentMethods: {
@@ -752,10 +748,6 @@ const BusManagement = () => {
                             }))
 
                         }}
-                    />}
-                    label="Manual Close"
-                />
-            </Grid>
                     />}
                     label="Manual Close"
                 />
