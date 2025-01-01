@@ -735,11 +735,27 @@ const BusManagement = () => {
                 <FormControlLabel
                     control={<Checkbox
                         checked={newBus.settings.manualClose || newBus.paymentMethods.manualClose}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, manualClose: e.target.checked
-                            }
-                        }))}
+                       <Grid item xs={12} sm={4}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={newBus.settings.manualClose || newBus.paymentMethods.manualClose}
+                        onChange={(e) => {
+                            setNewBus(prev => ({
+                                ...prev, paymentMethods: {
+                                    ...prev.paymentMethods, manualClose: e.target.checked
+                                }
+                            }))
+                            setNewBus(prev => ({
+                                ...prev, settings: {
+                                    ...prev.settings, manualClose: e.target.checked
+                                }
+                            }))
+
+                        }}
+                    />}
+                    label="Manual Close"
+                />
+            </Grid>
                     />}
                     label="Manual Close"
                 />
