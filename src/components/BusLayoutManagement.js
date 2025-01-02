@@ -21,6 +21,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import Draggable from 'react-draggable';
+
 // import ChairIcon from "@mui/icons-material/Chair";
 
 
@@ -133,6 +135,8 @@ const BusLayoutManagement = () => {
         description: "",
         seatDetails: {}
     });
+    const [currentStep, setCurrentStep] = useState(1);
+
 
     const initialSeatDetails = {
         seatNumber: "",
@@ -180,6 +184,7 @@ const BusLayoutManagement = () => {
         setCreateModalOpen(true);
     };
 
+
     const handleView = (layout) => {
         setCurrentLayout(layout);
         setIsEditMode(false);
@@ -194,12 +199,26 @@ const BusLayoutManagement = () => {
     };
 
     const handleSeatClick = (seatId) => {
-        setSelectedSeat(seatId);
-        setSeatModalOpen(true);
-        if (newLayout.seatDetails[seatId]) {
-            setSeatDetails(newLayout.seatDetails[seatId]);
-        } else {
-            setSeatDetails(initialSeatDetails);
+        if (currentStep === 1) {
+            // Step 1: Only select/deselect seats
+            setNewLayout(prev => {
+                const updatedDetails = { ...prev.seatDetails };
+                if (updatedDetails[seatId]) {
+                    delete updatedDetails[seatId];
+                } else {
+                    updatedDetails[seatId] = { seatNumber: "" };
+                }
+                return { ...prev, seatDetails: updatedDetails };
+            });
+        } else if (currentStep === 2) {
+            // Step 2: Open seat details modal
+            setSelectedSeat(seatId);
+            setSeatModalOpen(true);
+            if (newLayout.seatDetails[seatId]) {
+                setSeatDetails(newLayout.seatDetails[seatId]);
+            } else {
+                setSeatDetails(initialSeatDetails);
+            }
         }
     };
 
@@ -248,8 +267,192 @@ const BusLayoutManagement = () => {
                 description: "",
                 seatDetails: {}
             });
+            setCurrentStep(1);
         }
     };
+
+    // Step navigation handlers
+    const handleNextStep = () => {
+        if (Object.keys(newLayout.seatDetails).length === 0) {
+            alert("Please select at least one seat");
+            return;
+        }
+        setCurrentStep(2);
+    };
+
+    const handlePrevStep = () => {
+        setCurrentStep(1);
+    };
+
+
+    const renderModalContent = () => (
+        <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90%',
+            maxWidth: 1200,
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            borderRadius: "10px",
+            border: "2px solid gray",
+            maxHeight: '90vh',
+            overflow: 'auto',
+        }}>
+            <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                {isEditMode ? 'Edit Layout' : 'Create New Layout'} - Step {currentStep}
+            </Typography>
+
+            {currentStep === 1 && (
+                <>
+
+                    <Grid container spacing={2} sx={{ mb: 3 }}>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                label="Layout Name"
+                                value={newLayout.layoutName}
+                                onChange={(e) => setNewLayout(prev => ({
+                                    ...prev,
+                                    layoutName: e.target.value
+                                }))}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <Autocomplete
+                                value={newLayout.busType}
+                                onChange={(event, newValue) => setNewLayout(prev => ({
+                                    ...prev,
+                                    busType: newValue
+                                }))}
+                                options={busTypes}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Bus Type" />
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                label="Seats Count"
+                                value={newLayout.seatsCount}
+                                disabled
+                                helperText="Automatically calculated based on selected seats"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label="Description"
+                                multiline
+                                rows={2}
+                                value={newLayout.description}
+                                onChange={(e) => setNewLayout(prev => ({
+                                    ...prev,
+                                    description: e.target.value
+                                }))}
+                            />
+                        </Grid>
+                    </Grid>
+
+                    <Typography variant="h6" gutterBottom>
+                        Select Seats
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                        <Box sx={{ mb: 4, maxWidth: 700, width: '100%' }}>
+                            {renderSeatGrid()}
+                        </Box>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleNextStep}
+                            sx={{ marginRight: "8px" }}
+                        >
+                            Next Step
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => {
+                                setCreateModalOpen(false);
+                                setIsEditMode(false);
+                                setNewLayout({
+                                    layoutName: "",
+                                    busType: "",
+                                    seatsCount: 0,
+                                    description: "",
+                                    seatDetails: {}
+                                });
+                                setCurrentStep(1);
+                            }}
+                            sx={{ backgroundColor: 'gray' }}
+                        >
+                            Cancel
+                        </Button>
+                    </Box>
+                </>
+            )}
+
+            {currentStep === 2 && (
+                <Grid container spacing={2}>
+                    <Grid item xs={12} md={12}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                            <Box sx={{ mb: 4, maxWidth: 700, width: '100%' }}>
+                                {renderSeatGrid()}
+                            </Box>
+                        </Box>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handlePrevStep}
+                                sx={{ marginRight: "8px" }}
+                            >
+                                Back
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleSaveLayout}
+                                sx={{ marginRight: "8px" }}
+                            >
+                                Save Layout
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => {
+                                    setCreateModalOpen(false);
+                                    setIsEditMode(false);
+                                    setNewLayout({
+                                        layoutName: "",
+                                        busType: "",
+                                        seatsCount: 0,
+                                        description: "",
+                                        seatDetails: {}
+                                    });
+                                    setCurrentStep(1);
+                                }}
+                                sx={{ backgroundColor: 'gray' }}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
+                    </Grid>
+                </Grid>
+            )}
+        </Box>
+    );
+
 
     // Calculate seat count based on selected seats
     useEffect(() => {
@@ -446,59 +649,58 @@ const BusLayoutManagement = () => {
         const grid = [];
 
         for (let i = 0; i < rows; i++) {
-            const row = [];
             for (let j = 0; j < cols; j++) {
                 const seatId = `seat-${i}-${j}`;
                 const seatInfo = newLayout.seatDetails[seatId];
-                row.push(
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1" onClick={() => handleSeatClick(seatId)}>
-                        <SeatIcon isSelected={!!seatInfo} />
-                        {seatInfo?.seatNumber && (
-                            <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }} className="absolute text-xs font-medium cursor-pointer">
-                                {seatInfo.seatNumber}
+
+                if (currentStep === 1) {
+                    grid.push(
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                            key={seatId}
+                            className="relative m-1"
+                            onClick={() => handleSeatClick(seatId)}>
+                            <SeatIcon isSelected={!!seatInfo} />
+                            <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }}
+                                className="absolute text-xs font-medium cursor-pointer">
+                                {seatInfo?.seatNumber || ''}
                             </span>
-                        )}
-                    </div>
-
-                    // <Button
-                    //     key={seatId}
-                    //     variant="outlined"
-                    //     sx={{
-                    //         minWidth: '50px',
-                    //         height: '50px',
-                    //         margin: '4px',
-                    //         backgroundColor: seatInfo ? '#4CAF50' : 'white',
-                    //         color: seatInfo ? 'white' : 'inherit',
-
-                    //         display: 'flex',
-                    //         flexDirection: 'column',
-                    //         alignItems: 'center',
-                    //         justifyContent: 'center',
-                    //         position: 'relative',
-                    //         cursor: 'pointer',
-
-                    //         '&:hover': {
-                    //             backgroundColor: seatInfo ? '#45a049' : '#f5f5f5',
-                    //         }
-                    //     }}
-                    //     onClick={() => handleSeatClick(seatId)}
-                    // >
-                    //     <ChairIcon sx={{ color: seatInfo ? 'white' : 'black' }} />
-                    //     {seatInfo?.seatNumber && (
-                    //         <Typography variant="caption" sx={{}}>
-                    //             {seatInfo.seatNumber}
-                    //         </Typography>
-                    //     )}
-                    // </Button>
-                );
+                        </div>
+                    );
+                } else if (currentStep === 2 && seatInfo) {
+                    grid.push(
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                            key={seatId}
+                            className="relative m-1"
+                            onClick={() => handleSeatClick(seatId)}>
+                            <SeatIcon isSelected={true} />
+                            <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }}
+                                className="absolute text-xs font-medium cursor-pointer">
+                                {seatInfo?.seatNumber || ''}
+                            </span>
+                        </div>
+                    );
+                } else {
+                    grid.push(
+                        <div key={seatId}>
+                            <EmpltySeatIcon />
+                        </div>
+                    );
+                }
             }
-            grid.push(
-                <Box key={i} sx={{ display: 'flex', justifyContent: 'center' }}>
-                    {row}
-                </Box>
-            );
         }
-        return grid;
+
+        return (
+            <div
+                style={{
+                    display: 'grid',
+                    gridTemplateRows: `repeat(${rows}, 1fr)`,
+                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                    marginTop: '10px'
+                }}
+            >
+                {grid}
+            </div>
+        );
     };
 
     // Filtered layouts based on selected bus type
@@ -647,112 +849,11 @@ const BusLayoutManagement = () => {
                             seatDetails: {}
                         });
                     }}
+
                 >
-                    <Box sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '90%',
-                        maxWidth: 1200,
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: "10px",
-                        border: "2px solid gray",
-                        maxHeight: '90vh',
-                        overflow: 'auto',
-                    }}>
-                        <Typography variant="h6" gutterBottom>
-                            {isEditMode ? 'Edit Layout' : 'Create New Layout'}
-                        </Typography>
+                    {renderModalContent()}
 
-                        <Grid container spacing={2} sx={{ mb: 3 }}>
-                            <Grid item xs={12} sm={4}>
-                                <TextField
-                                    fullWidth
-                                    label="Layout Name"
-                                    value={newLayout.layoutName}
-                                    onChange={(e) => setNewLayout(prev => ({
-                                        ...prev,
-                                        layoutName: e.target.value
-                                    }))}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <Autocomplete
-                                    value={newLayout.busType}
-                                    onChange={(event, newValue) => setNewLayout(prev => ({
-                                        ...prev,
-                                        busType: newValue
-                                    }))}
-                                    options={busTypes}
-                                    renderInput={(params) => (
-                                        <TextField {...params} label="Bus Type" />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <TextField
-                                    fullWidth
-                                    label="Seats Count"
-                                    value={newLayout.seatsCount}
-                                    disabled
-                                    helperText="Automatically calculated based on selected seats"
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Description"
-                                    multiline
-                                    rows={2}
-                                    value={newLayout.description}
-                                    onChange={(e) => setNewLayout(prev => ({
-                                        ...prev,
-                                        description: e.target.value
-                                    }))}
-                                />
-                            </Grid>
-                        </Grid>
 
-                        <Typography variant="h6" gutterBottom>
-                            Select Seats
-                        </Typography>
-
-                        <Box sx={{ mb: 2 }}>
-                            {renderSeatGrid()}
-                        </Box>
-
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleSaveLayout}
-                                sx={{ marginRight: "8px" }}
-                            >
-                                {isEditMode ? 'Update Layout' : 'Save Layout'}
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                onClick={() => {
-                                    setCreateModalOpen(false);
-                                    setIsEditMode(false);
-                                    setNewLayout({
-                                        layoutName: "",
-                                        busType: "",
-                                        seatsCount: 0,
-                                        description: "",
-                                        seatDetails: {}
-                                    });
-                                }}
-                                sx={{ backgroundColor: 'gray' }}
-                            >
-                                Cancel
-                            </Button>
-                        </Box>
-                    </Box>
                 </Modal>
 
                 <Modal
@@ -761,143 +862,166 @@ const BusLayoutManagement = () => {
                     aria-labelledby="seat-details-modal"
                 >
                     <Box sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '600px',
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        p: 4,
-                        border: "2px solid gray",
-                        borderRadius: "10px",
-                        maxHeight: '90vh',
-                        overflow: 'auto'
+                        position: 'fixed',
+                        width: '100%',
+                        height: '100%',
+                        bgcolor: 'rgba(0, 0, 0, 0.5)'
                     }}>
-                        <Typography variant="h6" gutterBottom>
-                            Seat Details - {selectedSeat}
-                        </Typography>
+                        <Draggable
+                            handle="#draggable-modal-header"
+                            positionOffset={{ x: '-50%', y: '-50%' }}
+                            defaultPosition={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }}
+                        >
+                            <Paper sx={{
+                                position: 'absolute',
+                                width: 600,
+                                bgcolor: 'background.paper',
+                                boxShadow: 24,
+                                border: "2px solid gray",
+                                borderRadius: "10px",
+                                maxHeight: '90vh',
+                                overflow: 'auto'
+                            }}>
+                                <div id="draggable-modal-header" style={{
+                                    cursor: 'move',
+                                    padding: '16px',
+                                    backgroundColor: '#f5f5f5',
+                                    borderBottom: '1px solid #ddd',
+                                    borderRadius: '8px 8px 0 0'
+                                }}>
+                                    <Box sx={{
+                                        p: 4,
+                                    }}>
+                                        <Typography variant="h6" gutterBottom>
+                                            Seat Details - {selectedSeat}
+                                        </Typography>
 
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Seat Number"
-                                    name="seatNumber"
-                                    value={seatDetails.seatNumber}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Service Charge CTB"
-                                    name="serviceChargeCTB"
-                                    type="number"
-                                    value={seatDetails.serviceChargeCTB}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Service Charge HGH"
-                                    name="serviceChargeHGH"
-                                    type="number"
-                                    value={seatDetails.serviceChargeHGH}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Service Charge Other"
-                                    name="serviceChargeOther"
-                                    type="number"
-                                    value={seatDetails.serviceChargeOther}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Corporate Tax"
-                                    name="corporateTax"
-                                    type="number"
-                                    value={seatDetails.corporateTax}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="VAT"
-                                    name="vat"
-                                    type="number"
-                                    value={seatDetails.vat}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Discount"
-                                    name="discount"
-                                    type="number"
-                                    value={seatDetails.discount}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Other Charges"
-                                    name="otherCharges"
-                                    type="number"
-                                    value={seatDetails.otherCharges}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Agent Commission"
-                                    name="agentCommission"
-                                    type="number"
-                                    value={seatDetails.agentCommission}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Bank Charges"
-                                    name="bankCharges"
-                                    type="number"
-                                    value={seatDetails.bankCharges}
-                                    onChange={handleInputChange}
-                                />
-                            </Grid>
-                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Seat Number"
+                                                    name="seatNumber"
+                                                    value={seatDetails.seatNumber}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Service Charge CTB"
+                                                    name="serviceChargeCTB"
+                                                    type="number"
+                                                    value={seatDetails.serviceChargeCTB}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Service Charge HGH"
+                                                    name="serviceChargeHGH"
+                                                    type="number"
+                                                    value={seatDetails.serviceChargeHGH}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Service Charge Other"
+                                                    name="serviceChargeOther"
+                                                    type="number"
+                                                    value={seatDetails.serviceChargeOther}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Corporate Tax"
+                                                    name="corporateTax"
+                                                    type="number"
+                                                    value={seatDetails.corporateTax}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="VAT"
+                                                    name="vat"
+                                                    type="number"
+                                                    value={seatDetails.vat}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Discount"
+                                                    name="discount"
+                                                    type="number"
+                                                    value={seatDetails.discount}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Other Charges"
+                                                    name="otherCharges"
+                                                    type="number"
+                                                    value={seatDetails.otherCharges}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Agent Commission"
+                                                    name="agentCommission"
+                                                    type="number"
+                                                    value={seatDetails.agentCommission}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Bank Charges"
+                                                    name="bankCharges"
+                                                    type="number"
+                                                    value={seatDetails.bankCharges}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+                                        </Grid>
 
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                            <Button
-                                variant="contained"
-                                onClick={handleSaveSeatDetails}
-                                sx={{ marginRight: "8px" }}
-                            >
-                                Save Seat
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                onClick={handleClose}
-                                sx={{ backgroundColor: 'gray' }}
-                            >
-                                Cancel
-                            </Button>
-                        </Box>
+                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                                            <Button
+                                                variant="contained"
+                                                onClick={handleSaveSeatDetails}
+                                                sx={{ marginRight: "8px" }}
+                                            >
+                                                Save Seat
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                color="secondary"
+                                                onClick={handleClose}
+                                                sx={{ backgroundColor: 'gray' }}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </Box>
+
+                                    </Box>
+                                </div>
+                            </Paper>
+                        </Draggable>
                     </Box>
+
                 </Modal>
 
                 <ViewModal />

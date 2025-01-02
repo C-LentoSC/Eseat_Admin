@@ -19,6 +19,8 @@ import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import GroupIcon from '@mui/icons-material/Group';
 import AirlineSeatReclineNormalIcon from '@mui/icons-material/AirlineSeatReclineNormal';
 import { AttachMoney, PaymentsOutlined, RequestQuoteOutlined } from '@mui/icons-material';
+import BusAlert from '@mui/icons-material/BusAlert';
+
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -45,6 +47,7 @@ import AgentManagement from './AgentManagement';
 import SeatTransfer from './SeatTransfer';
 import ManageFare from './ManageFare';
 import ManageBreakFare from './ManageBreakFare';
+import BulkBusManagement from './BulkBusManagement';
 
 import CustomAlert from './Parts/CustomAlert';
 
@@ -134,6 +137,11 @@ const NAVIGATION = {
           icon: <RequestQuoteOutlined />,
         },
       ],
+    },
+    {
+      segment: 'bulkBusManagement',
+      title: 'Bulk Bus Management',
+      icon: <BusAlert />,
     },
   ],
   Admin: [],
@@ -233,6 +241,9 @@ function DemoPageContent({ pathname }) {
         break;
       case '/manageFare/manage-break-fare':
         content = <ManageBreakFare />;
+        break;
+      case '/bulkBusManagement':
+        content = <BulkBusManagement />;
         break;
     default:
       content = <Typography>No page found</Typography>;
