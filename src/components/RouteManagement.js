@@ -169,7 +169,7 @@ const RouteManagement = () => {
                 .map((row) => {
                     const [routeNo, startPoint, endPoint, description, busFare, status,id] =
                         row.split(",");
-                    if (routeNo && startPoint && endPoint && description && busFare&&id) {
+                    if (routeNo && startPoint && endPoint &&  busFare&&id) {
                         return {
                             id,
                             routeNo,
