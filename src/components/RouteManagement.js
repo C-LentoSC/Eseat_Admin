@@ -103,9 +103,10 @@ const RouteManagement = () => {
             .then(res => {
                 loadAllRoutes()
                 sendAlert("updated")
+                handleClose()
             })
             .catch(handleError)
-        handleClose();
+
     };
 
     // Handle Input Changes

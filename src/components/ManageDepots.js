@@ -109,18 +109,19 @@ const ManageDepots = () => {
                 .then(res=>{
                     sendAlert('added new')
                     loadAllDepots()
+                    setFormData({
+                        region: "",
+                        depotName: "",
+                        dsName: "",
+                        mobile: "",
+                        address: "",
+                        email: "",
+                        description: "",
+                    });
                 })
                 .catch(handleError)
             // Reset form
-            setFormData({
-                region: "",
-                depotName: "",
-                dsName: "",
-                mobile: "",
-                address: "",
-                email: "",
-                description: "",
-            });
+
         }
     };
 
@@ -142,9 +143,9 @@ const ManageDepots = () => {
             .then(res=>{
                 sendAlert('updated')
                 loadAllDepots()
+                handleClose();
             })
             .catch(handleError)
-        handleClose();
     };
 
     // Handle edit modal region change

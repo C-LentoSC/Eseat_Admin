@@ -64,15 +64,16 @@ const ManageRegions = () => {
             };
             api.post('admin/region/add',newRegion)
                 .then(res=>{
+                    loadRegions()
+                    setRegionName("");
+                    setMobile("");
+                    setAddress("");
+                    setEmail("");
+                    setDescription("");
                     sendAlert('added')
                 })
                 .catch(handleError)
-            loadRegions()
-            setRegionName("");
-            setMobile("");
-            setAddress("");
-            setEmail("");
-            setDescription("");
+
         }
     };
 
@@ -94,9 +95,9 @@ const ManageRegions = () => {
             .then(res=>{
                 loadRegions()
                 sendAlert('updated')
+                handleClose();
             })
             .catch(handleError)
-        handleClose();
     };
 
     // Handle Input Changes
