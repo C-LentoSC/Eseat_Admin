@@ -516,14 +516,7 @@ const SeatTransfer = () => {
                                                 renderInput={(params) => <TextField {...params} label="Fare Break" />}
                                             />
                                         </Grid>
-                                        // <Grid item xs={12} md={6}>
-                                        //     <Autocomplete
-                                        //         options={points}
-                                        //         value={transferDetails.droppingPoint}
-                                        //         onChange={(_, value) => setTransferDetails({ ...transferDetails, droppingPoint: value })}
-                                        //         renderInput={(params) => <TextField {...params} label="Dropping Point" />}
-                                        //     />
-                                        // </Grid>
+                                       
                                         <Grid item xs={12} md={6}>
                                             <TextField
                                                 fullWidth
