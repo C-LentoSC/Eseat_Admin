@@ -1,37 +1,31 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Stack,
     FormControlLabel, Switch, Autocomplete, TextField,
     Button, Grid, InputAdornment
 } from '@mui/material';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
 const BulkBusManagement = () => {
     // Sample initial data
-    const [buses, setBuses] = useState([
-        {
-            id: 1,
-            depot: "Colombo",
-            region: "Western",
-            route: "Colombo-Kandy",
-            busType: "Luxury",
-            scheduleNumber: "SCH001",
-            onlineBookingStatus: true,
-            agentBookingStatus: true,
-            mainBusStatus: true
-        },
-        {
-            id: 2,
-            depot: "Galle",
-            region: "Southern",
-            route: "Galle-Matara",
-            busType: "Semi-Luxury",
-            scheduleNumber: "SCH002",
-            onlineBookingStatus: false,
-            agentBookingStatus: true,
-            mainBusStatus: true
-        }
-    ]);
+    const [buses, setBuses] = useState([]);
+    const loadAllBus=()=>{
+        api.get('admin/bulk-bus/get-all')
+            .then(res=>{
+                setBuses(res.data)
+
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadAllBus()
+    }, []);
+    const [alert, setAlert] = useState(null)
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+
 
     // Filter states
     const [selectedDepot, setSelectedDepot] = useState(null);
@@ -61,44 +55,54 @@ const BulkBusManagement = () => {
 
     // Handle bulk status updates
     const handleBulkStatusUpdate = (statusType) => {
-        setBuses(prev => prev.map(bus => {
-            if (filteredBuses.find(fb => fb.id === bus.id)) {
+        let obg={statusType}
                 switch (statusType) {
                     case 'online':
-                        return { ...bus, onlineBookingStatus: bulkOnlineStatus };
+                        obg={...obg,status:bulkOnlineStatus}
+                        break
                     case 'agent':
-                        return { ...bus, agentBookingStatus: bulkAgentStatus };
+                        obg={...obg,status:bulkAgentStatus}
+                        break
                     case 'main':
-                        return { ...bus, mainBusStatus: bulkMainBusStatus };
+                        obg={...obg,status:bulkMainBusStatus}
+                        break
                     default:
-                        return bus;
+                        break
                 }
-            }
-            return bus;
-        }));
+        api.post('admin/bulk-bus/change-status',obg)
+            .then(res=>{
+                loadAllBus()
+            })
+            .catch(handleError)
     };
 
     // Handle individual status updates
     const handleStatusChange = (id, statusType) => {
-        setBuses(prev => prev.map(bus => {
-            if (bus.id === id) {
-                switch (statusType) {
-                    case 'online':
-                        return { ...bus, onlineBookingStatus: !bus.onlineBookingStatus };
-                    case 'agent':
-                        return { ...bus, agentBookingStatus: !bus.agentBookingStatus };
-                    case 'main':
-                        return { ...bus, mainBusStatus: !bus.mainBusStatus };
-                    default:
-                        return bus;
-                }
-            }
-            return bus;
-        }));
+        let obg={id,statusType}
+        switch (statusType) {
+            case 'online':
+                obg={...obg,status:bulkOnlineStatus}
+                break
+            case 'agent':
+                obg={...obg,status:bulkAgentStatus}
+                break
+            case 'main':
+                obg={...obg,status:bulkMainBusStatus}
+                break
+            default:
+                break
+        }
+        api.post('admin/bulk-bus/change-status',obg)
+            .then(res=>{
+                loadAllBus()
+            })
+            .catch(handleError)
     };
 
     return (
         <Container component="main" maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb:3 }}>
                     Bulk Manage of Buses
@@ -248,7 +252,7 @@ const BulkBusManagement = () => {
                                             },
                                         }}
                                         >
-                                    
+
                                         Apply
                                     </Button>
                                 </Box>
