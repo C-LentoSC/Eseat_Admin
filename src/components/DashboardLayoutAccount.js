@@ -20,7 +20,9 @@ import GroupIcon from '@mui/icons-material/Group';
 import AirlineSeatReclineNormalIcon from '@mui/icons-material/AirlineSeatReclineNormal';
 import { AttachMoney, PaymentsOutlined, RequestQuoteOutlined } from '@mui/icons-material';
 import BusAlert from '@mui/icons-material/BusAlert';
-
+import Assignment from '@mui/icons-material/Assignment';
+import HistoryIcon from '@mui/icons-material/History';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -48,8 +50,11 @@ import SeatTransfer from './SeatTransfer';
 import ManageFare from './ManageFare';
 import ManageBreakFare from './ManageBreakFare';
 import BulkBusManagement from './BulkBusManagement';
+import BusReport from './BusReport';
+import BookingHistory from './BookingHistory';
+import ScheduleManagement from './ScheduleManagement';
 
-import CustomAlert from './Parts/CustomAlert';
+import CustomAlert from './Parts/CustomAlert'; 
 
 
 const NAVIGATION = {
@@ -142,6 +147,21 @@ const NAVIGATION = {
       segment: 'bulkBusManagement',
       title: 'Bulk Bus Management',
       icon: <BusAlert />,
+    },
+    {
+      segment: 'busReport',
+      title: 'Bus Report',
+      icon: <Assignment />,
+    },
+    {
+      segment: 'bookingHistory',
+      title: 'Booking History',
+      icon: <HistoryIcon />,
+    },
+    {
+      segment: 'scheduleManagement',
+      title: 'Schedule Management',
+      icon: <EventAvailableIcon />,
     },
   ],
   Admin: [],
@@ -245,7 +265,16 @@ function DemoPageContent({ pathname }) {
       case '/bulkBusManagement':
         content = <BulkBusManagement />;
         break;
-    default:
+      case '/busReport':
+        content = <BusReport />;
+        break;
+      case '/bookingHistory':
+        content = <BookingHistory />;
+        break;
+      case '/scheduleManagement':
+        content = <ScheduleManagement />;
+        break;
+    default:  
       content = <Typography>No page found</Typography>;
   }
 

@@ -282,7 +282,8 @@ const AgentManagement = () => {
                         bgcolor: 'background.paper',
                         boxShadow: 24,
                         p: 4,
-                        borderRadius: 2
+                           borderRadius: "10px",
+                        border: "2px solid gray"
                     }}>
                         <Typography variant="h6" gutterBottom>
                             {newAgent.id ? 'Edit Agent' : 'Add New Agent'}
@@ -411,7 +412,8 @@ const AgentManagement = () => {
                         bgcolor: 'background.paper',
                         boxShadow: 24,
                         p: 4,
-                        borderRadius: 2
+                        borderRadius: "10px",
+                        border: "2px solid gray"
                     }}>
                         <Stack spacing={3}>
                             <Typography variant="h5" sx={{ fontWeight: 600 }}>

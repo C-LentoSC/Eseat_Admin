@@ -474,9 +474,14 @@ const SeatTransfer = () => {
                                 <Autocomplete
                                     options={schedules}
                                     getOptionLabel={(option) => `${option.time} - ${option.route} (${option.busNo})`}
-                                    onChange={(_, value) => {
+                                    onChange={(event, value, reason) => {
                                         setSelectedSchedule(value);
-                                        setShowSeatLayout(true);
+                                        setShowSeatLayout(value !== null);
+                                    }}
+                                    onClose={(event, reason) => {
+                                        if (reason === 'clear') {
+                                            setShowSeatLayout(false);
+                                        }
                                     }}
                                     renderInput={(params) => (
                                         <TextField
