@@ -525,7 +525,7 @@ const SeatTransfer = () => {
                                                 onChange={(e) => setTransferDetails({ ...transferDetails, newSeatNumber: e.target.value })}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid item xs={12} md={4}>
                                             <TextField
                                                 fullWidth
                                                 label="Seat Cost"
@@ -534,7 +534,7 @@ const SeatTransfer = () => {
                                                 disabled
                                             />
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid item xs={12} md={4}>
                                             <TextField
                                                 fullWidth
                                                 label="Old Seat Cost"
@@ -543,7 +543,7 @@ const SeatTransfer = () => {
                                                 disabled
                                             />
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
+                                        <Grid item xs={12} md={4}>
                                             <TextField
                                                 fullWidth
                                                 label="Balance To Pay"
