@@ -31,7 +31,7 @@ const SeatTransfer = () => {
     const [selectedSchedule, setSelectedSchedule] = useState(null);
     const [showSeatLayout, setShowSeatLayout] = useState(false);
 
-    const points = ["Colombo", "Kandy", "Galle", "Matara"];
+    const points = ["Colombo - Kandy", "Kandy - Galle", "Galle - Matara", "Matara - Colombo"];
 
     const [transferDetails, setTransferDetails] = useState({
         boardingPoint: '',
@@ -513,17 +513,17 @@ const SeatTransfer = () => {
                                                 options={points}
                                                 value={transferDetails.boardingPoint}
                                                 onChange={(_, value) => setTransferDetails({ ...transferDetails, boardingPoint: value })}
-                                                renderInput={(params) => <TextField {...params} label="Boarding Point" />}
+                                                renderInput={(params) => <TextField {...params} label="Fare Break" />}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} md={6}>
-                                            <Autocomplete
-                                                options={points}
-                                                value={transferDetails.droppingPoint}
-                                                onChange={(_, value) => setTransferDetails({ ...transferDetails, droppingPoint: value })}
-                                                renderInput={(params) => <TextField {...params} label="Dropping Point" />}
-                                            />
-                                        </Grid>
+                                        // <Grid item xs={12} md={6}>
+                                        //     <Autocomplete
+                                        //         options={points}
+                                        //         value={transferDetails.droppingPoint}
+                                        //         onChange={(_, value) => setTransferDetails({ ...transferDetails, droppingPoint: value })}
+                                        //         renderInput={(params) => <TextField {...params} label="Dropping Point" />}
+                                        //     />
+                                        // </Grid>
                                         <Grid item xs={12} md={6}>
                                             <TextField
                                                 fullWidth
