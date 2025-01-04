@@ -99,11 +99,13 @@ const ManageBusFareBreaks = () => {
             api.post('admin/routes/fare/add',newBusPoint)
                 .then(res=>{
                     loadAll()
+                    setDirection("");
+                    setRoutePoint("");
+                    setFare("");
+                    sendAlert('new fare brake is added')
                 })
                 .catch(handleError)
-            setDirection("");
-            setRoutePoint("");
-            setFare("");
+
         }
     };
 
@@ -124,10 +126,11 @@ const ManageBusFareBreaks = () => {
         api.post('admin/routes/fare/edit',currentBusPoint)
             .then(res=>{
                 loadAll()
+                handleCloseModal();
                 sendAlert('updated')
             })
             .catch(handleError)
-        handleCloseModal();
+
     };
 
     // Handle Input Changes for Edit Modal

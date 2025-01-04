@@ -92,10 +92,10 @@ const ManageBusPoints = () => {
                 .then(res => {
                     allPointGet()
                     sendAlert('new point added')
+                    setDirection("");
+                    setRoutePoint("");
                 })
                 .catch(handleError)
-            setDirection("");
-            setRoutePoint("");
         }
     };
 
@@ -116,10 +116,11 @@ const ManageBusPoints = () => {
         api.post('admin/routes/points/edit', currentBusPoint)
             .then(res => {
                 sendAlert("updated")
+                allPointGet()
+                handleCloseModal();
             })
             .catch(handleError)
-        allPointGet()
-        handleCloseModal();
+
     };
 
     // Handle Input Changes for Edit Modal

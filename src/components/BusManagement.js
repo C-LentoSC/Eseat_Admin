@@ -263,8 +263,7 @@ const BusManagement = () => {
         setSelectedFacilities(prev => ({
             ...prev,
 
-            [facilityId]:
-                !prev[facilityId]
+            [facilityId]: !prev[facilityId]
 
         }));
     };
@@ -380,69 +379,69 @@ const BusManagement = () => {
             .then(res => {
                 sendAlert('updated')
                 loadInfo()
-                 // Reset form
-        setNewBus({
-            scheduleNumber: "",
-            busType: "",
-            route: "",
-            routeNo: "",
-            seats: "",
-            busModel: "",
-            status: true,
-            paymentMethods: {
-                card: false, cash: false, bank: false, ezcash: false, reload: false
-            },
-            facilities: {
-                wifi: false, usb: false, seatBelt: false, phoneCharger: false
-            },
-            settings: {
-                onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
-            }
-        });
-        setEditMode(false)
-        setSelectedLayout(null);
-        setMainImage(null);
-        setOtherImages([]);
-        // setSelectedFacilities(facilities.reduce((acc, facility) => ({
-        //     ...acc, [facility.id]: false
-        // }), {}));
-        setSelectedFacilities([])
-        setRouteData(null);
-        setAddModalOpen(false);
+                // Reset form
+                setNewBus({
+                    scheduleNumber: "",
+                    busType: "",
+                    route: "",
+                    routeNo: "",
+                    seats: "",
+                    busModel: "",
+                    status: true,
+                    paymentMethods: {
+                        card: false, cash: false, bank: false, ezcash: false, reload: false
+                    },
+                    facilities: {
+                        wifi: false, usb: false, seatBelt: false, phoneCharger: false
+                    },
+                    settings: {
+                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
+                    }
+                });
+                setEditMode(false)
+                setSelectedLayout(null);
+                setMainImage(null);
+                setOtherImages([]);
+                // setSelectedFacilities(facilities.reduce((acc, facility) => ({
+                //     ...acc, [facility.id]: false
+                // }), {}));
+                setSelectedFacilities([])
+                setRouteData(null);
+                setAddModalOpen(false);
             })
             .catch(handleError); else api.post('admin/bus/add', formattedBus, {headers: {"Content-Type": "multipart/form-data"}})
             .then(res => {
                 sendAlert('new bus is added')
                 loadInfo()
-                 // Reset form
-        setNewBus({
-            scheduleNumber: "",
-            busType: "",
-            route: "",
-            routeNo: "",
-            seats: "",
-            busModel: "",
-            status: true,
-            paymentMethods: {
-                card: false, cash: false, bank: false, ezcash: false, reload: false
-            },
-            facilities: {
-                wifi: false, usb: false, seatBelt: false, phoneCharger: false
-            },
-            settings: {
-                onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
-            }
-        });
-        setEditMode(false)
-        setSelectedLayout(null);
-        setMainImage(null);
-        setOtherImages([]);
-        // setSelectedFacilities(facilities.reduce((acc, facility) => ({
-        //     ...acc, [facility.id]: false
-        // }), {}));
-        setSelectedFacilities([])
-        setRouteData(null);
-        setAddModalOpen(false);
+                // Reset form
+                setNewBus({
+                    scheduleNumber: "",
+                    busType: "",
+                    route: "",
+                    routeNo: "",
+                    seats: "",
+                    busModel: "",
+                    status: true,
+                    paymentMethods: {
+                        card: false, cash: false, bank: false, ezcash: false, reload: false
+                    },
+                    facilities: {
+                        wifi: false, usb: false, seatBelt: false, phoneCharger: false
+                    },
+                    settings: {
+                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
+                    }
+                });
+                setEditMode(false)
+                setSelectedLayout(null);
+                setMainImage(null);
+                setOtherImages([]);
+                // setSelectedFacilities(facilities.reduce((acc, facility) => ({
+                //     ...acc, [facility.id]: false
+                // }), {}));
+                setSelectedFacilities([])
+                setRouteData(null);
+                setAddModalOpen(false);
             })
             .catch(handleError)
     };
@@ -546,9 +545,7 @@ const BusManagement = () => {
 
         return (<div
             style={{
-                display: 'grid',
-                gridTemplateRows: `repeat(${rows}, 1fr)`,
-                gridTemplateColumns: `repeat(${cols}, 1fr)`, // gap: '10px',
+                display: 'grid', gridTemplateRows: `repeat(${rows}, 1fr)`, gridTemplateColumns: `repeat(${cols}, 1fr)`, // gap: '10px',
                 marginTop: '10px'
             }}
         >
@@ -1098,8 +1095,8 @@ const BusManagement = () => {
                                 <Switch
                                     checked={bus.status}
                                     onChange={() => {
-                                        api.post("admin/bus/toggle-status",{id:bus.id})
-                                            .then(res=>{
+                                        api.post("admin/bus/toggle-status", {id: bus.id})
+                                            .then(res => {
                                                 loadInfo()
                                             }).catch(handleError)
                                     }}

@@ -96,16 +96,18 @@ const AgentManagement = () => {
                 .then(res => {
                     sendAlert('agent updated')
                     loadAllAgents()
+                    handleModalClose();
                 }).catch(handleError)
         } else {
             api.post('admin/agent/add', newAgent)
                 .then(res => {
                     sendAlert('new agent added')
                     loadAllAgents()
+                    handleModalClose();
                 }).catch(handleError)
         }
 
-        handleModalClose();
+
     };
 
     const handleBusAssignment = useCallback((agent) => {
