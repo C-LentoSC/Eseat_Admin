@@ -27,6 +27,8 @@ import Draggable from 'react-draggable';
 
 
 const BusLayoutManagement = () => {
+
+    
     // Sample data
     const [layouts, setLayouts] = useState([
         {
@@ -142,13 +144,13 @@ const BusLayoutManagement = () => {
         seatNumber: "",
         serviceChargeCTB: "",
         serviceChargeHGH: "",
-        serviceChargeOther: "",
-        corporateTax: "",
+        // corporateTax: "",
         vat: "",
         discount: "",
-        otherCharges: "",
-        agentCommission: "",
-        bankCharges: ""
+        // agentCommission: "",
+        bankCharges: "",
+        serviceCharge01: "",
+        serviceCharge02: ""
     };
 
     // Seat selection states
@@ -528,14 +530,15 @@ const BusLayoutManagement = () => {
                     <Grid item xs={12}>
                         <Typography>Service Charge CTB: </Typography>
                         <Typography marginTop={1}>Service Charge HGH: </Typography>
-                        <Typography marginTop={1}>Service Charge Other: </Typography>
-                        <Typography marginTop={1}>Corporate Tax: </Typography>
+                        {/* <Typography marginTop={1}>Corporate Tax: </Typography> */}
                         <Typography marginTop={1}>VAT: </Typography>
-
                         <Typography marginTop={1}>Discount: </Typography>
-                        <Typography marginTop={1}>Other Charges: </Typography>
-                        <Typography marginTop={1}>Agent Commission: </Typography>
+                        {/* <Typography marginTop={1}>Agent Commission: </Typography> */}
                         <Typography marginTop={1}>Bank Charges: </Typography>
+
+                        <Typography marginTop={1}>Service Charge 01: </Typography>
+                        <Typography marginTop={1}>Service Charge 02: </Typography>
+
                     </Grid>
                 </Grid>
             </Box>
@@ -550,14 +553,15 @@ const BusLayoutManagement = () => {
                     <Grid item xs={12}>
                         <Typography>Service Charge CTB: {selectedViewSeat.serviceChargeCTB}</Typography>
                         <Typography marginTop={1}>Service Charge HGH: {selectedViewSeat.serviceChargeHGH}</Typography>
-                        <Typography marginTop={1}>Service Charge Other: {selectedViewSeat.serviceChargeOther}</Typography>
-                        <Typography marginTop={1}>Corporate Tax: {selectedViewSeat.corporateTax}</Typography>
+                        {/* <Typography marginTop={1}>Corporate Tax: {selectedViewSeat.corporateTax}</Typography> */}
                         <Typography marginTop={1}>VAT: {selectedViewSeat.vat}</Typography>
-
                         <Typography marginTop={1}>Discount: {selectedViewSeat.discount}</Typography>
-                        <Typography marginTop={1}>Other Charges: {selectedViewSeat.otherCharges}</Typography>
-                        <Typography marginTop={1}>Agent Commission: {selectedViewSeat.agentCommission}</Typography>
+                        {/* <Typography marginTop={1}>Agent Commission: {selectedViewSeat.agentCommission}</Typography> */}
                         <Typography marginTop={1}>Bank Charges: {selectedViewSeat.bankCharges}</Typography>
+
+                        <Typography marginTop={1}>Service Charge 01: {selectedViewSeat.serviceCharge01}</Typography>
+                        <Typography marginTop={1}>Service Charge 02: {selectedViewSeat.serviceCharge02}</Typography>
+
                     </Grid>
                 </Grid>
             </Box>
@@ -926,17 +930,8 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="Service Charge Other"
-                                                    name="serviceChargeOther"
-                                                    type="number"
-                                                    value={seatDetails.serviceChargeOther}
-                                                    onChange={handleInputChange}
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} sm={6}>
+
+                                            {/* <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
                                                     label="Corporate Tax"
@@ -945,7 +940,7 @@ const BusLayoutManagement = () => {
                                                     value={seatDetails.corporateTax}
                                                     onChange={handleInputChange}
                                                 />
-                                            </Grid>
+                                            </Grid> */}
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
@@ -966,17 +961,8 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="Other Charges"
-                                                    name="otherCharges"
-                                                    type="number"
-                                                    value={seatDetails.otherCharges}
-                                                    onChange={handleInputChange}
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} sm={6}>
+
+                                            {/* <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
                                                     label="Agent Commission"
@@ -985,7 +971,7 @@ const BusLayoutManagement = () => {
                                                     value={seatDetails.agentCommission}
                                                     onChange={handleInputChange}
                                                 />
-                                            </Grid>
+                                            </Grid> */}
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
@@ -993,6 +979,28 @@ const BusLayoutManagement = () => {
                                                     name="bankCharges"
                                                     type="number"
                                                     value={seatDetails.bankCharges}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Service Charge 01"
+                                                    name="serviceCharge01"
+                                                    type="number"
+                                                    value={seatDetails.serviceCharge01}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid>
+
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Service Charge 02"
+                                                    name="serviceCharge02"
+                                                    type="number"
+                                                    value={seatDetails.serviceCharge02}
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid>

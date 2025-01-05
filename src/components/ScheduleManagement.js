@@ -7,7 +7,14 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+// import CustomAlert from "./Parts/CustomAlert";
+
 const ScheduleManagement = () => {
+
+     // const [alert, setAlert] = useState(null);
+    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+
     // Sample initial data
     const [schedules, setSchedules] = useState([
         {
