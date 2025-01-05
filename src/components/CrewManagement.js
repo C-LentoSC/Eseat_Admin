@@ -95,9 +95,9 @@ const CrewManagement = () => {
             api.post('admin/bus/crew/add',o).then(res=>{
                 sendAlert('new member added')
                 loadInfo()
+                handleCloseAdd();
             }).catch(handleError)
         })
-        handleCloseAdd();
     };
 
     const handleEdit = (item) => {
@@ -121,8 +121,8 @@ const CrewManagement = () => {
         }).then(res=>{
             sendAlert('updated')
             loadInfo()
+            setOpenEdit(false);
         }).catch(handleError)
-        setOpenEdit(false);
     };
 
     const handleOpenAdd = () => setOpenAdd(true);

@@ -93,10 +93,11 @@ const UserRegistrationPage = () => {
                 if (r.data.status === "ok") {
                     sendAlert(r.data.message||"user is updated")
                     loadAllUsers();
+                    handleClose();
                 }
             })
             .catch(handleError)
-        handleClose();
+
     };
 
     const handleInputChange = (e) => {

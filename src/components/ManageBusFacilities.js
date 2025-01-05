@@ -63,11 +63,11 @@ const ManageBusFacilities = () => {
                 if (r.data.status) {
                     loadFacility()
                     sendAlert('update saved')
+                    handleClose();
                 }
                 sendAlert(r.data.message || "facility updated")
             })
             .catch(handleError)
-        handleClose();
     };
 
 

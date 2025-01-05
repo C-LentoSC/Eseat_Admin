@@ -75,9 +75,9 @@ const PointsManagement = () => {
             .then(res=>{
                 sendAlert(res.data.message || "point edited")
                 loadAllPoints()
+                handleClose();
             })
             .catch(handleError)
-        handleClose();
     };
 
     // Handle Input Changes
