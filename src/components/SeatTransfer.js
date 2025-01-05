@@ -56,8 +56,8 @@ const SeatTransfer = () => {
                     ...updatedDetails,
                     newSeatNumber: selectedSeat.seatNumber,
                     newSeatId: selectedSeat.id,
-                    seatCost: transferDetails.boardingPoint?.price + 3,
-                    balanceToPay: transferDetails.boardingPoint?.price + 3 - (transferDetails?.oldSeatCost ?? 0)
+                    seatCost: transferDetails.boardingPoint?.price+selectedSeat?.cost,
+                    balanceToPay: transferDetails.boardingPoint?.price  - (transferDetails?.oldSeatCost ?? 0)
                 };
             }
         }
