@@ -133,10 +133,11 @@ const BusSchedule = () => {
             api.post('admin/bus/schedule/add',i)
                 .then(res=>{
                     loadInfo()
+                    handleCloseAdd();
                 })
                 .catch(handleError)
         })
-        handleCloseAdd();
+
     };
 
     const handleEdit = (item) => {
@@ -170,12 +171,13 @@ const BusSchedule = () => {
         api.post('admin/bus/schedule/edit',updatedSchedule)
             .then(res=>{
                 loadInfo()
+                setOpenEdit(false);
+                setBlockedSeats({});
+                setShowSeatLayout(false);
             })
             .catch(handleError)
 
-        setOpenEdit(false);
-        setBlockedSeats({});
-        setShowSeatLayout(false);
+
     };
 
     const handleOpenAdd = () => setOpenAdd(true);
