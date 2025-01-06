@@ -54,6 +54,33 @@ const SeatTransfer = () => {
                 };
             } else {
 
+        const busFare = 1000;
+        const ctbCharge = 30;
+        const hghCharge = 47.5;
+        const discountRate = 10; 
+        const vatRate = 12; 
+        const bankChargeRate = 1.1; 
+        const serviceCharge1 = 50;
+        const serviceCharge2 = 50;
+    
+        //01
+        const totalBeforeDiscount = busFare + ctbCharge + hghCharge;
+    
+        //02
+        const discount = (totalBeforeDiscount * discountRate) / 100;
+        const afterDiscountPrice = totalBeforeDiscount - discount;
+    
+        //03
+        const vat = (afterDiscountPrice * vatRate) / 100;
+        const afterVatPrice = afterDiscountPrice + vat;
+    
+        //04
+        const bankCharge = (afterVatPrice * bankChargeRate) / 100;
+        const afterBankChargePrice = afterVatPrice + bankCharge;
+    
+        const finalTotal = afterBankChargePrice + serviceCharge1 + serviceCharge2;
+        const seatCostTotal = finalTotal.toFixed(2);
+                
                 updatedDetails = {
                     ...updatedDetails,
                     newSeatNumber: selectedSeat.seatNumber,
