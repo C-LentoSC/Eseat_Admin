@@ -482,16 +482,14 @@ const BusManagement = () => {
             </Typography>
             <Grid container>
                 <Grid item xs={12}>
-                    <Typography>Service Charge CTB: </Typography>
-                    <Typography marginTop={1}>Service Charge HGH: </Typography>
-                    <Typography marginTop={1}>Service Charge Other: </Typography>
-                    <Typography marginTop={1}>Corporate Tax: </Typography>
-                    <Typography marginTop={1}>VAT: </Typography>
+                        <Typography>Service Charge CTB: </Typography>
+                        <Typography marginTop={1}>Service Charge HGH: </Typography>
+                        <Typography marginTop={1}>VAT: </Typography>
+                        <Typography marginTop={1}>Discount: </Typography>
+                        <Typography marginTop={1}>Bank Charges: </Typography>
 
-                    <Typography marginTop={1}>Discount: </Typography>
-                    <Typography marginTop={1}>Other Charges: </Typography>
-                    <Typography marginTop={1}>Agent Commission: </Typography>
-                    <Typography marginTop={1}>Bank Charges: </Typography>
+                        <Typography marginTop={1}>Service Charge 01: </Typography>
+                        <Typography marginTop={1}>Service Charge 02: </Typography>
                 </Grid>
             </Grid>
         </Box>);
@@ -504,15 +502,13 @@ const BusManagement = () => {
                 <Grid item xs={12}>
                     <Typography>Service Charge CTB: {selectedViewSeat.serviceChargeCTB}</Typography>
                     <Typography marginTop={1}>Service Charge HGH: {selectedViewSeat.serviceChargeHGH}</Typography>
-                    <Typography marginTop={1}>Service Charge
-                        Other: {selectedViewSeat.serviceChargeOther}</Typography>
-                    <Typography marginTop={1}>Corporate Tax: {selectedViewSeat.corporateTax}</Typography>
                     <Typography marginTop={1}>VAT: {selectedViewSeat.vat}</Typography>
-
                     <Typography marginTop={1}>Discount: {selectedViewSeat.discount}</Typography>
-                    <Typography marginTop={1}>Other Charges: {selectedViewSeat.otherCharges}</Typography>
-                    <Typography marginTop={1}>Agent Commission: {selectedViewSeat.agentCommission}</Typography>
                     <Typography marginTop={1}>Bank Charges: {selectedViewSeat.bankCharges}</Typography>
+
+                    <Typography marginTop={1}>Service Charge 01: {selectedViewSeat.serviceCharge01}</Typography>
+                    <Typography marginTop={1}>Service Charge 02: {selectedViewSeat.serviceCharge02}</Typography>
+                            
                 </Grid>
             </Grid>
         </Box>);
