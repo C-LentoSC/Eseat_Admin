@@ -860,6 +860,13 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.serviceChargeCTB}
                                                     onChange={handleInputChange}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <InputAdornment position="start">LKR</InputAdornment>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
                                                 />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
@@ -870,6 +877,13 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.serviceChargeHGH}
                                                     onChange={handleInputChange}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <InputAdornment position="start">LKR</InputAdornment>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
                                                 />
                                             </Grid>
 
@@ -891,6 +905,13 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.vat}
                                                     onChange={handleInputChange}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                            </InputAdornment>
+                                                        ),
+                                                        endAdornment: <InputAdornment position="end">%</InputAdornment>
+                                                    }}
                                                 />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
@@ -901,6 +922,13 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.discount}
                                                     onChange={handleInputChange}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                            </InputAdornment>
+                                                        ),
+                                                        endAdornment: <InputAdornment position="end">%</InputAdornment>
+                                                    }}
                                                 />
                                             </Grid>
 
@@ -922,6 +950,13 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.bankCharges}
                                                     onChange={handleInputChange}
+                                                    InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                            </InputAdornment>
+                                                        ),
+                                                        endAdornment: <InputAdornment position="end">%</InputAdornment>
+                                                    }}
                                                 />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
@@ -932,6 +967,13 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.serviceCharge01}
                                                     onChange={handleInputChange}
+                                                     InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <InputAdornment position="start">LKR</InputAdornment>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
                                                 />
                                             </Grid>
 
@@ -943,6 +985,13 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.serviceCharge02}
                                                     onChange={handleInputChange}
+                                                     InputProps={{
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <InputAdornment position="start">LKR</InputAdornment>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
                                                 />
                                             </Grid>
                                         </Grid>
