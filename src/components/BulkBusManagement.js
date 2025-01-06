@@ -11,9 +11,9 @@ import CustomAlert from "./Parts/CustomAlert";
 const BulkBusManagement = () => {
     // Sample initial data
     const [buses, setBuses] = useState([]);
-    const loadAllBus=()=>{
+    const loadAllBus = () => {
         api.get('admin/bulk-bus/get-all')
-            .then(res=>{
+            .then(res => {
                 setBuses(res.data)
 
             })
@@ -55,22 +55,23 @@ const BulkBusManagement = () => {
 
     // Handle bulk status updates
     const handleBulkStatusUpdate = (statusType) => {
-        let obg={statusType}
-                switch (statusType) {
-                    case 'online':
-                        obg={...obg,status:bulkOnlineStatus}
-                        break
-                    case 'agent':
-                        obg={...obg,status:bulkAgentStatus}
-                        break
-                    case 'main':
-                        obg={...obg,status:bulkMainBusStatus}
-                        break
-                    default:
-                        break
-                }
-        api.post('admin/bulk-bus/change-status',obg)
-            .then(res=>{
+        let obg = {statusType,filteredBuses}
+
+        switch (statusType) {
+            case 'online':
+                obg = {...obg, status: bulkOnlineStatus}
+                break
+            case 'agent':
+                obg = {...obg, status: bulkAgentStatus}
+                break
+            case 'main':
+                obg = {...obg, status: bulkMainBusStatus}
+                break
+            default:
+                break
+        }
+        api.post('admin/bulk-bus/change-status', obg)
+            .then(res => {
                 loadAllBus()
             })
             .catch(handleError)
@@ -78,22 +79,22 @@ const BulkBusManagement = () => {
 
     // Handle individual status updates
     const handleStatusChange = (id, statusType) => {
-        let obg={id,statusType}
+        let obg = {id, statusType}
         switch (statusType) {
             case 'online':
-                obg={...obg,status:bulkOnlineStatus}
+                obg = {...obg, status: bulkOnlineStatus}
                 break
             case 'agent':
-                obg={...obg,status:bulkAgentStatus}
+                obg = {...obg, status: bulkAgentStatus}
                 break
             case 'main':
-                obg={...obg,status:bulkMainBusStatus}
+                obg = {...obg, status: bulkMainBusStatus}
                 break
             default:
                 break
         }
-        api.post('admin/bulk-bus/change-status',obg)
-            .then(res=>{
+        api.post('admin/bulk-bus/change-status', obg)
+            .then(res => {
                 loadAllBus()
             })
             .catch(handleError)
@@ -103,13 +104,13 @@ const BulkBusManagement = () => {
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                   setOpen={setAlert}/> : <></>}
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600, mb:3 }}>
+            <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
+                <Typography variant="h5" sx={{fontWeight: 600, mb: 3}}>
                     Bulk Manage of Buses
                 </Typography>
 
                 {/* Filters */}
-                <Grid container spacing={2} sx={{mb:3}}>
+                <Grid container spacing={2} sx={{mb: 3}}>
                     <Grid item xs={12} sm={6} md={3}>
                         <Autocomplete
                             value={selectedDepot}
@@ -221,14 +222,14 @@ const BulkBusManagement = () => {
                 </Grid>
 
                 {/* Bulk Actions */}
-                <Paper sx={{ p: 2 }}>
+                <Paper sx={{p: 2}}>
                     <Stack spacing={2}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                        <Typography variant="subtitle1" sx={{fontWeight: 500}}>
                             Bulk Status Update for Filtered Buses
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={4}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                                     <FormControlLabel
                                         control={
                                             <Switch
@@ -251,14 +252,14 @@ const BulkBusManagement = () => {
                                                 backgroundColor: "#303f9f",
                                             },
                                         }}
-                                        >
+                                    >
 
                                         Apply
                                     </Button>
                                 </Box>
                             </Grid>
                             <Grid item xs={12} sm={4}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                                     <FormControlLabel
                                         control={
                                             <Switch
@@ -287,7 +288,7 @@ const BulkBusManagement = () => {
                                 </Box>
                             </Grid>
                             <Grid item xs={12} sm={4}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                                     <FormControlLabel
                                         control={
                                             <Switch

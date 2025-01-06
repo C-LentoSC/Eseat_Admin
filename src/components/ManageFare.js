@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
     Box,
     Button,
@@ -21,26 +21,33 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
 // import CustomAlert from "./Parts/CustomAlert";
 
 const ManageFare = () => {
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
     // const [selectedBusType, setSelectedBusType] = useState(null);
     const fileInputRef = useRef();
     const [percentage, setPercentage] = useState('');
 
-    const [routes, setRoutes] = useState([
-        { id: 1, name: 'Colombo - Kandy', oldFare: 500, newFare: 500 },
-        { id: 2, name: 'Colombo - Galle', oldFare: 450, newFare: 450 },
-        { id: 3, name: 'Colombo - Jaffna', oldFare: 1200, newFare: 1200 },
-    ]);
-
+    const [routes, setRoutes] = useState([]);
+    const loadAll=()=>{
+        api.get('admin/bulk-fare/get-all')
+            .then(res=>{
+                setRoutes(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadAll()
+    }, []);
     // const busTypes = ["Luxury", "Semi-Luxury", "Normal"];
 
     const updateAllFares = (isIncrease) => {
@@ -109,10 +116,19 @@ const ManageFare = () => {
     };
 
 
-    const handleSave = () => { };
+    const handleSave = () => {
+        api.post('admin/bulk-fare/save', {routes})
+            .then(()=> {
+                loadAll()
+                sendAlert('fare saved successfully')
+            })
+            .catch(handleError)
+    };
 
     return (
         <Container maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
