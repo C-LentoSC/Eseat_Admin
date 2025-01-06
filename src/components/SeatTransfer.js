@@ -42,6 +42,7 @@ const SeatTransfer = () => {
         const filteredSeats = entry.filter(d => d?.seatNumber === no);
         const selectedSeat = filteredSeats[0];
         if (!selectedSeat) {
+            sendAlert('this seat is not available')
             updatedDetails = {
                 ...updatedDetails, newSeatId: null, seatCost: '', balanceToPay: ''
             };
@@ -52,6 +53,7 @@ const SeatTransfer = () => {
                     ...updatedDetails, newSeatId: null, seatCost: '', balanceToPay: ''
                 };
             } else {
+
                 updatedDetails = {
                     ...updatedDetails,
                     newSeatNumber: selectedSeat.seatNumber,
@@ -89,6 +91,7 @@ const SeatTransfer = () => {
         // Simulate API call
         api.post('admin/seat-transfer/search', searchData)
             .then(res => {
+                if(!res.data)sendAlert('invalid search data')
                 setBookingDetails(res.data)
                 setTransferDetails({
                     ...transferDetails, oldSeatCost: res.data.totalCost, id: res.data.id
@@ -349,7 +352,11 @@ const SeatTransfer = () => {
                         <DatePicker
                             label="New Travel Date"
                             value={selectedNewDate}
-                            onChange={setSelectedNewDate}
+                            onChange={res=> {
+                                setSelectedNewDate(res)
+                                setShowSeatLayout(false)
+                                setSelectedSchedule(null)
+                            }}
                             renderInput={(params) => <TextField {...params} fullWidth/>}
                             sx={{width: "100%"}}
                         />
@@ -368,6 +375,7 @@ const SeatTransfer = () => {
                                     setShowSeatLayout(false)
                                 }
                             }}
+
                             renderInput={(params) => (<TextField
                                 {...params}
                                 label="Select Schedule"
