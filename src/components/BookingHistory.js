@@ -31,6 +31,7 @@ const BookingHistory = () => {
                 { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0 },
                 { seatNo: "2A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0 }
             ],
+            name:"John Doe",
             mobileNo: "0771234567",
             travelDate: "2025-01-10",
             bookBy: "John Doe",
@@ -50,6 +51,7 @@ const BookingHistory = () => {
             seatDetails: [
                 { seatNo: "3B", seatCost: 800, serviceCharge: 80, vat: 120, discount: 0, otherCharges: 0 }
             ],
+            name:"John Doe",
             mobileNo: "0777654321",
             travelDate: "2025-01-15",
             bookBy: "Jane Smith",
@@ -69,6 +71,7 @@ const BookingHistory = () => {
             seatDetails: [
                 { seatNo: "5C", seatCost: 900, serviceCharge: 90, vat: 135, discount: 0, otherCharges: 0 }
             ],
+            name:"John Doe",
             mobileNo: "0773456789",
             travelDate: "2025-01-20",
             bookBy: "Travel Agent X",
@@ -88,6 +91,7 @@ const BookingHistory = () => {
             seatDetails: [
                 { seatNo: "7D", seatCost: 1200, serviceCharge: 120, vat: 180, discount: 100, otherCharges: 0 }
             ],
+            name:"John Doe",
             mobileNo: "0779876543",
             travelDate: "2025-01-25",
             bookBy: "Sam Wilson",
@@ -107,6 +111,7 @@ const BookingHistory = () => {
             seatDetails: [
                 { seatNo: "8A", seatCost: 1100, serviceCharge: 110, vat: 165, discount: 0, otherCharges: 50 }
             ],
+            name:"John Doe",
             mobileNo: "0775555555",
             travelDate: "2025-01-30",
             bookBy: "Mary Johnson",
@@ -213,6 +218,7 @@ const BookingHistory = () => {
             'Schedule No',
             'Route',
             'Seat Numbers',
+            'Name',
             'Mobile No',
             'Travel Date',
             'Book By',
@@ -234,6 +240,7 @@ const BookingHistory = () => {
                 formatCSVField(booking.scheduleNo),
                 formatCSVField(booking.route),
                 `"${booking.seatDetails.map(s => s.seatNo).join(' ')}"`,
+                formatCSVField(booking.name),
                 formatMobileNumber(booking.mobileNo),
                 formatDateForCSV(booking.travelDate),
                 formatCSVField(booking.bookBy),
@@ -476,7 +483,7 @@ const BookingHistory = () => {
 
                 {/* Bookings Table */}
                 <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-                    <Table stickyHeader>
+                    <Table >
                         <TableHead>
                             <TableRow>
                                 <TableCell>V-Code</TableCell>
@@ -484,6 +491,7 @@ const BookingHistory = () => {
                                 <TableCell>Schedule No</TableCell>
                                 <TableCell>Route</TableCell>
                                 <TableCell>Seat No</TableCell>
+                                <TableCell>Name</TableCell>
                                 <TableCell>Mobile No</TableCell>
                                 <TableCell>Travel Date</TableCell>
                                 <TableCell>Book By</TableCell>
@@ -504,6 +512,7 @@ const BookingHistory = () => {
                                     <TableCell>{booking.scheduleNo}</TableCell>
                                     <TableCell>{booking.route}</TableCell>
                                     <TableCell>{booking.seatDetails.map(s => s.seatNo).join(', ')}</TableCell>
+                                    <TableCell>{booking.name}</TableCell>
                                     <TableCell>{booking.mobileNo}</TableCell>
                                     <TableCell>{booking.travelDate}</TableCell>
                                     <TableCell>{booking.bookBy}</TableCell>

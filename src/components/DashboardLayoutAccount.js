@@ -23,6 +23,9 @@ import BusAlert from '@mui/icons-material/BusAlert';
 import Assignment from '@mui/icons-material/Assignment';
 import HistoryIcon from '@mui/icons-material/History';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+
 
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
@@ -53,8 +56,10 @@ import BulkBusManagement from './BulkBusManagement';
 import BusReport from './BusReport';
 import BookingHistory from './BookingHistory';
 import ScheduleManagement from './ScheduleManagement';
+import RefundBooking from './RefundBooking';
+import TicketCancelRequests from './TicketCancelRequests';
 
-import CustomAlert from './Parts/CustomAlert'; 
+import CustomAlert from './Parts/CustomAlert';  
 
 
 const NAVIGATION = {
@@ -163,7 +168,17 @@ const NAVIGATION = {
       title: 'Schedule Management',
       icon: <EventAvailableIcon />,
     },
-  ],
+    {
+      segment: 'refundBooking',
+      title: 'Refund Booking',
+      icon: <AttachMoneyIcon />,
+    },
+    {
+      segment: 'ticketCancelRequests',
+      title: 'Ticket Cancel Requests',
+      icon: <CancelOutlinedIcon />,
+    },
+  ], 
   Admin: [],
   OperationManager: [],
   OperationStaff: [],
@@ -273,6 +288,12 @@ function DemoPageContent({ pathname }) {
         break;
       case '/scheduleManagement':
         content = <ScheduleManagement />;
+        break;
+      case '/refundBooking':
+        content = <RefundBooking />;
+        break;
+      case '/ticketCancelRequests':
+        content = <TicketCancelRequests />;
         break;
     default:  
       content = <Typography>No page found</Typography>;
