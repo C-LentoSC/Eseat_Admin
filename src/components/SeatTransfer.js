@@ -354,8 +354,7 @@ const SeatTransfer = () => {
                             value={selectedNewDate}
                             onChange={res=> {
                                 setSelectedNewDate(res)
-                                setShowSeatLayout(false)
-                                setSelectedSchedule(null)
+                                     setSelectedSchedule(null)
                             }}
                             renderInput={(params) => <TextField {...params} fullWidth/>}
                             sx={{width: "100%"}}
