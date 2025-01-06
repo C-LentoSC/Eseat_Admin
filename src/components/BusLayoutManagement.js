@@ -29,6 +29,8 @@ import CustomAlert from "./Parts/CustomAlert";
 
 
 const BusLayoutManagement = () => {
+
+
     // Sample data
     const [layouts, setLayouts] = useState([]);
     const loadLayOuts = () => {
@@ -870,7 +872,17 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid>
-                                     
+
+                                            {/* <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Corporate Tax"
+                                                    name="corporateTax"
+                                                    type="number"
+                                                    value={seatDetails.corporateTax}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid> */}
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
@@ -891,7 +903,17 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid>
-                                           
+
+                                            {/* <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="Agent Commission"
+                                                    name="agentCommission"
+                                                    type="number"
+                                                    value={seatDetails.agentCommission}
+                                                    onChange={handleInputChange}
+                                                />
+                                            </Grid> */}
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
@@ -902,8 +924,6 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid>
-
-                                            
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
@@ -914,6 +934,7 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid>
+
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth

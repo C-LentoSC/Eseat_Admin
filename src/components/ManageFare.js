@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
     Box,
     Button,
@@ -6,7 +6,7 @@ import {
     TextField,
     Typography,
     IconButton,
-    Autocomplete,
+    // Autocomplete,
     InputAdornment,
     Paper,
     TableContainer,
@@ -19,27 +19,36 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
 // import CustomAlert from "./Parts/CustomAlert";
 
 const ManageFare = () => {
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
-    const [selectedBusType, setSelectedBusType] = useState(null);
+    // const [selectedBusType, setSelectedBusType] = useState(null);
+    const fileInputRef = useRef();
     const [percentage, setPercentage] = useState('');
 
-    const [routes, setRoutes] = useState([
-        { id: 1, name: 'Colombo - Kandy', oldFare: 500, newFare: 500 },
-        { id: 2, name: 'Colombo - Galle', oldFare: 450, newFare: 450 },
-        { id: 3, name: 'Colombo - Jaffna', oldFare: 1200, newFare: 1200 },
-    ]);
-
-    const busTypes = ["Luxury", "Semi-Luxury", "Normal"];
+    const [routes, setRoutes] = useState([]);
+    const loadAll=()=>{
+        api.get('admin/bulk-fare/get-all')
+            .then(res=>{
+                setRoutes(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadAll()
+    }, []);
+    // const busTypes = ["Luxury", "Semi-Luxury", "Normal"];
 
     const updateAllFares = (isIncrease) => {
         const multiplier = isIncrease ?
@@ -71,10 +80,55 @@ const ManageFare = () => {
         a.download = 'bus_fares.csv';
         a.click();
     };
-    const handleSave = () => { };
+    const handleImport = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                const rows = text.split('\n');
+                // Skip header row
+                const updatedRoutes = rows.slice(1).map(row => {
+                    const [name, oldFare, newFare] = row.split(',');
+                    // Find matching route by name and update its fares
+                    const existingRoute = routes.find(r => r.name.trim() === name.trim());
+                    if (existingRoute) {
+                        return {
+                            ...existingRoute,
+                            oldFare: parseInt(oldFare),
+                            newFare: parseInt(newFare)
+                        };
+                    }
+                    return null;
+                }).filter(route => route !== null);
+
+                if (updatedRoutes.length > 0) {
+                    setRoutes(routes.map(route => {
+                        const updatedRoute = updatedRoutes.find(r => r.id === route.id);
+                        return updatedRoute || route;
+                    }));
+                }
+            };
+            reader.readAsText(file);
+        }
+        // Reset file input
+        event.target.value = '';
+    };
+
+
+    const handleSave = () => {
+        api.post('admin/bulk-fare/save', {routes})
+            .then(()=> {
+                loadAll()
+                sendAlert('fare saved successfully')
+            })
+            .catch(handleError)
+    };
 
     return (
         <Container maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
@@ -86,7 +140,7 @@ const ManageFare = () => {
 
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", }}>
                     <Box sx={{ display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap", mt: 2 }}>
-                        <Autocomplete
+                        {/* <Autocomplete
                             options={busTypes}
                             value={selectedBusType}
                             onChange={(_, value) => setSelectedBusType(value)}
@@ -110,7 +164,7 @@ const ManageFare = () => {
                                     width: '200px'
                                 }
                             }}
-                        />
+                        /> */}
                         <TextField
                             label="Percentage"
                             type="number"
@@ -165,6 +219,27 @@ const ManageFare = () => {
                     </Box>
 
                     <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+                        <input
+                            type="file"
+                            accept=".csv"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={handleImport}
+                        />
+                        <Button
+                            variant="contained"
+                            startIcon={<FileUploadIcon />}
+                            onClick={() => fileInputRef.current.click()}
+                            sx={{
+                                backgroundColor: "#3f51b5",
+                                color: "#fff",
+                                "&:hover": {
+                                    backgroundColor: "#303f9f",
+                                },
+                            }}
+                        >
+                            Import
+                        </Button>
                         <Button
                             variant="contained"
                             startIcon={<FileDownloadIcon />}
