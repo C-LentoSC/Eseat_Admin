@@ -22,6 +22,7 @@ const SeatTransfer = () => {
     const [selectedNewDate, setSelectedNewDate] = useState(null);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
     const [showSeatLayout, setShowSeatLayout] = useState(false);
+    const [selectedSeat, setSelectedSeat] = useState(null);
 
     const [points, setPoints] = useState([]);
 
@@ -32,7 +33,7 @@ const SeatTransfer = () => {
     });
     const handleSeatNoChange = (no) => {
         if (!selectedSchedule) return;
-        if (transferDetails.boardingPoint === "" || transferDetails.boardingPoint === null) {
+        if (transferDetails.boardingPoint === "" || transferDetails.boardingPoint === null||transferDetails.boardingPoint.id===0) {
             sendAlert("select the fare break first")
             return;
         }
@@ -53,7 +54,21 @@ const SeatTransfer = () => {
                 };
             } else {
 
-        const busFare = transferDetails.boardingPoint.price;
+                updatedDetails = {
+                    ...updatedDetails,
+                    newSeatNumber: selectedSeat.seatNumber,
+                    newSeatId: selectedSeat.id,
+                };
+            }
+        }
+        setTransferDetails(updatedDetails);
+        setSelectedSeat(selectedSeat);
+    };
+    const calTotal = () => {
+        if (!selectedSeat) return null
+        if(!transferDetails.boardingPoint)return null;
+        const busFare = transferDetails.boardingPoint.price||0;
+        if (busFare === 0) return 0
         const ctbCharge = selectedSeat.serviceChargeCTB;
         const hghCharge = selectedSeat.serviceChargeHGH;
         const discountRate = selectedSeat.discount;
@@ -64,36 +79,34 @@ const SeatTransfer = () => {
 
         //01
         const totalBeforeDiscount = busFare + ctbCharge + hghCharge;
-                
+
         //02
         const discount = (totalBeforeDiscount * discountRate) / 100;
         const afterDiscountPrice = totalBeforeDiscount - discount;
-    
+
         //03
         const vat = (afterDiscountPrice * vatRate) / 100;
         const afterVatPrice = afterDiscountPrice + vat;
-    
+
         //04
         const bankCharge = (afterVatPrice * bankChargeRate) / 100;
         const afterBankChargePrice = afterVatPrice + bankCharge;
-    
+
         const finalTotal = afterBankChargePrice + serviceCharge1 + serviceCharge2;
         const seatCostTotal = finalTotal.toFixed(2);
-                
-                updatedDetails = {
-                    ...updatedDetails,
-                    newSeatNumber: selectedSeat.seatNumber,
-                    newSeatId: selectedSeat.id,
-                    seatCost: seatCostTotal,
-                    balanceToPay: seatCostTotal - (transferDetails?.oldSeatCost ?? 0)
-                };
-            }
-        }
-        setTransferDetails(updatedDetails);
-    };
+        return seatCostTotal
+    }
+    const toPay = () => {
+        if (!calTotal()) return null
+        return calTotal() - (transferDetails?.oldSeatCost ?? 0)
+    }
     const handleTransfer = () => {
         if (transferDetails.newSeatNumber === "" || transferDetails.newSeatId === null) {
             sendAlert('select a valid seat');
+            return
+        }
+        if (transferDetails.boardingPoint === "" || transferDetails.boardingPoint === null||transferDetails.boardingPoint.id===0) {
+            sendAlert('select a valid fare break first');
             return
         }
         api.post('admin/seat-transfer/transfer', transferDetails)
@@ -120,7 +133,7 @@ const SeatTransfer = () => {
         // Simulate API call
         api.post('admin/seat-transfer/search', searchData)
             .then(res => {
-                if(!res.data)sendAlert('invalid search data')
+                if (!res.data) sendAlert('invalid search data')
                 setBookingDetails(res.data)
                 setTransferDetails({
                     ...transferDetails, oldSeatCost: res.data.totalCost, id: res.data.id
@@ -381,7 +394,7 @@ const SeatTransfer = () => {
                         <DatePicker
                             label="New Travel Date"
                             value={selectedNewDate}
-                            onChange={res=> {
+                            onChange={res => {
                                 setSelectedNewDate(res)
                                 setShowSeatLayout(false)
                                 setSelectedSchedule(null)
@@ -438,14 +451,16 @@ const SeatTransfer = () => {
                                     getOptionKey={(option) => option?.id}
                                     value={transferDetails.boardingPoint || null}
                                     onChange={(_, value) => {
-                                        setTransferDetails({ ...transferDetails, boardingPoint: value });
+                                        const updatedTransferDetails = {...transferDetails, boardingPoint: value};
+
+                                        setTransferDetails(updatedTransferDetails);
                                     }}
                                     onClose={(evt, reason) => {
                                         if (reason === 'clear') {
-                                            setTransferDetails({ ...transferDetails, boardingPoint: '' });
+                                            setTransferDetails({...transferDetails, boardingPoint: null});
                                         }
                                     }}
-                                    renderInput={(params) => <TextField {...params} label="Fare Break" />}
+                                    renderInput={(params) => <TextField {...params} label="Fare Break"/>}
                                 />
                             </Grid>
 
@@ -467,7 +482,8 @@ const SeatTransfer = () => {
                                 <TextField
                                     fullWidth
                                     label="Seat Cost"
-                                    value={transferDetails.seatCost}
+                                    // value={transferDetails.seatCost}
+                                    value={calTotal()??0}
                                     onChange={(e) => setTransferDetails({
                                         ...transferDetails, seatCost: e.target.value
                                     })}
@@ -489,7 +505,8 @@ const SeatTransfer = () => {
                                 <TextField
                                     fullWidth
                                     label="Balance To Pay"
-                                    value={transferDetails.balanceToPay}
+                                    // value={transferDetails.balanceToPay}
+                                    value={toPay()??0}
                                     onChange={(e) => setTransferDetails({
                                         ...transferDetails, balanceToPay: e.target.value
                                     })}
