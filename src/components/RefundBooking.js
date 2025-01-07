@@ -27,6 +27,7 @@ const RefundBooking = () => {
             name: "John Doe",
             mobileNo: "0771234567",
             netAmount: 2500,
+            bankDetails:"Peaple's Bank, Colombo",
             refunded: false,
             note: ""
         },
@@ -43,6 +44,7 @@ const RefundBooking = () => {
             name: "Jane Smith",
             mobileNo: "0777654321",
             netAmount: 1800,
+            bankDetails:"Peaple's Bank, Colombo",
             refunded: false,
             note: ""
         }
@@ -135,6 +137,7 @@ const RefundBooking = () => {
             'Name',
             'Mobile No',
             'Net Amount',
+            'Bank Details',
             'Refunded',
             'Note'
         ];
@@ -151,6 +154,7 @@ const RefundBooking = () => {
             formatCSVField(booking.name),
             `="${booking.mobileNo}"`,
             formatCSVField(booking.netAmount),
+            formatCSVField(booking.bankDetails),
             formatCSVField(booking.refunded ? 'Yes' : 'No'),
             formatCSVField(booking.note)
         ]);
@@ -325,6 +329,7 @@ const RefundBooking = () => {
                                 <TableCell>Name</TableCell>
                                 <TableCell>Mobile No</TableCell>
                                 <TableCell>Net Amount</TableCell>
+                                <TableCell>Bank Details</TableCell>
                                 <TableCell align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
@@ -342,6 +347,7 @@ const RefundBooking = () => {
                                     <TableCell>{booking.name}</TableCell>
                                     <TableCell>{booking.mobileNo}</TableCell>
                                     <TableCell>{booking.netAmount}</TableCell>
+                                    <TableCell>{booking.bankDetails}</TableCell>
                                     <TableCell align="right">
                                         <IconButton
                                             onClick={() => handleNoteClick(booking)}

@@ -25,6 +25,8 @@ import HistoryIcon from '@mui/icons-material/History';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import PersonIcon from '@mui/icons-material/Person'; 
 
 
 import { AppProvider } from '@toolpad/core/AppProvider';
@@ -33,7 +35,7 @@ import { useDemoRouter } from '@toolpad/core/internal';
 import { ReactComponent as Logo } from '../resources/eseat.svg';
 
 
-// import Dashboard1 from './Dashboard1'; //Dummy
+// import Dashboard from './Dashboard'; //Dummy
 import UserRegistrationPage from './UserRegistrationPage';
 import ManageBusFacilities from './ManageBusFacilities';
 import PointsManagement from './PointsManagement';
@@ -58,6 +60,8 @@ import BookingHistory from './BookingHistory';
 import ScheduleManagement from './ScheduleManagement';
 import RefundBooking from './RefundBooking';
 import TicketCancelRequests from './TicketCancelRequests';
+import TicketMarkingSystem from './TicketMarkingSystem';
+import CustomerDetails from './CustomerDetails';
 
 import CustomAlert from './Parts/CustomAlert';  
 
@@ -178,6 +182,16 @@ const NAVIGATION = {
       title: 'Ticket Cancel Requests',
       icon: <CancelOutlinedIcon />,
     },
+    {
+      segment: 'ticketMarkingSystem',
+      title: 'Ticket Marking System',
+      icon: <ReceiptIcon />,
+    },
+    {
+      segment: 'customerDetails',
+      title: 'Customer Details',
+      icon: <PersonIcon />,
+    },
   ], 
   Admin: [],
   OperationManager: [],
@@ -215,7 +229,7 @@ function DemoPageContent({ pathname }) {
       content = <UserRegistrationPage />; //Dummy
       break;
     // case '/dashboard':
-    //   content = <Dashboard1 />; //Dummy
+    //   content = <Dashboard />; //Dummy
     //   break;
     case '/user-registration':
       content = <UserRegistrationPage />;
@@ -295,7 +309,13 @@ function DemoPageContent({ pathname }) {
       case '/ticketCancelRequests':
         content = <TicketCancelRequests />;
         break;
-    default:  
+      case '/ticketMarkingSystem':
+        content = <TicketMarkingSystem />;
+        break;
+      case '/customerDetails':
+        content = <CustomerDetails />;
+        break;
+    default:   
       content = <Typography>No page found</Typography>;
   }
 
