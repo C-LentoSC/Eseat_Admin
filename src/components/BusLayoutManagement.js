@@ -126,15 +126,21 @@ const BusLayoutManagement = () => {
     const handleSeatClick = (seatId) => {
         if (currentStep === 1) {
             // Step 1: Only select/deselect seats
-            setNewLayout(prev => {
-                const updatedDetails = { ...prev.seatDetails };
-                if (updatedDetails[seatId]) {
-                    delete updatedDetails[seatId];
-                } else {
-                    updatedDetails[seatId] = { seatNumber: "" };
-                }
-                return { ...prev, seatDetails: updatedDetails };
-            });
+            console.log(newLayout.seatDetails[seatId].hasRelations);
+
+            if(newLayout.seatDetails[seatId].hasRelations === false){
+                setNewLayout(prev => {
+                    const updatedDetails = { ...prev.seatDetails };
+                    if (updatedDetails[seatId]) {
+                        delete updatedDetails[seatId];
+                    } else {
+                        updatedDetails[seatId] = { seatNumber: "" };
+                    }
+                    return { ...prev, seatDetails: updatedDetails };
+                });
+            }else{
+                setAlert({message: "The selection cannot be removed. This seat is used", severity: "error"})
+            }
         } else if (currentStep === 2) {
             // Step 2: Open seat details modal
             setSelectedSeat(seatId);
