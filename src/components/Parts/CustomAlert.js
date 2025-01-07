@@ -53,7 +53,7 @@ export default function CustomAlert({ severity = 'info', message,open,setOpen=()
                     </IconButton>
                 }
             >
-                {message}
+                {message.charAt(0).toUpperCase() + message.slice(1)}
             </Alert>
         </Stack>
     );

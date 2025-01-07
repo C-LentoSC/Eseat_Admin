@@ -42,7 +42,6 @@ const SeatTransfer = () => {
         const filteredSeats = entry.filter(d => d?.seatNumber === no);
         const selectedSeat = filteredSeats[0];
         if (!selectedSeat) {
-            sendAlert('this seat is not available')
             updatedDetails = {
                 ...updatedDetails, newSeatId: null, seatCost: '', balanceToPay: ''
             };
@@ -54,14 +53,14 @@ const SeatTransfer = () => {
                 };
             } else {
 
-        const busFare = 1000;
-        const ctbCharge = 30;
-        const hghCharge = 47.5;
-        const discountRate = 10; 
-        const vatRate = 12; 
-        const bankChargeRate = 1.1; 
-        const serviceCharge1 = 50;
-        const serviceCharge2 = 50;
+        const busFare = transferDetails.boardingPoint.price;
+        const ctbCharge = selectedSeat.serviceChargeCTB;
+        const hghCharge = selectedSeat.serviceChargeHGH;
+        const discountRate = selectedSeat.discount;
+        const vatRate = selectedSeat.vat;
+        const bankChargeRate = selectedSeat.bankCharges;
+        const serviceCharge1 = selectedSeat.serviceCharge01;
+        const serviceCharge2 = selectedSeat.serviceCharge02;
     
         //01
         const totalBeforeDiscount = busFare + ctbCharge + hghCharge;
@@ -93,7 +92,10 @@ const SeatTransfer = () => {
         setTransferDetails(updatedDetails);
     };
     const handleTransfer = () => {
-        if (transferDetails.newSeatNumber === "" || transferDetails.newSeatId === null) return
+        if (transferDetails.newSeatNumber === "" || transferDetails.newSeatId === null) {
+            sendAlert('select a valid seat');
+            return
+        }
         api.post('admin/seat-transfer/transfer', transferDetails)
             .then(res => {
                 setBookingDetails(null)
@@ -381,7 +383,8 @@ const SeatTransfer = () => {
                             value={selectedNewDate}
                             onChange={res=> {
                                 setSelectedNewDate(res)
-                                     setSelectedSchedule(null)
+                                setShowSeatLayout(false)
+                                setSelectedSchedule(null)
                             }}
                             renderInput={(params) => <TextField {...params} fullWidth/>}
                             sx={{width: "100%"}}
