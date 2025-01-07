@@ -62,37 +62,23 @@ const SeatTransfer = () => {
         const serviceCharge1 = selectedSeat.serviceCharge01;
         const serviceCharge2 = selectedSeat.serviceCharge02;
 
-        console.log("busFare" + busFare);
-        console.log("ctbCharge" + ctbCharge);
-        console.log("hghCharge" + hghCharge);
-        console.log("discountRate" + discountRate);
-        console.log("vatRate" + vatRate);
-        console.log("bankChargeRate" + bankChargeRate);
-        console.log("serviceCharge1" + serviceCharge1);
-        console.log("serviceCharge2" + serviceCharge2);
-
         //01
         const totalBeforeDiscount = busFare + ctbCharge + hghCharge;
-        console.log("totalBeforeDiscount" + totalBeforeDiscount);
                 
         //02
         const discount = (totalBeforeDiscount * discountRate) / 100;
         const afterDiscountPrice = totalBeforeDiscount - discount;
-        console.log("serviceCharge2" + serviceCharge2);
     
         //03
         const vat = (afterDiscountPrice * vatRate) / 100;
         const afterVatPrice = afterDiscountPrice + vat;
-        console.log("serviceCharge2" + serviceCharge2);
     
         //04
         const bankCharge = (afterVatPrice * bankChargeRate) / 100;
         const afterBankChargePrice = afterVatPrice + bankCharge;
-        console.log("serviceCharge2" + serviceCharge2);
     
         const finalTotal = afterBankChargePrice + serviceCharge1 + serviceCharge2;
         const seatCostTotal = finalTotal.toFixed(2);
-        console.log("serviceCharge2" + serviceCharge2);
                 
                 updatedDetails = {
                     ...updatedDetails,
