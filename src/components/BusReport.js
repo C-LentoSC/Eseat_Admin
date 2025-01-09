@@ -841,6 +841,7 @@ const BusReport = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Schedule No</TableCell>
+                  <TableCell>Start date</TableCell>
                   <TableCell>Start Time</TableCell>
                   <TableCell>Start Point</TableCell>
                   <TableCell>End Point</TableCell>
@@ -857,6 +858,7 @@ const BusReport = () => {
                 {filteredSchedules.map((schedule) => (
                   <TableRow key={schedule.id}>
                     <TableCell>{schedule.scheduleNo}</TableCell>
+                    <TableCell>{schedule.startDate}</TableCell>
                     <TableCell>{schedule.startTime}</TableCell>
                     <TableCell>{schedule.startPoint}</TableCell>
                     <TableCell>{schedule.endPoint}</TableCell>
