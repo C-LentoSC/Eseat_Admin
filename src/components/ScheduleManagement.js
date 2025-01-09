@@ -186,12 +186,7 @@ const ScheduleManagement = () => {
                                     <TableCell>{schedule.closingDate}</TableCell>
                                     <TableCell>{schedule.closingTime}</TableCell>
                                     <TableCell>
-                                        <Chip
-                                            label={schedule.status}
-                                            color={schedule.status === 'Active' ? 'success' : 'error'}
-                                            size="small"
-                                            sx={{ width: 80 }}
-                                        />
+                                        <Typography variant="body2" sx={{ color: schedule.status === 'Active' ? 'green' : 'red' }}>{schedule.status}</Typography>
                                     </TableCell>
                                     {/* <TableCell>
                                         {schedule.status === 'Duplicate' ? (
