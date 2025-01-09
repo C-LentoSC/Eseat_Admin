@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
-    Autocomplete, TextField, InputAdornment, IconButton,
+    Autocomplete, TextField, InputAdornment,
     Chip
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+// import DeleteIcon from '@mui/icons-material/Delete';
 
 // import CustomAlert from "./Parts/CustomAlert";
 
@@ -16,7 +16,7 @@ const ScheduleManagement = () => {
     // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Sample initial data
-    const [schedules, setSchedules] = useState([
+    const [schedules] = useState([
         {
             id: 1,
             scheduleNumber: "SCH001",
@@ -54,7 +54,7 @@ const ScheduleManagement = () => {
             endTime: "11:30",
             closingDate: "2025-01-14",
             closingTime: "21:00",
-            status: "Duplicate"
+            status: "Active"
         }
     ]);
 
@@ -68,7 +68,7 @@ const ScheduleManagement = () => {
     const scheduleNumbers = [...new Set(schedules.map(schedule => schedule.scheduleNumber))];
     const routeNos = [...new Set(schedules.map(schedule => schedule.routeNo))];
     const routes = [...new Set(schedules.map(schedule => schedule.route))];
-    const statuses = ["Active", "Inactive", "Duplicate"];
+    const statuses = ["Active", "Inactive"];
 
     // Filter the schedules based on selected criteria
     const filteredSchedules = schedules.filter(schedule => {
@@ -81,9 +81,9 @@ const ScheduleManagement = () => {
     });
 
     // Handle delete
-    const handleDelete = (id) => {
-        setSchedules(schedules.filter(schedule => schedule.id !== id));
-    };
+    // const handleDelete = (id) => {
+    //     setSchedules(schedules.filter(schedule => schedule.id !== id));
+    // };
 
     // Reusable Autocomplete component
     const AutocompleteField = ({ value, onChange, options, label }) => (
@@ -170,7 +170,7 @@ const ScheduleManagement = () => {
                                 <TableCell>Closing Date</TableCell>
                                 <TableCell>Closing Time</TableCell>
                                 <TableCell>Status</TableCell>
-                                <TableCell>Actions</TableCell>
+                                {/* <TableCell>Actions</TableCell> */}
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -188,12 +188,12 @@ const ScheduleManagement = () => {
                                     <TableCell>
                                         <Chip
                                             label={schedule.status}
-                                            color={schedule.status === 'Active' ? 'success' : schedule.status === 'Duplicate' ? 'warning' : 'error'}
+                                            color={schedule.status === 'Active' ? 'success' : 'error'}
                                             size="small"
                                             sx={{ width: 80 }}
                                         />
                                     </TableCell>
-                                    <TableCell>
+                                    {/* <TableCell>
                                         {schedule.status === 'Duplicate' ? (
                                             <IconButton
                                                 size="small"
@@ -203,7 +203,7 @@ const ScheduleManagement = () => {
                                                 <DeleteIcon />
                                             </IconButton>
                                         ) : null}
-                                    </TableCell>
+                                    </TableCell> */}
                                 </TableRow>
                             ))}
                         </TableBody>

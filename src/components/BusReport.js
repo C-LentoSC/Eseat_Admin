@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -18,7 +18,11 @@ import {
   Button,
   Select,
   MenuItem,
-  InputAdornment
+  InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -181,7 +185,8 @@ const BusReport = () => {
           route: "Colombo - Nuwaraeliya",
           nic: "-",
           bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12"
+          bookedDate: "2024-11-20 00:12",
+          seatStatus: 'transfer',
         },
         {
           refNo: "346402643030861",
@@ -191,7 +196,8 @@ const BusReport = () => {
           route: "Colombo - Nuwaraeliya",
           nic: "-",
           bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-19 16:15"
+          bookedDate: "2024-11-19 16:15",
+          seatStatus: 'direct',
         },
         {
           refNo: "346408407807049",
@@ -201,7 +207,8 @@ const BusReport = () => {
           route: "Colombo - Nuwaraeliya",
           nic: "-",
           bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12"
+          bookedDate: "2024-11-20 00:12",
+          seatStatus: 'transfer',
         },
         {
           refNo: "346402643030861",
@@ -211,7 +218,8 @@ const BusReport = () => {
           route: "Colombo - Nuwaraeliya",
           nic: "-",
           bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-19 16:15"
+          bookedDate: "2024-11-19 16:15",
+          seatStatus: 'direct',
         },
         {
           refNo: "346408407807049",
@@ -221,7 +229,8 @@ const BusReport = () => {
           route: "Colombo - Nuwaraeliya",
           nic: "-",
           bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12"
+          bookedDate: "2024-11-20 00:12",
+          seatStatus: 'direct',
         },
 
       ],
@@ -339,6 +348,19 @@ const BusReport = () => {
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBus, setSelectedBus] = useState(null);
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [selectedTransferBus, setSelectedTransferBus] = useState(null);
+  const [isBookingStatusModalOpen, setIsBookingStatusModalOpen] = useState(false);
+  const [conductorMobile, setConductorMobile] = useState("");
+  const [busNumber, setBusNumber] = useState("");
+  const [bookingAction, setBookingAction] = useState("");
+  const [statusChangeDialog, setStatusChangeDialog] = useState({
+    open: false,
+    scheduleId: null,
+    newStatus: '',
+    oldStatus: ''
+  });
+
 
   const depots = ["Central", "Northern", "Eastern"];
   const routes = ["R001", "R002", "R003"];
@@ -354,15 +376,118 @@ const BusReport = () => {
     return dateMatch && timeMatch && depotMatch && routeMatch;
   });
 
-  const handleBookingToggle = (status) => { };
-  const handleSendSMS = () => { };
+  useEffect(() => {
+    if (selectedBus) {
+      setConductorMobile(selectedBus.conductorNo || "");
+      setBusNumber(selectedBus.busNo || "");
+    }
+  }, [selectedBus]);
 
-  const handleView = (bus) => {
-    setSelectedBus(bus);
-    setIsModalOpen(true);
+
+  const handleTransfer = (schedule) => {
+    setSelectedTransferBus(schedule);
+    setIsTransferModalOpen(true);
   };
 
-  const handleStatusChange = (scheduleId, newStatus) => {
+  const TransferModal = () => (
+    <Modal
+      open={isTransferModalOpen}
+      onClose={() => setIsTransferModalOpen(false)}
+      sx={{ overflow: "auto", py: 2 }}
+    >
+      <Box sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "90%",
+        maxWidth: 1200,
+        bgcolor: "background.paper",
+        boxShadow: 24,
+        p: 4,
+        maxHeight: "90vh",
+        overflow: "auto",
+        borderRadius: "10px",
+        border: "2px solid gray",
+      }}>
+        <Typography variant="h6" sx={{ mb: 3 }}>
+          Transfer Details - {selectedTransferBus?.scheduleNo}
+        </Typography>
+
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Ref No</TableCell>
+                <TableCell>Seat No</TableCell>
+                <TableCell>V-Code</TableCell>
+                <TableCell>Mode Of Pay</TableCell>
+                <TableCell>Route</TableCell>
+                <TableCell>NIC</TableCell>
+                <TableCell>Book By</TableCell>
+                <TableCell>Book Date</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {selectedTransferBus?.bookings.map((row, index) => (
+                row.seatStatus === 'transfer' ? (
+                  <TableRow key={index}>
+                    <TableCell>{row.refNo}</TableCell>
+                    <TableCell>{row.seatNo}</TableCell>
+                    <TableCell>{row.vCode}</TableCell>
+                    <TableCell>{row.modeOfPay}</TableCell>
+                    <TableCell>{row.route}</TableCell>
+                    <TableCell>{row.nic}</TableCell>
+                    <TableCell>{row.bookedBy}</TableCell>
+                    <TableCell>{row.bookedDate}</TableCell>
+                  </TableRow>
+                ) : null
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => setIsTransferModalOpen(false)}
+            sx={{ backgroundColor: 'gray' }}
+          >
+            Close
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
+  );
+
+  const handleBookingToggle = React.useCallback((status) => () => {
+    setBookingAction(status === "opened" ? "close" : "open");
+    setIsBookingStatusModalOpen(true);
+  }, []);
+
+  const handleBookingConfirm = () => {
+    // Add your logic here to handle the status change
+    console.log({
+      action: bookingAction,
+      conductorMobile,
+      busNumber
+    });
+
+    setIsBookingStatusModalOpen(false);
+  };
+
+  const handleStatusChangeClick = (scheduleId, newStatus, oldStatus) => {
+    setStatusChangeDialog({
+      open: true,
+      scheduleId,
+      newStatus,
+      oldStatus
+    });
+  };
+
+  const handleStatusChangeConfirm = () => {
+    const { scheduleId, newStatus } = statusChangeDialog;
     setSchedules(prevSchedules =>
       prevSchedules.map(schedule =>
         schedule.id === scheduleId
@@ -370,6 +495,42 @@ const BusReport = () => {
           : schedule
       )
     );
+    setStatusChangeDialog({ open: false, scheduleId: null, newStatus: '', oldStatus: '' });
+  };
+
+  const handleStatusChangeCancel = () => {
+    setStatusChangeDialog({ open: false, scheduleId: null, newStatus: '', oldStatus: '' });
+  };
+
+  const StatusChangeConfirmation = () => (
+    <Dialog
+      open={statusChangeDialog.open}
+      onClose={handleStatusChangeCancel}
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle>Confirm Bus Close</DialogTitle>
+      <DialogContent>
+        <Typography>
+          Are you sure you want to change the Bus status from "{statusChangeDialog.oldStatus}" to "{statusChangeDialog.newStatus}"?
+        </Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleStatusChangeCancel}>
+          No
+        </Button>
+        <Button onClick={handleStatusChangeConfirm} autoFocus>
+          Yes
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  const handleSendSMS = () => { };
+
+  const handleView = (bus) => {
+    setSelectedBus(bus);
+    setIsModalOpen(true);
   };
 
   // PDF download function
@@ -385,7 +546,7 @@ const BusReport = () => {
       elements.forEach((element) => {
         element.style.paddingBottom = "12px";
       });
-  
+
       // Create PDF with A4 dimensions
       const pdf = new jsPDF('p', 'mm', 'a4');
       const margin = 10;
@@ -708,7 +869,11 @@ const BusReport = () => {
                       <Select
                         size="small"
                         value={schedule.tripStatus}
-                        onChange={(e) => handleStatusChange(schedule.id, e.target.value)}
+                        onChange={(e) => handleStatusChangeClick(
+                          schedule.id,
+                          e.target.value,
+                          schedule.tripStatus
+                        )}
                       >
                         {tripStatuses.map((status) => (
                           <MenuItem key={status} value={status}>
@@ -721,9 +886,11 @@ const BusReport = () => {
                       <IconButton onClick={() => handleView(schedule)}>
                         <VisibilityIcon />
                       </IconButton>
-                      <Button size="small" variant="contained" sx={{ ml: 1 }}>
-                        Transfer
-                      </Button>
+                      {schedule?.bookings.length > 0 && (
+                        <Button size="small" variant="contained" sx={{ ml: 1 }} onClick={() => handleTransfer(schedule)}>
+                          Transfer
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -776,15 +943,16 @@ const BusReport = () => {
                 </div>
 
                 <Box sx={{ mt: 2, display: "flex", gap: 2, justifyContent: "center" }}>
+                  <Button variant="contained" onClick={handleSendSMS()}>
+                    <span className="setpadding01">Send SMS to Conductor</span>
+                  </Button>
+
                   <Button
                     variant="contained"
                     color={selectedBus?.status === "opened" ? "secondary" : "primary"}
                     onClick={handleBookingToggle(selectedBus?.status)}
                   >
                     <span className="setpadding01">{selectedBus?.status === "opened" ? 'Close Booking' : 'Open Booking'}</span>
-                  </Button>
-                  <Button variant="contained" onClick={handleSendSMS()}>
-                  <span className="setpadding01">Send SMS to Conductor</span>
                   </Button>
                 </Box>
 
@@ -915,6 +1083,72 @@ const BusReport = () => {
               </Box>
             </Box>
           </Modal>
+
+          <Modal
+            open={isBookingStatusModalOpen}
+            onClose={() => setIsBookingStatusModalOpen(false)}
+          >
+            <Box sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "400px",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+              borderRadius: "10px",
+              border: "2px solid gray",
+            }}>
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                {bookingAction === "close" ? "Close Booking" : "Open Booking"}
+              </Typography>
+
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Conductor Mobile"
+                    value={conductorMobile}
+                    onChange={(e) => setConductorMobile(e.target.value)}
+                    placeholder="Enter conductor mobile number"
+                  // size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Bus Number"
+                    value={busNumber}
+                    onChange={(e) => setBusNumber(e.target.value)}
+                    placeholder="Enter bus number"
+                  // size="small"
+                  />
+                </Grid>
+              </Grid>
+
+              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => setIsBookingStatusModalOpen(false)}
+                  sx={{ backgroundColor: 'gray' }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleBookingConfirm}
+                >
+                  Confirm
+                </Button>
+              </Box>
+            </Box>
+          </Modal>
+
+          <TransferModal />
+          <StatusChangeConfirmation />
 
         </Box>
       </Container>

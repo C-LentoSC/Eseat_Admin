@@ -22,11 +22,17 @@ import { AttachMoney, PaymentsOutlined, RequestQuoteOutlined } from '@mui/icons-
 import BusAlert from '@mui/icons-material/BusAlert';
 import Assignment from '@mui/icons-material/Assignment';
 import HistoryIcon from '@mui/icons-material/History';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import CancelScheduleSendIcon from '@mui/icons-material/CancelScheduleSend';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import DateRangeIcon from '@mui/icons-material/DateRange';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import PersonIcon from '@mui/icons-material/Person'; 
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 
 import { AppProvider } from '@toolpad/core/AppProvider';
@@ -56,7 +62,13 @@ import ManageFare from './ManageFare';
 import ManageBreakFare from './ManageBreakFare';
 import BulkBusManagement from './BulkBusManagement';
 import BusReport from './BusReport';
+import AllBookings from './AllBookings';
+import PendingBookings from './PendingBookings';
+import ManualCancelBookings from './ManualCancelBookings';
+import AgentBookings from './AgentBookings';
 import BookingHistory from './BookingHistory';
+import FailBookings from './FailBookings';
+import DeletedBookings from './DeletedBookings';
 import ScheduleManagement from './ScheduleManagement';
 import RefundBooking from './RefundBooking';
 import TicketCancelRequests from './TicketCancelRequests';
@@ -163,9 +175,46 @@ const NAVIGATION = {
       icon: <Assignment />,
     },
     {
-      segment: 'bookingHistory',
-      title: 'Booking History',
+      segment: 'allBookings',
+      title: 'All Bookings',
       icon: <HistoryIcon />,
+      children: [
+        {
+          segment: 'allBookings',
+          title: 'All Bookings',
+          icon: <HistoryIcon />,
+        },
+        {
+          segment: 'pendingBookings',
+          title: 'Pending Bookings',
+          icon: <PendingActionsIcon />,
+        },
+        {
+          segment: 'manualCancelBookings',
+          title: 'Manual Cancel Bookings',
+          icon: <CancelScheduleSendIcon />,
+        },
+        {
+          segment: 'agentBookings',
+          title: 'Agent Bookings',
+          icon: <PersonSearchIcon />,
+        },
+        {
+          segment: 'failBookings',
+          title: 'Fail Bookings',
+          icon: <ErrorOutlineIcon />,
+        },
+        {
+          segment: 'deletedBookings',
+          title: 'Deleted Bookings',
+          icon: <DeleteOutlineIcon />,
+        },
+        {
+          segment: 'bookingHistory',
+          title: 'Booking History',
+          icon: <DateRangeIcon />,
+        },
+      ],
     },
     {
       segment: 'scheduleManagement',
@@ -297,7 +346,28 @@ function DemoPageContent({ pathname }) {
       case '/busReport':
         content = <BusReport />;
         break;
-      case '/bookingHistory':
+      case '/allBookings':
+        content = <AllBookings />;
+        break;
+      case '/allBookings/allBookings':
+        content = <AllBookings />;
+        break;
+      case '/allBookings/pendingBookings':
+        content = <PendingBookings />;
+        break;
+      case '/allBookings/manualCancelBookings':
+        content = <ManualCancelBookings />;
+        break;
+      case '/allBookings/agentBookings':
+        content = <AgentBookings />;
+        break;
+      case '/allBookings/failBookings':
+        content = <FailBookings />;
+        break;
+      case '/allBookings/deletedBookings':
+        content = <DeletedBookings />;
+        break;
+      case '/allBookings/bookingHistory':
         content = <BookingHistory />;
         break;
       case '/scheduleManagement':
