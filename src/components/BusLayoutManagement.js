@@ -126,7 +126,7 @@ const BusLayoutManagement = () => {
     const handleSeatClick = (seatId) => {
         if (currentStep === 1) {
             // Step 1: Only select/deselect seats
-           
+
             if(newLayout.seatDetails[seatId].hasRelations === false){
                 setNewLayout(prev => {
                     const updatedDetails = { ...prev.seatDetails };

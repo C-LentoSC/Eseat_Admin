@@ -508,7 +508,7 @@ const BusManagement = () => {
 
                     <Typography marginTop={1}>Service Charge 01: {selectedViewSeat.serviceCharge01}</Typography>
                     <Typography marginTop={1}>Service Charge 02: {selectedViewSeat.serviceCharge02}</Typography>
-                            
+
                 </Grid>
             </Grid>
         </Box>);

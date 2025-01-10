@@ -22,7 +22,18 @@ import { AttachMoney, PaymentsOutlined, RequestQuoteOutlined } from '@mui/icons-
 import BusAlert from '@mui/icons-material/BusAlert';
 import Assignment from '@mui/icons-material/Assignment';
 import HistoryIcon from '@mui/icons-material/History';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import CancelScheduleSendIcon from '@mui/icons-material/CancelScheduleSend';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import DateRangeIcon from '@mui/icons-material/DateRange';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import PersonIcon from '@mui/icons-material/Person';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+
 
 
 import { AppProvider } from '@toolpad/core/AppProvider';
@@ -31,7 +42,7 @@ import { useDemoRouter } from '@toolpad/core/internal';
 import { ReactComponent as Logo } from '../resources/eseat.svg';
 
 
-// import Dashboard1 from './Dashboard1'; //Dummy
+// import Dashboard from './Dashboard'; //Dummy
 import UserRegistrationPage from './UserRegistrationPage';
 import ManageBusFacilities from './ManageBusFacilities';
 import PointsManagement from './PointsManagement';
@@ -52,8 +63,18 @@ import ManageFare from './ManageFare';
 import ManageBreakFare from './ManageBreakFare';
 import BulkBusManagement from './BulkBusManagement';
 import BusReport from './BusReport';
+import AllBookings from './AllBookings';
+import PendingBookings from './PendingBookings';
+import ManualCancelBookings from './ManualCancelBookings';
+import AgentBookings from './AgentBookings';
 import BookingHistory from './BookingHistory';
+import FailBookings from './FailBookings';
+import DeletedBookings from './DeletedBookings';
 import ScheduleManagement from './ScheduleManagement';
+import RefundBooking from './RefundBooking';
+import TicketCancelRequests from './TicketCancelRequests';
+import TicketMarkingSystem from './TicketMarkingSystem';
+import CustomerDetails from './CustomerDetails';
 
 
 import CustomAlert from './Parts/CustomAlert';
@@ -158,14 +179,71 @@ const NAVIGATION = {
       icon: <Assignment />,
     },
     {
-      segment: 'bookingHistory',
-      title: 'Booking History',
+      segment: 'allBookings',
+      title: 'All Bookings',
       icon: <HistoryIcon />,
+      children: [
+        {
+          segment: 'allBookings',
+          title: 'All Bookings',
+          icon: <HistoryIcon />,
+        },
+        {
+          segment: 'pendingBookings',
+          title: 'Pending Bookings',
+          icon: <PendingActionsIcon />,
+        },
+        {
+          segment: 'manualCancelBookings',
+          title: 'Manual Cancel Bookings',
+          icon: <CancelScheduleSendIcon />,
+        },
+        {
+          segment: 'agentBookings',
+          title: 'Agent Bookings',
+          icon: <PersonSearchIcon />,
+        },
+        {
+          segment: 'failBookings',
+          title: 'Fail Bookings',
+          icon: <ErrorOutlineIcon />,
+        },
+        {
+          segment: 'deletedBookings',
+          title: 'Deleted Bookings',
+          icon: <DeleteOutlineIcon />,
+        },
+        {
+          segment: 'bookingHistory',
+          title: 'Booking History',
+          icon: <DateRangeIcon />,
+        },
+      ],
     },
     {
       segment: 'scheduleManagement',
       title: 'Schedule Management',
       icon: <EventAvailableIcon />,
+    },
+    {
+      segment: 'refundBooking',
+      title: 'Refund Booking',
+      icon: <AttachMoneyIcon />,
+    },
+    {
+      segment: 'ticketCancelRequests',
+      title: 'Ticket Cancel Requests',
+      icon: <CancelOutlinedIcon />,
+    },
+    {
+      segment: 'ticketMarkingSystem',
+      title: 'Ticket Marking System',
+      icon: <ReceiptIcon />,
+    },
+    {
+      segment: 'customerDetails',
+      title: 'Customer Details',
+      icon: <PersonIcon />,
     },
   ],
   Admin: [],
@@ -204,7 +282,7 @@ function DemoPageContent({ pathname }) {
       content = <UserRegistrationPage />; //Dummy
       break;
     // case '/dashboard':
-    //   content = <Dashboard1 />; //Dummy
+    //   content = <Dashboard />; //Dummy
     //   break;
     case '/user-registration':
       content = <UserRegistrationPage />;
@@ -272,13 +350,46 @@ function DemoPageContent({ pathname }) {
       case '/busReport':
         content = <BusReport />;
         break;
-      case '/bookingHistory':
+      case '/allBookings':
+        content = <AllBookings />;
+        break;
+      case '/allBookings/allBookings':
+        content = <AllBookings />;
+        break;
+      case '/allBookings/pendingBookings':
+        content = <PendingBookings />;
+        break;
+      case '/allBookings/manualCancelBookings':
+        content = <ManualCancelBookings />;
+        break;
+      case '/allBookings/agentBookings':
+        content = <AgentBookings />;
+        break;
+      case '/allBookings/failBookings':
+        content = <FailBookings />;
+        break;
+      case '/allBookings/deletedBookings':
+        content = <DeletedBookings />;
+        break;
+      case '/allBookings/bookingHistory':
         content = <BookingHistory />;
         break;
       case '/scheduleManagement':
         content = <ScheduleManagement />;
         break;
-    default:
+      case '/refundBooking':
+        content = <RefundBooking />;
+        break;
+      case '/ticketCancelRequests':
+        content = <TicketCancelRequests />;
+        break;
+      case '/ticketMarkingSystem':
+        content = <TicketMarkingSystem />;
+        break;
+      case '/customerDetails':
+        content = <CustomerDetails />;
+        break;
+    default:  
       content = <Typography>No page found</Typography>;
   }
 
