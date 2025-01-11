@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
-    Autocomplete, TextField, InputAdornment,
-    Chip
+    Autocomplete, TextField, InputAdornment
 } from '@mui/material';
 // import DeleteIcon from '@mui/icons-material/Delete';
 
