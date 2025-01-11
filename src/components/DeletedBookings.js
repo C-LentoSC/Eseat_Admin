@@ -3,16 +3,16 @@ import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
     Autocomplete, TextField, InputAdornment, Modal, Button,
-    Chip, Checkbox
+    IconButton, Checkbox, Chip
 } from '@mui/material';
-// import { Visibility, RestoreFromTrash, Delete, FileDownload } from '@mui/icons-material';
+import { Visibility, RestoreFromTrash, Delete } from '@mui/icons-material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
 // import CustomAlert from "./Parts/CustomAlert";
 
-const BookingHistory = () => {
+const DeletedBookings = () => {
 
     // const [alert, setAlert] = useState(null);
     // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
@@ -28,10 +28,10 @@ const BookingHistory = () => {
             scheduleNo: "SCH001",
             route: "Colombo-Kandy",
             seatDetails: [
-                { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, status: 'Confirmed' },
-                { seatNo: "2A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, status: 'Confirmed' }
+                { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0 },
+                { seatNo: "2A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0 }
             ],
-            name: "John Doe",
+            name:"John Doe",
             mobileNo: "0771234567",
             travelDate: "2025-01-10",
             bookBy: "John Doe",
@@ -49,16 +49,16 @@ const BookingHistory = () => {
             scheduleNo: "SCH002",
             route: "Galle-Matara",
             seatDetails: [
-                { seatNo: "3B", seatCost: 800, serviceCharge: 80, vat: 120, discount: 0, otherCharges: 0, status: 'Pending' }
+                { seatNo: "3B", seatCost: 800, serviceCharge: 80, vat: 120, discount: 0, otherCharges: 0 }
             ],
-            name: "John Doe",
+            name:"John Doe",
             mobileNo: "0777654321",
             travelDate: "2025-01-15",
             bookBy: "Jane Smith",
             bookDate: "2025-01-02",
             netAmount: 1800,
             paymentType: "Cash",
-            bookingStatus: "Failed",
+            bookingStatus: "Manual Cancel",
             paymentStatus: "Failed",
             deleteDate: null
         },
@@ -69,16 +69,16 @@ const BookingHistory = () => {
             scheduleNo: "SCH003",
             route: "Colombo-Galle",
             seatDetails: [
-                { seatNo: "5C", seatCost: 900, serviceCharge: 90, vat: 135, discount: 0, otherCharges: 0, status: 'Pending' }
+                { seatNo: "5C", seatCost: 900, serviceCharge: 90, vat: 135, discount: 0, otherCharges: 0 }
             ],
-            name: "Agen",
+            name:"John Doe",
             mobileNo: "0773456789",
             travelDate: "2025-01-20",
             bookBy: "Travel Agent X",
             bookDate: "2025-01-03",
             netAmount: 2000,
             paymentType: "Bank Transfer",
-            bookingStatus: "Booked",
+            bookingStatus: "Agent Bookings",
             paymentStatus: "Paid",
             deleteDate: null
         },
@@ -89,16 +89,16 @@ const BookingHistory = () => {
             scheduleNo: "SCH004",
             route: "Kandy-Colombo",
             seatDetails: [
-                { seatNo: "7D", seatCost: 1200, serviceCharge: 120, vat: 180, discount: 100, otherCharges: 0, status: 'Pending' }
+                { seatNo: "7D", seatCost: 1200, serviceCharge: 120, vat: 180, discount: 100, otherCharges: 0 }
             ],
-            name: "Guest",
+            name:"John Doe",
             mobileNo: "0779876543",
             travelDate: "2025-01-25",
             bookBy: "Sam Wilson",
             bookDate: "2025-01-04",
             netAmount: 1400,
             paymentType: "Credit Card",
-            bookingStatus: "Failed",
+            bookingStatus: "Fail",
             paymentStatus: "Failed",
             deleteDate: null
         },
@@ -109,9 +109,9 @@ const BookingHistory = () => {
             scheduleNo: "SCH005",
             route: "Matara-Colombo",
             seatDetails: [
-                { seatNo: "8A", seatCost: 1100, serviceCharge: 110, vat: 165, discount: 0, otherCharges: 50, status: 'Pending' }
+                { seatNo: "8A", seatCost: 1100, serviceCharge: 110, vat: 165, discount: 0, otherCharges: 50 }
             ],
-            name: "Guest",
+            name:"John Doe",
             mobileNo: "0775555555",
             travelDate: "2025-01-30",
             bookBy: "Mary Johnson",
@@ -124,22 +124,21 @@ const BookingHistory = () => {
         }
     ]);
 
-
     // States
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedBooking] = useState(null);
+    const [selectedBooking, setSelectedBooking] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState({});
     const [bookingId, setBookingId] = useState('');
     const [refNo, setRefNo] = useState('');
     const [mobileNo, setMobileNo] = useState('');
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
-    const [selectedBookingStatus, setSelectedBookingStatus] = useState("All");
+    const [selectedBookingStatus] = useState("Deleted");
     const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(null);
     const [selectedBookDate, setSelectedBookDate] = useState(null);
 
     // Extract unique values for selectors
     const paymentMethods = [...new Set(bookings.map(booking => booking.paymentType))];
-    const bookingStatuses = ["All", "Pending", "Manual Cancel", "Failed"];
+    // const bookingStatuses = ["All", "Pending", "Manual Cancel", "Agent Bookings", "Fail", "Deleted"];
     const paymentStatuses = ["Paid", "Pending", "Failed"];
 
     // Filter the bookings based on selected criteria
@@ -172,23 +171,23 @@ const BookingHistory = () => {
         }));
     };
 
-    // const handleViewPayment = (booking) => {
-    //     setSelectedBooking(booking);
-    //     setSelectedSeats({});
-    //     setModalOpen(true);
-    // };
+    const handleViewPayment = (booking) => {
+        setSelectedBooking(booking);
+        setSelectedSeats({});
+        setModalOpen(true);
+    };
 
     const handleConfirmPayment = () => {
         setModalOpen(false);
     };
 
-    // const handleRestore = (bookingId) => {
-    //     console.log('Restoring booking:', bookingId);
-    // };
+    const handleRestore = (bookingId) => {
+        console.log('Restoring booking:', bookingId);
+    };
 
-    // const handleDelete = (bookingId) => {
-    //     console.log('Permanently deleting booking:', bookingId);
-    // };
+    const handleDelete = (bookingId) => {
+        console.log('Permanently deleting booking:', bookingId);
+    };
 
 
     // const formatDateForCSV = (dateStr) => {
@@ -292,7 +291,7 @@ const BookingHistory = () => {
         <Container component="main" maxWidth="lg">
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-                    Booking History
+                Deleted Bookings
                 </Typography>
 
                 {/* Filters */}
@@ -408,7 +407,7 @@ const BookingHistory = () => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
+                    {/* <Grid item xs={12} sm={6} md={3}>
                         <Autocomplete
                             value={selectedBookingStatus}
                             onChange={(_, value) => setSelectedBookingStatus(value)}
@@ -434,7 +433,7 @@ const BookingHistory = () => {
                                 }
                             }}
                         />
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12} sm={6} md={3}>
                         <Autocomplete
                             value={selectedPaymentStatus}
@@ -502,7 +501,7 @@ const BookingHistory = () => {
                                 <TableCell>Booking Status</TableCell>
                                 <TableCell>Payment Status</TableCell>
                                 {selectedBookingStatus === 'Deleted' && <TableCell>Delete Date</TableCell>}
-                                {/* <TableCell align='right'>Actions</TableCell> */}
+                                <TableCell align='right'>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -512,24 +511,7 @@ const BookingHistory = () => {
                                     <TableCell>{booking.refNo}</TableCell>
                                     <TableCell>{booking.scheduleNo}</TableCell>
                                     <TableCell>{booking.route}</TableCell>
-                                    <TableCell>{booking.seatDetails.map(s => s.seatNo).join(', ')}
-
-                                        <Chip
-                                            label={
-                                                booking.seatDetails.some((s) => s.status === 'Pending')
-                                                    ? 'Pending'
-                                                    : 'Confirmed'
-                                            }
-                                            color={
-                                                booking.seatDetails.some((s) => s.status === 'Pending')
-                                                    ? 'warning'
-                                                    : 'success'
-                                            }
-                                            size="small"
-                                            sx={{ width: 80, height: 20, paddingTop: '2px' }}
-                                        />
-
-                                    </TableCell>
+                                    <TableCell>{booking.seatDetails.map(s => s.seatNo).join(', ')}</TableCell>
                                     <TableCell>{booking.name}</TableCell>
                                     <TableCell>{booking.mobileNo}</TableCell>
                                     <TableCell>{booking.travelDate}</TableCell>
@@ -554,7 +536,7 @@ const BookingHistory = () => {
                                         />
                                     </TableCell>
                                     {selectedBookingStatus === 'Deleted' && <TableCell>{booking.deleteDate}</TableCell>}
-                                    {/* <TableCell align='right'>
+                                    <TableCell align='right'>
                                         {booking.bookingStatus === 'Pending' && (
                                             <IconButton onClick={() => handleViewPayment(booking)}>
                                                 <Visibility />
@@ -570,7 +552,7 @@ const BookingHistory = () => {
                                                 </IconButton>
                                             </>
                                         )}
-                                    </TableCell> */}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -658,4 +640,4 @@ const BookingHistory = () => {
     );
 };
 
-export default BookingHistory;
+export default DeletedBookings;

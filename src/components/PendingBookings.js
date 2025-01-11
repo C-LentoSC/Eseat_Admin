@@ -3,16 +3,16 @@ import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
     Autocomplete, TextField, InputAdornment, Modal, Button,
-    Chip, Checkbox
+    IconButton, Checkbox, Chip
 } from '@mui/material';
-// import { Visibility, RestoreFromTrash, Delete, FileDownload } from '@mui/icons-material';
+import { Visibility, CheckCircle, FileDownload } from '@mui/icons-material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
 // import CustomAlert from "./Parts/CustomAlert";
 
-const BookingHistory = () => {
+const PendingBookings = () => {
 
     // const [alert, setAlert] = useState(null);
     // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
@@ -28,7 +28,7 @@ const BookingHistory = () => {
             scheduleNo: "SCH001",
             route: "Colombo-Kandy",
             seatDetails: [
-                { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, status: 'Confirmed' },
+                { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, status: 'Pending' },
                 { seatNo: "2A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, status: 'Confirmed' }
             ],
             name: "John Doe",
@@ -127,19 +127,20 @@ const BookingHistory = () => {
 
     // States
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedBooking] = useState(null);
+    const [selectedBooking, setSelectedBooking] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState({});
     const [bookingId, setBookingId] = useState('');
     const [refNo, setRefNo] = useState('');
     const [mobileNo, setMobileNo] = useState('');
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
-    const [selectedBookingStatus, setSelectedBookingStatus] = useState("All");
+    const [selectedBookingStatus] = useState("Pending");
+    // const [selectedSeatetStatus] = useState("Pending");
     const [selectedPaymentStatus, setSelectedPaymentStatus] = useState(null);
     const [selectedBookDate, setSelectedBookDate] = useState(null);
 
     // Extract unique values for selectors
     const paymentMethods = [...new Set(bookings.map(booking => booking.paymentType))];
-    const bookingStatuses = ["All", "Pending", "Manual Cancel", "Failed"];
+    // const bookingStatuses = ["All", "Pending", "Manual Cancel", "Agent Bookings", "Fail", "Deleted"];
     const paymentStatuses = ["Paid", "Pending", "Failed"];
 
     // Filter the bookings based on selected criteria
@@ -153,6 +154,7 @@ const BookingHistory = () => {
                 selectedBookingStatus === "All" ?
                 booking.bookingStatus !== "Deleted" :
                 booking.bookingStatus === selectedBookingStatus;
+        // const seateStatusMatch = booking.seatDetails.some((s) => s.status === selectedSeatetStatus);
         const paymentStatusMatch =
             !selectedPaymentStatus ||
             booking.paymentStatus === selectedPaymentStatus;
@@ -172,11 +174,11 @@ const BookingHistory = () => {
         }));
     };
 
-    // const handleViewPayment = (booking) => {
-    //     setSelectedBooking(booking);
-    //     setSelectedSeats({});
-    //     setModalOpen(true);
-    // };
+    const handleViewPayment = (booking) => {
+        setSelectedBooking(booking);
+        setSelectedSeats({});
+        setModalOpen(true);
+    };
 
     const handleConfirmPayment = () => {
         setModalOpen(false);
@@ -191,108 +193,108 @@ const BookingHistory = () => {
     // };
 
 
-    // const formatDateForCSV = (dateStr) => {
-    //     const formattedDate = dayjs(dateStr).format('DD/MM/YYYY');
-    //     return `="${formattedDate}"`;
-    // };
+    const formatDateForCSV = (dateStr) => {
+        const formattedDate = dayjs(dateStr).format('DD/MM/YYYY');
+        return `="${formattedDate}"`;
+    };
 
-    // const formatCSVField = (field) => {
-    //     if (field === null || field === undefined) {
-    //         return '""';
-    //     }
-    //     const fieldStr = String(field);
+    const formatCSVField = (field) => {
+        if (field === null || field === undefined) {
+            return '""';
+        }
+        const fieldStr = String(field);
 
-    //     if (fieldStr.includes(',') || fieldStr.includes('"') || fieldStr.includes('\n')) {
-    //         return `"${fieldStr.replace(/"/g, '""')}"`;
-    //     }
-    //     return fieldStr;
-    // };
-    // const formatMobileNumber = (number) => {
-    //     return `="${number}"`;
-    // };
+        if (fieldStr.includes(',') || fieldStr.includes('"') || fieldStr.includes('\n')) {
+            return `"${fieldStr.replace(/"/g, '""')}"`;
+        }
+        return fieldStr;
+    };
+    const formatMobileNumber = (number) => {
+        return `="${number}"`;
+    };
 
 
-    // const convertToCSV = (data) => {
-    //     const headers = [
-    //         'V-Code',
-    //         'Ref No',
-    //         'Schedule No',
-    //         'Route',
-    //         'Seat Numbers',
-    //         'Name',
-    //         'Mobile No',
-    //         'Travel Date',
-    //         'Book By',
-    //         'Book Date',
-    //         'Net Amount',
-    //         'Payment Type',
-    //         'Booking Status',
-    //         'Payment Status'
-    //     ];
+    const convertToCSV = (data) => {
+        const headers = [
+            'V-Code',
+            'Ref No',
+            'Schedule No',
+            'Route',
+            'Seat Numbers',
+            'Name',
+            'Mobile No',
+            'Travel Date',
+            'Book By',
+            'Book Date',
+            'Net Amount',
+            'Payment Type',
+            'Booking Status',
+            'Payment Status'
+        ];
 
-    //     if (selectedBookingStatus === 'Deleted') {
-    //         headers.push('Delete Date');
-    //     }
+        if (selectedBookingStatus === 'Deleted') {
+            headers.push('Delete Date');
+        }
 
-    //     const rows = data.map(booking => {
-    //         const row = [
-    //             formatCSVField(booking.vCode),
-    //             formatCSVField(booking.refNo),
-    //             formatCSVField(booking.scheduleNo),
-    //             formatCSVField(booking.route),
-    //             `"${booking.seatDetails.map(s => s.seatNo).join(' ')}"`,
-    //             formatCSVField(booking.name),
-    //             formatMobileNumber(booking.mobileNo),
-    //             formatDateForCSV(booking.travelDate),
-    //             formatCSVField(booking.bookBy),
-    //             formatDateForCSV(booking.bookDate),
-    //             formatCSVField(booking.netAmount),
-    //             formatCSVField(booking.paymentType),
-    //             formatCSVField(booking.bookingStatus),
-    //             formatCSVField(booking.paymentStatus)
-    //         ];
+        const rows = data.map(booking => {
+            const row = [
+                formatCSVField(booking.vCode),
+                formatCSVField(booking.refNo),
+                formatCSVField(booking.scheduleNo),
+                formatCSVField(booking.route),
+                `"${booking.seatDetails.map(s => s.seatNo).join(' ')}"`,
+                formatCSVField(booking.name),
+                formatMobileNumber(booking.mobileNo),
+                formatDateForCSV(booking.travelDate),
+                formatCSVField(booking.bookBy),
+                formatDateForCSV(booking.bookDate),
+                formatCSVField(booking.netAmount),
+                formatCSVField(booking.paymentType),
+                formatCSVField(booking.bookingStatus),
+                formatCSVField(booking.paymentStatus)
+            ];
 
-    //         if (selectedBookingStatus === 'Deleted') {
-    //             row.push(formatDateForCSV(booking.deleteDate || ''));
-    //         }
+            if (selectedBookingStatus === 'Deleted') {
+                row.push(formatDateForCSV(booking.deleteDate || ''));
+            }
 
-    //         return row;
-    //     });
+            return row;
+        });
 
-    //     const csvContent = [
-    //         headers.join(','),
-    //         ...rows.map(row => row.join(','))
-    //     ].join('\n');
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.join(','))
+        ].join('\n');
 
-    //     return csvContent;
-    // };
+        return csvContent;
+    };
 
     // Function to handle export with BOM for Excel
-    // const handleExport = () => {
-    //     const csvContent = convertToCSV(filteredBookings);
-    //     // Add BOM to handle UTF-8 in Excel correctly
-    //     const BOM = '\uFEFF';
-    //     const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-    //     const link = document.createElement('a');
+    const handleExport = () => {
+        const csvContent = convertToCSV(filteredBookings);
+        // Add BOM to handle UTF-8 in Excel correctly
+        const BOM = '\uFEFF';
+        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
 
-    //     const url = URL.createObjectURL(blob);
-    //     link.setAttribute('href', url);
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
 
-    //     const fileName = `booking_history_${dayjs().format('YYYY-MM-DD_HH-mm')}.csv`;
-    //     link.setAttribute('download', fileName);
+        const fileName = `pending_bookings_${dayjs().format('YYYY-MM-DD_HH-mm')}.csv`;
+        link.setAttribute('download', fileName);
 
-    //     document.body.appendChild(link);
-    //     link.click();
-    //     document.body.removeChild(link);
-    //     URL.revokeObjectURL(url);
-    // };
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
 
 
     return (
         <Container component="main" maxWidth="lg">
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-                    Booking History
+                    Pending Bookings (Live Updates)
                 </Typography>
 
                 {/* Filters */}
@@ -408,7 +410,7 @@ const BookingHistory = () => {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
+                    {/* <Grid item xs={12} sm={6} md={3}>
                         <Autocomplete
                             value={selectedBookingStatus}
                             onChange={(_, value) => setSelectedBookingStatus(value)}
@@ -434,7 +436,7 @@ const BookingHistory = () => {
                                 }
                             }}
                         />
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12} sm={6} md={3}>
                         <Autocomplete
                             value={selectedPaymentStatus}
@@ -465,7 +467,7 @@ const BookingHistory = () => {
                 </Grid>
 
 
-                {/* <Box sx={{
+                <Box sx={{
                     display: "flex",
                     justifyContent: "flex-end",
                     alignItems: "center",
@@ -480,7 +482,7 @@ const BookingHistory = () => {
                     >
                         Export
                     </Button>
-                </Box> */}
+                </Box>
 
                 {/* Bookings Table */}
                 <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
@@ -502,7 +504,7 @@ const BookingHistory = () => {
                                 <TableCell>Booking Status</TableCell>
                                 <TableCell>Payment Status</TableCell>
                                 {selectedBookingStatus === 'Deleted' && <TableCell>Delete Date</TableCell>}
-                                {/* <TableCell align='right'>Actions</TableCell> */}
+                                <TableCell align='right'>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -512,24 +514,7 @@ const BookingHistory = () => {
                                     <TableCell>{booking.refNo}</TableCell>
                                     <TableCell>{booking.scheduleNo}</TableCell>
                                     <TableCell>{booking.route}</TableCell>
-                                    <TableCell>{booking.seatDetails.map(s => s.seatNo).join(', ')}
-
-                                        <Chip
-                                            label={
-                                                booking.seatDetails.some((s) => s.status === 'Pending')
-                                                    ? 'Pending'
-                                                    : 'Confirmed'
-                                            }
-                                            color={
-                                                booking.seatDetails.some((s) => s.status === 'Pending')
-                                                    ? 'warning'
-                                                    : 'success'
-                                            }
-                                            size="small"
-                                            sx={{ width: 80, height: 20, paddingTop: '2px' }}
-                                        />
-
-                                    </TableCell>
+                                    <TableCell>{booking.seatDetails.map(s => s.seatNo).join(', ')}</TableCell>
                                     <TableCell>{booking.name}</TableCell>
                                     <TableCell>{booking.mobileNo}</TableCell>
                                     <TableCell>{booking.travelDate}</TableCell>
@@ -542,7 +527,7 @@ const BookingHistory = () => {
                                             label={booking.bookingStatus}
                                             color={booking.bookingStatus === 'Booked' ? 'success' : booking.bookingStatus === 'Pending' ? 'warning' : 'error'}
                                             size="small"
-                                            sx={{ minWidth: 80, height: 20, paddingTop: '2px' }}
+                                            sx={{ width: 80, height: 20, paddingTop: '2px' }}
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -550,17 +535,22 @@ const BookingHistory = () => {
                                             label={booking.paymentStatus}
                                             color={booking.paymentStatus === 'Paid' ? 'success' : booking.paymentStatus === 'Pending' ? 'warning' : 'error'}
                                             size="small"
-                                            sx={{ minWidth: 80, height: 20, paddingTop: '2px' }}
+                                            sx={{ width: 80, height: 20, paddingTop: '2px' }}
                                         />
                                     </TableCell>
                                     {selectedBookingStatus === 'Deleted' && <TableCell>{booking.deleteDate}</TableCell>}
-                                    {/* <TableCell align='right'>
+                                    <TableCell align='right'>
+                                        {/* {booking.seatDetails.some((s) => s.status === 'Pending') && (
+                                            <IconButton onClick={() => handleViewPayment(booking)}>
+                                                <Visibility />
+                                            </IconButton>
+                                        )} */}
                                         {booking.bookingStatus === 'Pending' && (
                                             <IconButton onClick={() => handleViewPayment(booking)}>
                                                 <Visibility />
                                             </IconButton>
                                         )}
-                                        {booking.bookingStatus === 'Deleted' && (
+                                        {/* {booking.bookingStatus === 'Deleted' && (
                                             <>
                                                 <IconButton onClick={() => handleRestore(booking.id)} color="primary">
                                                     <RestoreFromTrash />
@@ -569,8 +559,8 @@ const BookingHistory = () => {
                                                     <Delete />
                                                 </IconButton>
                                             </>
-                                        )}
-                                    </TableCell> */}
+                                        )} */}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -623,10 +613,19 @@ const BookingHistory = () => {
                                             <TableCell>{seat.discount}</TableCell>
                                             <TableCell>{seat.otherCharges}</TableCell>
                                             <TableCell>
-                                                <Checkbox
-                                                    checked={selectedSeats[seat.seatNo] || false}
-                                                    onChange={() => handleSeatSelect(seat.seatNo)}
-                                                />
+                                                {seat.status === 'Pending' ? (
+                                                    <Checkbox
+                                                        checked={selectedSeats[seat.seatNo] || false}
+                                                        onChange={() => handleSeatSelect(seat.seatNo)}
+                                                    />
+                                                ) : (
+                                                    <IconButton
+                                                    color="success"
+                                                    >
+                                                        <CheckCircle />
+                                                    </IconButton>
+                                                )}
+
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -658,4 +657,4 @@ const BookingHistory = () => {
     );
 };
 
-export default BookingHistory;
+export default PendingBookings;

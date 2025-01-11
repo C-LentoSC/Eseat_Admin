@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -18,7 +18,11 @@ import {
   Button,
   Select,
   MenuItem,
-  InputAdornment
+  InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -172,29 +176,65 @@ const BusReport = () => {
           status: "available"
         }
       },
-      bookings:[
+      bookings: [
         {
           refNo: "346408407807049",
-          seatNo: "10",
+          seatNo: "1",
           vCode: "-",
           modeOfPay: "Full Ticket",
           route: "Colombo - Nuwaraeliya",
           nic: "-",
           bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12"
+          bookedDate: "2024-11-20 00:12",
+          seatStatus: 'transfer',
         },
         {
           refNo: "346402643030861",
-          seatNo: "15",
+          seatNo: "2",
           vCode: "-",
           modeOfPay: "Full Ticket",
           route: "Colombo - Nuwaraeliya",
           nic: "-",
           bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-19 16:15"
+          bookedDate: "2024-11-19 16:15",
+          seatStatus: 'direct',
         },
+        {
+          refNo: "346408407807049",
+          seatNo: "3",
+          vCode: "-",
+          modeOfPay: "Full Ticket",
+          route: "Colombo - Nuwaraeliya",
+          nic: "-",
+          bookedBy: "CBS-Praneeth",
+          bookedDate: "2024-11-20 00:12",
+          seatStatus: 'transfer',
+        },
+        {
+          refNo: "346402643030861",
+          seatNo: "4",
+          vCode: "-",
+          modeOfPay: "Full Ticket",
+          route: "Colombo - Nuwaraeliya",
+          nic: "-",
+          bookedBy: "CBS-Praneeth",
+          bookedDate: "2024-11-19 16:15",
+          seatStatus: 'direct',
+        },
+        {
+          refNo: "346408407807049",
+          seatNo: "5",
+          vCode: "-",
+          modeOfPay: "Full Ticket",
+          route: "Colombo - Nuwaraeliya",
+          nic: "-",
+          bookedBy: "CBS-Praneeth",
+          bookedDate: "2024-11-20 00:12",
+          seatStatus: 'direct',
+        },
+
       ],
-      summary:[
+      summary: [
         {
           bookedBy: "CBS-Praneeth",
           modeOfPay: "Full Ticket",
@@ -297,17 +337,30 @@ const BusReport = () => {
       tripStatus: "No Action",
       status: "opened",
       seatDetails: {},
-      bookings:[],
-      summary:[],
+      bookings: [],
+      summary: [],
     },
   ]);
 
-  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedDepot, setSelectedDepot] = useState(null);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBus, setSelectedBus] = useState(null);
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [selectedTransferBus, setSelectedTransferBus] = useState(null);
+  const [isBookingStatusModalOpen, setIsBookingStatusModalOpen] = useState(false);
+  const [conductorMobile, setConductorMobile] = useState("");
+  const [busNumber, setBusNumber] = useState("");
+  const [bookingAction, setBookingAction] = useState("");
+  const [statusChangeDialog, setStatusChangeDialog] = useState({
+    open: false,
+    scheduleId: null,
+    newStatus: '',
+    oldStatus: ''
+  });
+
 
   const depots = ["Central", "Northern", "Eastern"];
   const routes = ["R001", "R002", "R003"];
@@ -323,15 +376,118 @@ const BusReport = () => {
     return dateMatch && timeMatch && depotMatch && routeMatch;
   });
 
-  const handleBookingToggle = (status) => { };
-  const handleSendSMS = () => { };
+  useEffect(() => {
+    if (selectedBus) {
+      setConductorMobile(selectedBus.conductorNo || "");
+      setBusNumber(selectedBus.busNo || "");
+    }
+  }, [selectedBus]);
 
-  const handleView = (bus) => {
-    setSelectedBus(bus);
-    setIsModalOpen(true);
+
+  const handleTransfer = (schedule) => {
+    setSelectedTransferBus(schedule);
+    setIsTransferModalOpen(true);
   };
 
-  const handleStatusChange = (scheduleId, newStatus) => {
+  const TransferModal = () => (
+    <Modal
+      open={isTransferModalOpen}
+      onClose={() => setIsTransferModalOpen(false)}
+      sx={{ overflow: "auto", py: 2 }}
+    >
+      <Box sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "90%",
+        maxWidth: 1200,
+        bgcolor: "background.paper",
+        boxShadow: 24,
+        p: 4,
+        maxHeight: "90vh",
+        overflow: "auto",
+        borderRadius: "10px",
+        border: "2px solid gray",
+      }}>
+        <Typography variant="h6" sx={{ mb: 3 }}>
+          Transfer Details - {selectedTransferBus?.scheduleNo}
+        </Typography>
+
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Ref No</TableCell>
+                <TableCell>Seat No</TableCell>
+                <TableCell>V-Code</TableCell>
+                <TableCell>Mode Of Pay</TableCell>
+                <TableCell>Route</TableCell>
+                <TableCell>NIC</TableCell>
+                <TableCell>Book By</TableCell>
+                <TableCell>Book Date</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {selectedTransferBus?.bookings.map((row, index) => (
+                row.seatStatus === 'transfer' ? (
+                  <TableRow key={index}>
+                    <TableCell>{row.refNo}</TableCell>
+                    <TableCell>{row.seatNo}</TableCell>
+                    <TableCell>{row.vCode}</TableCell>
+                    <TableCell>{row.modeOfPay}</TableCell>
+                    <TableCell>{row.route}</TableCell>
+                    <TableCell>{row.nic}</TableCell>
+                    <TableCell>{row.bookedBy}</TableCell>
+                    <TableCell>{row.bookedDate}</TableCell>
+                  </TableRow>
+                ) : null
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => setIsTransferModalOpen(false)}
+            sx={{ backgroundColor: 'gray' }}
+          >
+            Close
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
+  );
+
+  const handleBookingToggle = React.useCallback((status) => () => {
+    setBookingAction(status === "opened" ? "close" : "open");
+    setIsBookingStatusModalOpen(true);
+  }, []);
+
+  const handleBookingConfirm = () => {
+    // Add your logic here to handle the status change
+    console.log({
+      action: bookingAction,
+      conductorMobile,
+      busNumber
+    });
+
+    setIsBookingStatusModalOpen(false);
+  };
+
+  const handleStatusChangeClick = (scheduleId, newStatus, oldStatus) => {
+    setStatusChangeDialog({
+      open: true,
+      scheduleId,
+      newStatus,
+      oldStatus
+    });
+  };
+
+  const handleStatusChangeConfirm = () => {
+    const { scheduleId, newStatus } = statusChangeDialog;
     setSchedules(prevSchedules =>
       prevSchedules.map(schedule =>
         schedule.id === scheduleId
@@ -339,49 +495,139 @@ const BusReport = () => {
           : schedule
       )
     );
+    setStatusChangeDialog({ open: false, scheduleId: null, newStatus: '', oldStatus: '' });
+  };
+
+  const handleStatusChangeCancel = () => {
+    setStatusChangeDialog({ open: false, scheduleId: null, newStatus: '', oldStatus: '' });
+  };
+
+  const StatusChangeConfirmation = () => (
+    <Dialog
+      open={statusChangeDialog.open}
+      onClose={handleStatusChangeCancel}
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle>Confirm Bus Close</DialogTitle>
+      <DialogContent>
+        <Typography>
+          Are you sure you want to change the Bus status from "{statusChangeDialog.oldStatus}" to "{statusChangeDialog.newStatus}"?
+        </Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleStatusChangeCancel}>
+          No
+        </Button>
+        <Button onClick={handleStatusChangeConfirm} autoFocus>
+          Yes
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  const handleSendSMS = () => { };
+
+  const handleView = (bus) => {
+    setSelectedBus(bus);
+    setIsModalOpen(true);
   };
 
   // PDF download function
   const handleDownloadPDF = async () => {
     try {
-      if (!selectedBus) {
-        console.error('No bus selected');
-        return;
-      }
-
-      // Wait for the next render cycle to ensure the element exists
-      await new Promise(resolve => setTimeout(resolve, 100));
+      if (!selectedBus) return;
 
       const element = document.querySelector('.modal-content');
-      if (!element) {
-        console.error('Could not find content element');
-        return;
+      if (!element) return;
+
+      // Add consistent padding
+      const elements = document.querySelectorAll(".setpadding01");
+      elements.forEach((element) => {
+        element.style.paddingBottom = "12px";
+      });
+
+      // Create PDF with A4 dimensions
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const margin = 10;
+      const pageWidth = 210 - (2 * margin);
+      const pageHeight = 287 - margin;
+
+      // Generate canvas
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+
+      // Calculate dimensions
+      const contentWidth = canvas.width;
+      const contentHeight = canvas.height;
+      const pdfWidth = pageWidth;
+      const pdfHeight = (contentHeight * pdfWidth) / contentWidth;
+
+      // Calculate total pages needed
+      const totalPages = Math.ceil(pdfHeight / pageHeight);
+
+      // Add content page by page
+      for (let page = 0; page < totalPages; page++) {
+        if (page > 0) {
+          pdf.addPage();
+        }
+
+        // Calculate source and destination coordinates
+        const sourceY = page * (contentHeight / totalPages);
+        const sourceHeight = contentHeight / totalPages;
+
+        // Create temporary canvas for this page section
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = contentWidth;
+        tempCanvas.height = sourceHeight;
+        const ctx = tempCanvas.getContext('2d');
+
+        // Draw portion of original canvas to temp canvas
+        ctx.drawImage(
+          canvas,
+          0,
+          sourceY,
+          contentWidth,
+          sourceHeight,
+          0,
+          0,
+          contentWidth,
+          sourceHeight
+        );
+
+        // Add temp canvas to PDF
+        const imgData = tempCanvas.toDataURL('image/png');
+        pdf.addImage(
+          imgData,
+          'PNG',
+          margin,
+          margin,
+          pdfWidth,
+          pageHeight,
+          '',
+          'FAST'
+        );
       }
 
-      // Create the canvas
-      const canvas = await html2canvas(element, {
-        scale: 2, // Better quality
-        useCORS: true,
-        logging: false,
-        windowHeight: element.scrollHeight,
-        windowWidth: element.scrollWidth
-      });
-
-      // Convert to PDF
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`bus-report-${selectedBus.scheduleNo}.pdf`);
+
+      // remove consistent padding
+      const elements2 = document.querySelectorAll(".setpadding01");
+      elements2.forEach((element) => {
+        element.style.paddingBottom = "0px";
+      });
+
     } catch (error) {
       console.error('Error generating PDF:', error);
+
+      // remove consistent padding
+      const elements2 = document.querySelectorAll(".setpadding01");
+      elements2.forEach((element) => {
+        element.style.paddingBottom = "0px";
+      });
     }
   };
 
@@ -430,7 +676,7 @@ const BusReport = () => {
       ].map(({ status, label }) => (
         <div key={status} className="flex items-center gap-2">
           <SeatIcon status={status} Setwidth="6" Setheight="6" />
-          <span>{label}</span>
+          <span className="setpadding01">{label}</span>
         </div>
       ))}
     </Box>
@@ -452,7 +698,7 @@ const BusReport = () => {
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1">
               <SeatIcon status={seatInfo.status} />
               {seatInfo?.seatNumber && (
-                <span style={{ left: "11px", fontWeight: "bold", color: "#FFFFFF" }} className="absolute text-xs font-medium cursor-pointer">
+                <span style={{ left: "11px", fontWeight: "bold", color: "#FFFFFF" }} className="setpadding01 absolute text-xs font-medium cursor-pointer">
                   {seatInfo.seatNumber}
                 </span>
               )}
@@ -475,6 +721,7 @@ const BusReport = () => {
           // gap: '10px',
           marginTop: '10px',
           maxWidth: '800px',
+          maxHeight: '400px',
         }}
       >
         {grid}
@@ -594,6 +841,7 @@ const BusReport = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Schedule No</TableCell>
+                  <TableCell>Start date</TableCell>
                   <TableCell>Start Time</TableCell>
                   <TableCell>Start Point</TableCell>
                   <TableCell>End Point</TableCell>
@@ -610,6 +858,7 @@ const BusReport = () => {
                 {filteredSchedules.map((schedule) => (
                   <TableRow key={schedule.id}>
                     <TableCell>{schedule.scheduleNo}</TableCell>
+                    <TableCell>{schedule.startDate}</TableCell>
                     <TableCell>{schedule.startTime}</TableCell>
                     <TableCell>{schedule.startPoint}</TableCell>
                     <TableCell>{schedule.endPoint}</TableCell>
@@ -622,7 +871,11 @@ const BusReport = () => {
                       <Select
                         size="small"
                         value={schedule.tripStatus}
-                        onChange={(e) => handleStatusChange(schedule.id, e.target.value)}
+                        onChange={(e) => handleStatusChangeClick(
+                          schedule.id,
+                          e.target.value,
+                          schedule.tripStatus
+                        )}
                       >
                         {tripStatuses.map((status) => (
                           <MenuItem key={status} value={status}>
@@ -635,9 +888,11 @@ const BusReport = () => {
                       <IconButton onClick={() => handleView(schedule)}>
                         <VisibilityIcon />
                       </IconButton>
-                      <Button size="small" variant="contained" sx={{ ml: 1 }}>
-                        Transfer
-                      </Button>
+                      {schedule?.bookings.length > 0 && (
+                        <Button size="small" variant="contained" sx={{ ml: 1 }} onClick={() => handleTransfer(schedule)}>
+                          Transfer
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -665,107 +920,6 @@ const BusReport = () => {
               borderRadius: "10px",
               border: "2px solid gray",
             }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>Bus Details ({selectedBus?.scheduleNo})</Typography>
-
-              <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-                <SeatLegend />
-              </Box>
-              <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
-                {selectedBus && renderSeatLayout(selectedBus)}
-              </Box>
-
-              <Box sx={{ mt: 2, display: "flex", gap: 2, justifyContent: "center" }}>
-                <Button
-                  variant="contained"
-                  color={selectedBus?.status === "opened" ? "secondary" : "primary"}
-                  onClick={handleBookingToggle(selectedBus?.status)}
-                >
-                  {selectedBus?.status === "opened" ? 'Close Booking' : 'Open Booking'}
-                </Button>
-                <Button variant="contained" onClick={handleSendSMS()}>
-                  Send SMS to Conductor
-                </Button>
-              </Box>
-
-              <Grid container spacing={2} sx={{ mb: 5, mt: 3, paddingLeft: '20px', paddingRight: '20px' }}>
-                <Grid item xs={6} md={6} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  <Typography variant="subtitle2">Manual close at :</Typography>
-                  <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.manualClosedAt}</Typography>
-                </Grid>
-                <Grid item xs={6} md={6} sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
-                  <Typography variant="subtitle2">Closed By :</Typography>
-                  <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.closedBy}</Typography>
-                </Grid>
-                <Grid item xs={6} md={6} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  <Typography variant="subtitle2">Conductor No :</Typography>
-                  <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.conductorNo}</Typography>
-                </Grid>
-                <Grid item xs={6} md={6} sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
-                  <Typography variant="subtitle2">Bus No :</Typography>
-                  <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.busNo}</Typography>
-                </Grid>
-              </Grid>
-
-              <div className="modal-content" style={{ padding: '20px' }}>
-
-                <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>Booking Details</Typography>
-
-                <Grid container spacing={2} sx={{ mb: 3, mt: 1 }}>
-                  <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <Typography variant="subtitle2">Depot Name :</Typography>
-                    <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.depot}</Typography>
-                  </Grid>
-                  <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <Typography variant="subtitle2">Bus No :</Typography>
-                    <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.busNo}</Typography>
-                  </Grid>
-                  <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <Typography variant="subtitle2">Date :</Typography>
-                    <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.startDate}</Typography>
-                  </Grid>
-                  <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <Typography variant="subtitle2">From :</Typography>
-                    <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.startPoint}</Typography>
-                  </Grid>
-                  <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <Typography variant="subtitle2">To :</Typography>
-                    <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.endPoint}</Typography>
-                  </Grid>
-                </Grid>
-
-                <TableContainer component={Paper}>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Ref No</TableCell>
-                        <TableCell>Seat no</TableCell>
-                        <TableCell>V-Code</TableCell>
-                        <TableCell>Mode of Pay</TableCell>
-                        <TableCell>Route</TableCell>
-                        <TableCell>NIC</TableCell>
-                        <TableCell>Booked By</TableCell>
-                        <TableCell>Booked Date</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {selectedBus?.bookings.map((booking, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{booking.refNo}</TableCell>
-                          <TableCell>{booking.seatNo}</TableCell>
-                          <TableCell>{booking.vCode}</TableCell>
-                          <TableCell>{booking.modeOfPay}</TableCell>
-                          <TableCell>{booking.route}</TableCell>
-                          <TableCell>{booking.nic}</TableCell>
-                          <TableCell>{booking.bookedBy}</TableCell>
-                          <TableCell>{booking.bookedDate}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-
-              </div>
-
               <Box sx={{ mt: 2, mr: 2, display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
                   variant="contained"
@@ -776,40 +930,150 @@ const BusReport = () => {
                   Download PDF
                 </Button>
               </Box>
+              <div className="modal-content" style={{ padding: '20px' }}>
 
-              <Box sx={{ mt: 2, mr: 2, ml: 2, mb: 4 }}>
-                <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>Summary Report</Typography>
+                <div sx={{ mt: 2, mr: 2, ml: 2, mb: 4 }}>
+                  <Typography variant="h6" sx={{ mb: 2 }}>Bus Details ({selectedBus?.scheduleNo})</Typography>
 
-                <TableContainer component={Paper}>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Booked By</TableCell>
-                        <TableCell>Mode of Pay</TableCell>
-                        <TableCell>Route</TableCell>
-                        <TableCell>Bus Fare</TableCell>
-                        <TableCell>No of Seats</TableCell>
-                        <TableCell align="right">Total Bus Fare</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {selectedBus?.summary.map((summary, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{summary.bookedBy}</TableCell>
-                          <TableCell>{summary.modeOfPay}</TableCell>
-                          <TableCell>{summary.route}</TableCell>
-                          <TableCell>{summary.busFare}</TableCell>
-                          <TableCell>{summary.noOfSeate}</TableCell>
-                          <TableCell align="right">{summary.totalBusFare}</TableCell>
+                  <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+                    <SeatLegend />
+                  </Box>
+
+                  <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
+                    {selectedBus && renderSeatLayout(selectedBus)}
+                  </Box>
+                </div>
+
+                <Box sx={{ mt: 2, display: "flex", gap: 2, justifyContent: "center" }}>
+                  <Button variant="contained" onClick={handleSendSMS()}>
+                    <span className="setpadding01">Send SMS to Conductor</span>
+                  </Button>
+
+                  <Button
+                    variant="contained"
+                    color={selectedBus?.status === "opened" ? "secondary" : "primary"}
+                    onClick={handleBookingToggle(selectedBus?.status)}
+                  >
+                    <span className="setpadding01">{selectedBus?.status === "opened" ? 'Close Booking' : 'Open Booking'}</span>
+                  </Button>
+                </Box>
+
+                <div sx={{ mt: 2, mr: 2, ml: 2, mb: 4 }}>
+                  <Box sx={{ pb: 4, mt: 3 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6} md={6} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <Typography variant="subtitle2">Manual close at :</Typography>
+                        <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.manualClosedAt}</Typography>
+                      </Grid>
+                      <Grid item xs={6} md={6} sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
+                        <Typography variant="subtitle2">Closed By :</Typography>
+                        <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.closedBy}</Typography>
+                      </Grid>
+                      <Grid item xs={6} md={6} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <Typography variant="subtitle2">Conductor No :</Typography>
+                        <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.conductorNo}</Typography>
+                      </Grid>
+                      <Grid item xs={6} md={6} sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
+                        <Typography variant="subtitle2">Bus No :</Typography>
+                        <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.busNo}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </div>
+
+                <div sx={{ mt: 2, mr: 2, ml: 2, mb: 4 }}>
+                  <Typography variant="h6" sx={{ mt: 3 }}>Booking Details</Typography>
+
+                  <Grid container spacing={2} sx={{ mb: 3, mt: 1 }}>
+                    <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                      <Typography variant="subtitle2">Depot Name :</Typography>
+                      <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.depot}</Typography>
+                    </Grid>
+                    <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                      <Typography variant="subtitle2">Bus No :</Typography>
+                      <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.busNo}</Typography>
+                    </Grid>
+                    <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                      <Typography variant="subtitle2">Date :</Typography>
+                      <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.startDate}</Typography>
+                    </Grid>
+                    <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                      <Typography variant="subtitle2">From :</Typography>
+                      <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.startPoint}</Typography>
+                    </Grid>
+                    <Grid item xs={6} md={4} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                      <Typography variant="subtitle2">To :</Typography>
+                      <Typography sx={{ ml: 1 }} variant="body2">{selectedBus?.endPoint}</Typography>
+                    </Grid>
+                  </Grid>
+
+                  <TableContainer component={Paper}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Ref No</TableCell>
+                          <TableCell>Seat no</TableCell>
+                          <TableCell>V-Code</TableCell>
+                          <TableCell>Mode of Pay</TableCell>
+                          <TableCell>Route</TableCell>
+                          <TableCell>NIC</TableCell>
+                          <TableCell>Booked By</TableCell>
+                          <TableCell>Booked Date</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                      </TableHead>
+                      <TableBody>
+                        {selectedBus?.bookings.map((booking, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{booking.refNo}</TableCell>
+                            <TableCell>{booking.seatNo}</TableCell>
+                            <TableCell>{booking.vCode}</TableCell>
+                            <TableCell>{booking.modeOfPay}</TableCell>
+                            <TableCell>{booking.route}</TableCell>
+                            <TableCell>{booking.nic}</TableCell>
+                            <TableCell>{booking.bookedBy}</TableCell>
+                            <TableCell>{booking.bookedDate}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
 
-              </Box>
+                <div sx={{ mt: 2, mr: 2, ml: 2, mb: 4 }}>
+                  <Typography variant="h6" sx={{ mb: 2, paddingTop: '40px' }}>Summary Report</Typography>
 
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <TableContainer component={Paper}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Booked By</TableCell>
+                          <TableCell>Mode of Pay</TableCell>
+                          <TableCell>Route</TableCell>
+                          <TableCell>Bus Fare</TableCell>
+                          <TableCell>No of Seats</TableCell>
+                          <TableCell align="right">Total Bus Fare</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {selectedBus?.summary.map((summary, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{summary.bookedBy}</TableCell>
+                            <TableCell>{summary.modeOfPay}</TableCell>
+                            <TableCell>{summary.route}</TableCell>
+                            <TableCell>{summary.busFare}</TableCell>
+                            <TableCell>{summary.noOfSeate}</TableCell>
+                            <TableCell align="right">{summary.totalBusFare}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
+
+              </div>
+
+
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mr: 2 }}>
                 <Button
                   variant="contained"
                   color="secondary"
@@ -821,6 +1085,72 @@ const BusReport = () => {
               </Box>
             </Box>
           </Modal>
+
+          <Modal
+            open={isBookingStatusModalOpen}
+            onClose={() => setIsBookingStatusModalOpen(false)}
+          >
+            <Box sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "400px",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+              borderRadius: "10px",
+              border: "2px solid gray",
+            }}>
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                {bookingAction === "close" ? "Close Booking" : "Open Booking"}
+              </Typography>
+
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Conductor Mobile"
+                    value={conductorMobile}
+                    onChange={(e) => setConductorMobile(e.target.value)}
+                    placeholder="Enter conductor mobile number"
+                  // size="small"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Bus Number"
+                    value={busNumber}
+                    onChange={(e) => setBusNumber(e.target.value)}
+                    placeholder="Enter bus number"
+                  // size="small"
+                  />
+                </Grid>
+              </Grid>
+
+              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => setIsBookingStatusModalOpen(false)}
+                  sx={{ backgroundColor: 'gray' }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleBookingConfirm}
+                >
+                  Confirm
+                </Button>
+              </Box>
+            </Box>
+          </Modal>
+
+          <TransferModal />
+          <StatusChangeConfirmation />
 
         </Box>
       </Container>
