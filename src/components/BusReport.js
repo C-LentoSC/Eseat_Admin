@@ -903,6 +903,7 @@ const BusReport = () => {
                           e.target.value,
                           schedule.tripStatus
                         )}
+                           sx={{ height : 30 }}
                       >
                         {tripStatuses.map((status) => (
                           <MenuItem key={status} value={status}>
@@ -916,7 +917,7 @@ const BusReport = () => {
                         <VisibilityIcon />
                       </IconButton>
                       {schedule?.bookings.length > 0 && (
-                        <Button size="small" variant="contained" sx={{ ml: 1 }} onClick={() => handleTransfer(schedule)}>
+                        <Button size="small" variant="contained" sx={{ ml: 1, height: 25 }} onClick={() => handleTransfer(schedule)}>
                           Transfer
                         </Button>
                       )}
@@ -1059,7 +1060,6 @@ const BusReport = () => {
                       </TableHead>
                       <TableBody>
                         {selectedBus?.bookings
-                        .slice(startIndex, startIndex + rowsPerPage)
                       .map((booking, index) => (
                           <TableRow key={index}>
                             <TableCell sx={{ py: 0 }}>{booking.refNo}</TableCell>
@@ -1074,15 +1074,7 @@ const BusReport = () => {
                         ))}
                       </TableBody>
                     </Table>
-                           <TablePagination
-                        component="div"
-                        count={selectedBus?.bookings.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                    />
+                          
                   </TableContainer>
                 </div>
 
@@ -1103,7 +1095,6 @@ const BusReport = () => {
                       </TableHead>
                       <TableBody>
                         {selectedBus?.summary
-                          .slice(startIndex, startIndex + rowsPerPage)
                         .map((summary, index) => (
                           <TableRow key={index}>
                             <TableCell sx={{ py: 0 }}>{summary.bookedBy}</TableCell>
@@ -1116,15 +1107,7 @@ const BusReport = () => {
                         ))}
                       </TableBody>
                     </Table>
-                          <TablePagination
-                        component="div"
-                        count={selectedBus?.summary.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                    />
+                        
                   </TableContainer>
                 </div>
 
