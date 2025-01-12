@@ -23,6 +23,7 @@ import {
     TableRow,
     TextField,
     Typography,
+    TablePagination
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -969,6 +970,19 @@ const BusManagement = () => {
         </div>
     </Box>);
 
+  //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
     return (<Container component="main" maxWidth="lg">
 
         {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
@@ -1070,24 +1084,26 @@ const BusManagement = () => {
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
-                        <TableRow>
-                            <TableCell>Schedule Number</TableCell>
-                            <TableCell>Bus Type</TableCell>
-                            <TableCell>Route</TableCell>
-                            <TableCell>Route No</TableCell>
-                            <TableCell align="center">Seats</TableCell>
-                            <TableCell align="center">Status</TableCell>
-                            <TableCell align="right">Actions</TableCell>
+                        <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                            <TableCell sx={{ py: 1 }}>Schedule Number</TableCell>
+                            <TableCell sx={{ py: 1 }}>Bus Type</TableCell>
+                            <TableCell sx={{ py: 1 }}>Route</TableCell>
+                            <TableCell sx={{ py: 1 }}>Route No</TableCell>
+                            <TableCell sx={{ py: 1 }} align="center">Seats</TableCell>
+                            <TableCell sx={{ py: 1 }} align="center">Status</TableCell>
+                            <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredBuses.map((bus) => (<TableRow key={bus.id}>
-                            <TableCell>{bus.scheduleNumber}</TableCell>
-                            <TableCell>{bus.busType}</TableCell>
-                            <TableCell>{bus.route}</TableCell>
-                            <TableCell>{bus.routeNo}</TableCell>
-                            <TableCell align="center">{bus.seats}</TableCell>
-                            <TableCell align="center">
+                        {filteredBuses
+                         .slice(startIndex, startIndex + rowsPerPage)
+                        .map((bus) => (<TableRow key={bus.id}>
+                            <TableCell sx={{ py: 0 }}>{bus.scheduleNumber}</TableCell>
+                            <TableCell sx={{ py: 0 }}>{bus.busType}</TableCell>
+                            <TableCell sx={{ py: 0 }}>{bus.route}</TableCell>
+                            <TableCell sx={{ py: 0 }}>{bus.routeNo}</TableCell>
+                            <TableCell sx={{ py: 0 }} align="center">{bus.seats}</TableCell>
+                            <TableCell sx={{ py: 0 }} align="center">
                                 <Switch
                                     checked={bus.status}
                                     onChange={() => {
@@ -1098,7 +1114,7 @@ const BusManagement = () => {
                                     }}
                                 />
                             </TableCell>
-                            <TableCell align="right">
+                            <TableCell sx={{ py: 0 }} align="right">
                                 <IconButton onClick={(e) => handleMenuOpen(e, bus)}>
                                     <MoreVertIcon/>
                                 </IconButton>
@@ -1106,6 +1122,15 @@ const BusManagement = () => {
                         </TableRow>))}
                     </TableBody>
                 </Table>
+                                         <TablePagination
+                        component="div"
+                        count={filteredBuses.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
             </TableContainer>
 
             <Menu
