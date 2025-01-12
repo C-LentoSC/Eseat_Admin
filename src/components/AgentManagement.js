@@ -3,7 +3,7 @@ import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Button,
     IconButton, Modal, TextField, Grid, Switch, FormControlLabel,
-    Autocomplete, InputAdornment, Divider, Stack
+    Autocomplete, InputAdornment, Divider, Stack, TablePagination
 } from '@mui/material';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -162,6 +162,19 @@ const AgentManagement = () => {
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
 
+        //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+    
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
@@ -241,21 +254,23 @@ const AgentManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Agent Name</TableCell>
-                                <TableCell>Mobile Number</TableCell>
-                                <TableCell>Username</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{ py: 1 }}>Agent Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>Mobile Number</TableCell>
+                                <TableCell sx={{ py: 1 }}>Username</TableCell>
+                                <TableCell sx={{ py: 1 }}>Status</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredAgents.map((agent) => (
+                            {filteredAgents
+                               .slice(startIndex, startIndex + rowsPerPage)
+                            .map((agent) => (
                                 <TableRow key={agent.id}>
-                                    <TableCell>{agent.name}</TableCell>
-                                    <TableCell>{agent.mobile}</TableCell>
-                                    <TableCell>{agent.username}</TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ py: 0 }}>{agent.name}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{agent.mobile}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{agent.username}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -272,7 +287,7 @@ const AgentManagement = () => {
                                             label={agent.status ? "Active" : "Inactive"}
                                         />
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell sx={{ py: 0 }} align="right">
                                         <IconButton
                                             sx={{color: 'green'}}
                                             onClick={() => handleBusAssignment(agent)}
@@ -297,6 +312,15 @@ const AgentManagement = () => {
                             ))}
                         </TableBody>
                     </Table>
+                                 <TablePagination
+                        component="div"
+                        count={filteredAgents.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
 
