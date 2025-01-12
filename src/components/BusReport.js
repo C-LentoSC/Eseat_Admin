@@ -1048,28 +1048,28 @@ const BusReport = () => {
                     <Table size="small">
                       <TableHead>
                         <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
-                          <TableCell sx={{ py: 1 }}>Ref No</TableCell>
-                          <TableCell sx={{ py: 1 }}>Seat no</TableCell>
-                          <TableCell sx={{ py: 1 }}>V-Code</TableCell>
-                          <TableCell sx={{ py: 1 }}>Mode of Pay</TableCell>
-                          <TableCell sx={{ py: 1 }}>Route</TableCell>
-                          <TableCell sx={{ py: 1 }}>NIC</TableCell>
-                          <TableCell sx={{ py: 1 }}>Booked By</TableCell>
-                          <TableCell sx={{ py: 1 }}>Booked Date</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Ref No</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Seat no</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">V-Code</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Mode of Pay</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Route</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">NIC</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked By</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked Date</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {selectedBus?.bookings
                       .map((booking, index) => (
                           <TableRow key={index}>
-                            <TableCell sx={{ py: 0 }}>{booking.refNo}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{booking.seatNo}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{booking.vCode}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{booking.modeOfPay}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{booking.route}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{booking.nic}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{booking.bookedBy}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{booking.bookedDate}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.refNo}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.seatNo}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.vCode}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.modeOfPay}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.route}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.nic}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedBy}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedDate}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -1085,24 +1085,24 @@ const BusReport = () => {
                     <Table size="small">
                       <TableHead>
                         <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
-                          <TableCell sx={{ py: 1 }}>Booked By</TableCell>
-                          <TableCell sx={{ py: 1 }}>Mode of Pay</TableCell>
-                          <TableCell sx={{ py: 1 }}>Route</TableCell>
-                          <TableCell sx={{ py: 1 }}>Bus Fare</TableCell>
-                          <TableCell sx={{ py: 1 }}>No of Seats</TableCell>
-                          <TableCell sx={{ py: 1 }} align="right">Total Bus Fare</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked By</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Mode of Pay</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Route</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Bus Fare</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">No of Seats</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01" align="right">Total Bus Fare</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {selectedBus?.summary
                         .map((summary, index) => (
                           <TableRow key={index}>
-                            <TableCell sx={{ py: 0 }}>{summary.bookedBy}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{summary.modeOfPay}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{summary.route}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{summary.busFare}</TableCell>
-                            <TableCell sx={{ py: 0 }}>{summary.noOfSeate}</TableCell>
-                            <TableCell sx={{ py: 0 }} align="right">{summary.totalBusFare}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.bookedBy}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.modeOfPay}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.route}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.busFare}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.noOfSeate}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01" align="right">{summary.totalBusFare}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
