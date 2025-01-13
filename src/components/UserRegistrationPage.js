@@ -33,6 +33,9 @@ import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
 
 const UserRegistrationPage = () => {
+
+    const [addmodel, setAddmodel] = useState(false);
+
     const [users, setUsers] = useState([]);
     const [open, setOpen] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
@@ -84,6 +87,7 @@ const UserRegistrationPage = () => {
     const handleClose = () => {
         setCurrentUser(null);
         setOpen(false);
+        setAddmodel(false);
     };
 
     const handleSave = () => {
@@ -139,142 +143,194 @@ const UserRegistrationPage = () => {
             </Typography>
 
             {/* Registration Form Section */}
-            <Box component="form" sx={{ width: '100%' }}>
-                {/* First Row (3 fields) */}
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            fullWidth
-                            value={name}
-                            onChange={evt => setName(evt.target.value)}
-                            label="Full Name"
-                            variant="outlined"
-                            required
-                            InputProps={{
-                                startAdornment: (<InputAdornment position="start">
-                                    <PersonIcon />
-                                </InputAdornment>),
-                            }}
-                        />
+            <Modal open={addmodel} onClose={() => setAddmodel(false)}>
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: "90%",
+                        bgcolor: 'background.paper',
+                        border: '2px solid gray',
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: '10px',
+                    }}
+                >
+
+                    <Typography variant="h6" gutterBottom>
+                        Add User
+                    </Typography>
+
+                    {/* First Row (3 fields) */}
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                value={name}
+                                onChange={evt => setName(evt.target.value)}
+                                label="Full Name"
+                                variant="outlined"
+                                required
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position="start">
+                                        <PersonIcon />
+                                    </InputAdornment>),
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                value={email}
+                                onChange={evt => setEmail(evt.target.value)}
+                                label="Email"
+                                variant="outlined"
+                                required
+                                type="email"
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position="start">
+                                        <EmailIcon />
+                                    </InputAdornment>),
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                value={mobile}
+                                onChange={evt => setMobile(evt.target.value)}
+                                label="Mobile Number"
+                                variant="outlined"
+                                required
+                                type="tel"
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position="start">
+                                        <PhoneIcon />
+                                    </InputAdornment>),
+                                }}
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            fullWidth
-                            value={email}
-                            onChange={evt => setEmail(evt.target.value)}
-                            label="Email"
-                            variant="outlined"
-                            required
-                            type="email"
-                            InputProps={{
-                                startAdornment: (<InputAdornment position="start">
-                                    <EmailIcon />
-                                </InputAdornment>),
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            fullWidth
-                            value={mobile}
-                            onChange={evt => setMobile(evt.target.value)}
-                            label="Mobile Number"
-                            variant="outlined"
-                            required
-                            type="tel"
-                            InputProps={{
-                                startAdornment: (<InputAdornment position="start">
-                                    <PhoneIcon />
-                                </InputAdornment>),
-                            }}
-                        />
-                    </Grid>
-                </Grid>
-                <Grid container spacing={3} sx={{ marginTop: '20px' }}>
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            fullWidth
-                            value={username}
-                            onChange={evt => setUsername(evt.target.value)}
-                            label="Username"
-                            variant="outlined"
-                            required
-                            InputProps={{
-                                startAdornment: (<InputAdornment position="start">
-                                    <AccountCircleIcon />
-                                </InputAdornment>),
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            fullWidth
-                            value={password}
-                            onChange={evt => setPassword(evt.target.value)}
-                            label="Password"
-                            variant="outlined"
-                            required
-                            type="password"
-                            InputProps={{
-                                startAdornment: (<InputAdornment position="start">
-                                    <LockIcon />
-                                </InputAdornment>),
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <FormControl fullWidth variant="outlined" required>
-                            <InputLabel shrink id="role-label">
-                                Role
-                            </InputLabel>
-                            <Select
-                                value={role_id}
-                                onChange={evt => setRole_id(evt.target.value)}
-                                labelId="role-label"
-                                defaultValue=""
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Role' }}
-                                label="Role"
-                            >
+                    <Grid container spacing={3} sx={{ marginTop: '20px' }}>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                value={username}
+                                onChange={evt => setUsername(evt.target.value)}
+                                label="Username"
+                                variant="outlined"
+                                required
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position="start">
+                                        <AccountCircleIcon />
+                                    </InputAdornment>),
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                value={password}
+                                onChange={evt => setPassword(evt.target.value)}
+                                label="Password"
+                                variant="outlined"
+                                required
+                                type="password"
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position="start">
+                                        <LockIcon />
+                                    </InputAdornment>),
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <FormControl fullWidth variant="outlined" required>
+                                <InputLabel shrink id="role-label">
+                                    Role
+                                </InputLabel>
+                                <Select
+                                    value={role_id}
+                                    onChange={evt => setRole_id(evt.target.value)}
+                                    labelId="role-label"
+                                    defaultValue=""
+                                    displayEmpty
+                                    inputProps={{ 'aria-label': 'Role' }}
+                                    label="Role"
+                                >
 
 
-                                <MenuItem value="" disabled>
-                                    Select User Role
-                                </MenuItem>
-                                {roles.map(r => {
-                                    return <MenuItem value={r.id}>{r.name}</MenuItem>
-                                })}
-                            </Select>
-                        </FormControl>
+                                    <MenuItem value="" disabled>
+                                        Select User Role
+                                    </MenuItem>
+                                    {roles.map(r => {
+                                        return <MenuItem value={r.id}>{r.name}</MenuItem>
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </Grid>
                     </Grid>
-                </Grid>
 
-                {/* Submit Button Section */}
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '30px' }}>
-                    <Button
-                        onClick={saveNewUser}
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                            padding: '12px 24px',
-                            fontWeight: 'bold',
-                            borderRadius: '4px',
-                            backgroundColor: '#3f51b5',
-                            color: '#fff',
-                            '&:hover': {
-                                backgroundColor: '#303f9f',
-                            },
-                        }}
-                    >
-                        Register
-                    </Button>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={saveNewUser}
+                            sx={{ marginRight: '8px' }}
+                        >
+                            Save
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={handleClose}
+                            sx={{ backgroundColor: 'gray' }}
+                        >
+                            Cancel
+                        </Button>
+                    </Box>
                 </Box>
-            </Box>
+            </Modal>
 
             {/* User Table Section */}
-            <Typography variant="h6" sx={{ marginTop: '40px', marginBottom: '20px' }}>
+            {/* <Typography variant="h6" sx={{ marginTop: '40px', marginBottom: '20px' }}>
                 Registered Users
-            </Typography>
+            </Typography> */}
+
+            <Box sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+                mt: 3,
+                flexWrap: "wrap",
+                gap: 2
+            }}>
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+
+                </Box>
+                <Button
+                    variant="contained"
+                    onClick={() => setAddmodel(true)}
+                    sx={{
+                        padding: "6px 24px",
+                        fontWeight: "bold",
+                        borderRadius: "4px",
+                        height: "40px",
+                        backgroundColor: "#3f51b5",
+                        color: "#fff",
+                        "&:hover": {
+                            backgroundColor: "#303f9f",
+                        },
+                    }}
+                >
+                    Add New User
+                </Button>
+            </Box>
+
+
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
