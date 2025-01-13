@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -30,6 +30,7 @@ import CustomAlert from "./Parts/CustomAlert";
 
 const RouteManagement = () => {
     const [routes, setRoutes] = useState([]);
+    const [addmodel, setAddmodel] = useState(false);
 
     const [startPoint, setStartPoint] = useState("");
     const [endPoint, setEndPoint] = useState("");
@@ -56,12 +57,12 @@ const RouteManagement = () => {
             .catch(handleError)
 
     }
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Add new route
     const handleAddRoute = () => {
-        if (startPoint && endPoint && routeNo &&  busFare) {
+        if (startPoint && endPoint && routeNo && busFare) {
             const newRoute = {
                 id: Date.now(),
                 starting_point: startPoint,
@@ -74,6 +75,7 @@ const RouteManagement = () => {
             api.post("admin/routes/add", newRoute)
                 .then(() => {
                     sendAlert("new route added")
+                    setAddmodel(false)
 
                 })
                 .catch(handleError)
@@ -96,6 +98,7 @@ const RouteManagement = () => {
     const handleClose = () => {
         setCurrentRoute(null);
         setOpen(false);
+        setAddmodel(false);
     };
 
     // Save Edited Route
@@ -112,13 +115,13 @@ const RouteManagement = () => {
 
     // Handle Input Changes
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        setCurrentRoute({...currentRoute, [name]: value});
+        const { name, value } = e.target;
+        setCurrentRoute({ ...currentRoute, [name]: value });
     };
 
     // Delete Route
     const handleDelete = (id) => {
-        api.post('admin/routes/delete', {id})
+        api.post('admin/routes/delete', { id })
             .then(res => {
                 loadAllRoutes()
                 sendAlert("deleted")
@@ -128,7 +131,7 @@ const RouteManagement = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        api.post("admin/routes/toggle-status", {id})
+        api.post("admin/routes/toggle-status", { id })
             .then(res => {
                 loadAllRoutes()
             })
@@ -152,7 +155,7 @@ const RouteManagement = () => {
             .concat(csvData)
             .join("\n");
 
-        const blob = new Blob([csvContent], {type: "text/csv;charset=utf-8;"});
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "routes.csv";
@@ -169,9 +172,9 @@ const RouteManagement = () => {
             const csvRows = event.target.result.split("\n").slice(1);
             const newRoutes = csvRows
                 .map((row) => {
-                    const [routeNo, startPoint, endPoint, description, busFare, status,id] =
+                    const [routeNo, startPoint, endPoint, description, busFare, status, id] =
                         row.split(",");
-                    if (routeNo && startPoint && endPoint &&  busFare&&id) {
+                    if (routeNo && startPoint && endPoint && busFare && id) {
                         return {
                             id,
                             routeNo,
@@ -187,8 +190,8 @@ const RouteManagement = () => {
                 .filter((route) => route !== null);
             // setRoutes((prev) => [...prev, ...newRoutes]);
             // console.log(newRoutes)
-            api.post('admin/routes/import',{data:newRoutes})
-                .then(res=>{
+            api.post('admin/routes/import', { data: newRoutes })
+                .then(res => {
                     loadAllRoutes()
                     sendAlert('success')
                 })
@@ -197,157 +200,172 @@ const RouteManagement = () => {
         reader.readAsText(file);
     };
 
-        //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
 
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
-            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+                setOpen={setAlert} /> : <></>}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
-                <Typography variant="h5" sx={{fontWeight: 600, marginBottom: "20px"}}>
-                    Route Management
-                </Typography>
 
-                {/* Form Section */}
-                <Box component="form" sx={{width: "100%"}}>
-                    <Grid container spacing={3}>
+                <Modal open={addmodel} onClose={handleClose}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: "90%",
+                            maxWidth: 600,
+                            bgcolor: 'background.paper',
+                            border: '2px solid gray',
+                            boxShadow: 24,
+                            p: 4,
+                            borderRadius: '10px',
+                        }}
+                    >
 
-                        <Grid item xs={12} sm={6}>
-
-                            <Autocomplete
-                                value={startPoint}
-                                onChange={(event, newValue) => setStartPoint(newValue)}
-                                options={allPoints}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Start Point"
-                                        variant="outlined"
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    {/* <AccountCircleIcon /> */}
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                )}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <Autocomplete
-                                value={endPoint}
-                                onChange={(event, newValue) => setEndPoint(newValue)}
-                                options={allPoints}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="End Point"
-                                        variant="outlined"
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    {/* <AccountCircleIcon /> */}
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                )}
-                            />
-                        </Grid>
-
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Route No"
-                                variant="outlined"
-                                required
-                                value={routeNo}
-                                onChange={(e) => setRouteNo(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            {/* <AccountCircleIcon /> */}
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Bus Fare"
-                                variant="outlined"
-                                required
-                                type="number"
-                                value={busFare}
-                                onChange={(e) => setBusFare(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">LKR</InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                fullWidth
-                                label="Description"
-                                variant="outlined"
-                                required
-                                multiline
-                                rows={4}
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            {/* <AccountCircleIcon /> */}
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                    </Grid>
-
-
-                    <Box sx={{display: "flex", justifyContent: "flex-end", marginTop: "30px"}}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleAddRoute}
-                            sx={{
-                                padding: "12px 24px",
-                                fontWeight: "bold",
-                                borderRadius: "4px",
-                                backgroundColor: "#3f51b5",
-                                color: "#fff",
-                                "&:hover": {
-                                    backgroundColor: "#303f9f",
-                                },
-                            }}
-                        >
+                        <Typography variant="h6" gutterBottom>
                             Add Route
-                        </Button>
+                        </Typography>
+
+                        <Grid container spacing={3}>
+
+                            <Grid item xs={12} sm={6}>
+
+                                <Autocomplete
+                                    value={startPoint}
+                                    onChange={(event, newValue) => setStartPoint(newValue)}
+                                    options={allPoints}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Start Point"
+                                            variant="outlined"
+                                            InputProps={{
+                                                ...params.InputProps,
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        {/* <AccountCircleIcon /> */}
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <Autocomplete
+                                    value={endPoint}
+                                    onChange={(event, newValue) => setEndPoint(newValue)}
+                                    options={allPoints}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="End Point"
+                                            variant="outlined"
+                                            InputProps={{
+                                                ...params.InputProps,
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        {/* <AccountCircleIcon /> */}
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Route No"
+                                    variant="outlined"
+                                    required
+                                    value={routeNo}
+                                    onChange={(e) => setRouteNo(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                {/* <AccountCircleIcon /> */}
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Bus Fare"
+                                    variant="outlined"
+                                    required
+                                    type="number"
+                                    value={busFare}
+                                    onChange={(e) => setBusFare(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">LKR</InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Description"
+                                    variant="outlined"
+                                    required
+                                    multiline
+                                    rows={4}
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                {/* <AccountCircleIcon /> */}
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleAddRoute}
+                                sx={{ marginRight: '8px' }}
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleClose}
+                                sx={{ backgroundColor: 'gray' }}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
                     </Box>
-                </Box>
+                </Modal>
 
 
                 <Box
@@ -361,8 +379,12 @@ const RouteManagement = () => {
                         alignItems: "center",
                     }}
                 >
-                    <Typography variant="h6" sx={{}}>
+                    {/* <Typography variant="h6" sx={{}}>
                         All Routes
+                    </Typography> */}
+
+                    <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                        Route Management
                     </Typography>
 
                     <Box sx={{
@@ -373,7 +395,7 @@ const RouteManagement = () => {
                         <Button
                             variant="contained"
                             color="primary"
-                            startIcon={<DownloadIcon/>}
+                            startIcon={<DownloadIcon />}
                             onClick={handleExport}
                             sx={{
                                 backgroundColor: "#3f51b5",
@@ -388,7 +410,7 @@ const RouteManagement = () => {
                         <Button
                             variant="contained"
                             component="label"
-                            startIcon={<UploadIcon/>}
+                            startIcon={<UploadIcon />}
                             sx={{
                                 backgroundColor: "#4caf50",
                                 color: "#fff",
@@ -398,7 +420,21 @@ const RouteManagement = () => {
                             }}
                         >
                             Import
-                            <input type="file" accept=".csv" hidden onChange={handleImport}/>
+                            <input type="file" accept=".csv" hidden onChange={handleImport} />
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setAddmodel(true)}
+                            sx={{
+                                backgroundColor: "#3f51b5",
+                                color: "#fff",
+                                "&:hover": {
+                                    backgroundColor: "#303f9f",
+                                },
+                            }}
+                        >
+                            Add Route
                         </Button>
                     </Box>
                 </Box>
@@ -419,53 +455,53 @@ const RouteManagement = () => {
                         </TableHead>
                         <TableBody>
                             {routes
-                             .slice(startIndex, startIndex + rowsPerPage)
-                             .map((route) => (
-                                <TableRow key={route.id}>
-                                    <TableCell sx={{ py: 0 }}>{route.routeNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{route.startPoint}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{route.endPoint}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{route.description}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>LKR {route.busFare}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={route.active}
-                                                    onChange={() => handleActiveChange(route.id)}
-                                                />
-                                            }
-                                            label={route.active ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{ py: 0 }} align="right">
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleOpen(route)}
-                                            sx={{marginRight: "8px"}}
-                                        >
-                                            <EditIcon/>
-                                        </IconButton>
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDelete(route.id)}
-                                        >
-                                            <DeleteIcon/>
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((route) => (
+                                    <TableRow key={route.id}>
+                                        <TableCell sx={{ py: 0 }}>{route.routeNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{route.startPoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{route.endPoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{route.description}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>LKR {route.busFare}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={route.active}
+                                                        onChange={() => handleActiveChange(route.id)}
+                                                    />
+                                                }
+                                                label={route.active ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleOpen(route)}
+                                                sx={{ marginRight: "8px" }}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleDelete(route.id)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                     <TablePagination
-                                            component="div"
-                                            count={routes.length}
-                                            page={page}
-                                            onPageChange={handleChangePage}
-                                            rowsPerPage={rowsPerPage}
-                                            onRowsPerPageChange={handleChangeRowsPerPage}
-                                            rowsPerPageOptions={[10, 25, 50, 100]}
-                                        />
+                    <TablePagination
+                        component="div"
+                        count={routes.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Edit Modal */}
@@ -494,7 +530,7 @@ const RouteManagement = () => {
                             name="routeNo"
                             value={currentRoute?.routeNo || ""}
                             onChange={handleInputChange}
-                            sx={{marginBottom: "16px"}}
+                            sx={{ marginBottom: "16px" }}
                         />
 
                         <Autocomplete
@@ -512,7 +548,7 @@ const RouteManagement = () => {
                                     label="Start Point"
                                     variant="outlined"
                                     required
-                                    sx={{marginBottom: "16px"}}
+                                    sx={{ marginBottom: "16px" }}
                                     InputProps={{
                                         ...params.InputProps,
                                         startAdornment: (
@@ -527,7 +563,7 @@ const RouteManagement = () => {
 
                         <Autocomplete
                             value={currentRoute?.endPoint || ""}
-                            onChange={(e, newValue) => handleInputChange({target: {name: "endPoint", value: newValue}})}
+                            onChange={(e, newValue) => handleInputChange({ target: { name: "endPoint", value: newValue } })}
                             options={allPoints}
                             renderInput={(params) => (
                                 <TextField
@@ -535,7 +571,7 @@ const RouteManagement = () => {
                                     label="End Point"
                                     variant="outlined"
                                     required
-                                    sx={{marginBottom: "16px"}}
+                                    sx={{ marginBottom: "16px" }}
                                     InputProps={{
                                         ...params.InputProps,
                                         startAdornment: (
@@ -557,7 +593,7 @@ const RouteManagement = () => {
                             rows={4}
                             value={currentRoute?.description || ""}
                             onChange={handleInputChange}
-                            sx={{marginBottom: "16px"}}
+                            sx={{ marginBottom: "16px" }}
                         />
                         <TextField
                             fullWidth
@@ -567,19 +603,19 @@ const RouteManagement = () => {
                             type="number"
                             value={currentRoute?.busFare || ""}
                             onChange={handleInputChange}
-                            sx={{marginBottom: "16px"}}
+                            sx={{ marginBottom: "16px" }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">LKR</InputAdornment>
                                 ),
                             }}
                         />
-                        <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSave}
-                                sx={{marginRight: '8px'}}
+                                sx={{ marginRight: '8px' }}
                             >
                                 Save
                             </Button>
@@ -587,7 +623,7 @@ const RouteManagement = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleClose}
-                                sx={{backgroundColor: 'gray'}}
+                                sx={{ backgroundColor: 'gray' }}
                             >
                                 Cancel
                             </Button>
