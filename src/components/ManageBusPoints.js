@@ -275,7 +275,7 @@ const ManageBusPoints = () => {
                 </Box>
 
                 {/* Form Section */}
-                <Box component="form" sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <Box component="form" sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", height:'45px' }}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={4}>
                             <Autocomplete
@@ -331,7 +331,7 @@ const ManageBusPoints = () => {
                             color="primary"
                             onClick={handleAddBusPoint}
                             sx={{
-                                width: "200px",
+                                width: "150px",
                                 padding: "12px 24px",
                                 fontWeight: "bold",
                                 borderRadius: "4px",
