@@ -17,6 +17,7 @@ import {
     InputAdornment,
     IconButton,
     Autocomplete,
+    TablePagination
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -674,6 +675,18 @@ const BusLayoutManagement = () => {
             .catch(handleError)
     };
 
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
@@ -743,22 +756,24 @@ const BusLayoutManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Layout Name</TableCell>
-                                <TableCell>Bus Type</TableCell>
-                                <TableCell align="center">Seats Count</TableCell>
-                                <TableCell>Description</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{ py: 1 }}>Layout Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>Bus Type</TableCell>
+                                <TableCell sx={{ py: 1 }} align="center">Seats Count</TableCell>
+                                <TableCell sx={{ py: 1 }}>Description</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredLayouts.map((layout) => (
+                            {filteredLayouts
+                              .slice(startIndex, startIndex + rowsPerPage)
+                    .map((layout) => (
                                 <TableRow key={layout.id}>
-                                    <TableCell>{layout.layoutName}</TableCell>
-                                    <TableCell>{layout.busType}</TableCell>
-                                    <TableCell align="center">{layout.seatsCount}</TableCell>
-                                    <TableCell>{layout.description}</TableCell>
-                                    <TableCell align="right">
+                                    <TableCell sx={{ py: 0 }}>{layout.layoutName}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{layout.busType}</TableCell>
+                                    <TableCell sx={{ py: 0 }} align="center">{layout.seatsCount}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{layout.description}</TableCell>
+                                    <TableCell sx={{ py: 0 }} align="right">
                                         <IconButton
                                             color="info"
                                             onClick={() => handleView(layout)}
@@ -784,6 +799,15 @@ const BusLayoutManagement = () => {
                             ))}
                         </TableBody>
                     </Table>
+                                <TablePagination
+                        component="div"
+                        count={filteredLayouts.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Create/Edit Layout Modal */}

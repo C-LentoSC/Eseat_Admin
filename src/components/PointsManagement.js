@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -16,6 +16,7 @@ import {
     Modal,
     IconButton,
     InputAdornment,
+    TablePagination
 } from "@mui/material";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import EditIcon from "@mui/icons-material/Edit";
@@ -25,20 +26,21 @@ import api from "../model/API";
 
 const PointsManagement = () => {
     const [points, setPoints] = useState([]);
+    const [addmodel, setAddmodel] = useState(false);
 
     const [newPointName, setNewPointName] = useState("");
     const [open, setOpen] = useState(false);
     const [currentPoint, setCurrentPoint] = useState(null);
     const [alert, setAlert] = useState(null)
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
-    useEffect(()=>{
+    useEffect(() => {
         loadAllPoints()
-    },[])
-    const loadAllPoints=()=>{
+    }, [])
+    const loadAllPoints = () => {
         api.get("admin/points/get-all")
-            .then(res=>{
+            .then(res => {
                 setPoints(res.data)
             })
             .catch(handleError)
@@ -46,10 +48,11 @@ const PointsManagement = () => {
     // Add New Point
     const handleAddPoint = () => {
         if (newPointName.trim()) {
-            api.post("admin/points/add",{name:newPointName})
-                .then(res=>{
+            api.post("admin/points/add", { name: newPointName })
+                .then(res => {
                     loadAllPoints()
-                    sendAlert(res.data.message||"new point added")
+                    sendAlert(res.data.message || "new point added")
+                    handleClose();
                 })
                 .catch(handleError)
 
@@ -67,12 +70,13 @@ const PointsManagement = () => {
     const handleClose = () => {
         setCurrentPoint(null);
         setOpen(false);
+        setAddmodel(false);
     };
 
     // Save Edited Point
     const handleSave = () => {
-        api.post('admin/points/edit',currentPoint)
-            .then(res=>{
+        api.post('admin/points/edit', currentPoint)
+            .then(res => {
                 sendAlert(res.data.message || "point edited")
                 loadAllPoints()
                 handleClose();
@@ -82,104 +86,182 @@ const PointsManagement = () => {
 
     // Handle Input Changes
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        setCurrentPoint({...currentPoint, [name]: value});
+        const { name, value } = e.target;
+        setCurrentPoint({ ...currentPoint, [name]: value });
     };
 
     // Delete Point
     const handleDelete = (id) => {
-        api.post('admin/points/delete',{id})
-            .then(res=>{
+        api.post('admin/points/delete', { id })
+            .then(res => {
                 sendAlert(res.data.message || "point deleted")
                 loadAllPoints()
             })
             .catch(handleError)
     };
 
+
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
-            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+                setOpen={setAlert} /> : <></>}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
-                <Typography variant="h5" sx={{fontWeight: 600, marginBottom: "20px"}}>
-                    Points Management
-                </Typography>
 
-                {/* Form Section */}
-                <Box component="form" sx={{width: "100%"}}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Point Name"
-                                variant="outlined"
-                                required
-                                value={newPointName}
-                                onChange={(e) => setNewPointName(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <LoyaltyIcon/>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
+
+                <Modal open={addmodel} onClose={handleClose}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: "90%",
+                            maxWidth: 400,
+                            bgcolor: 'background.paper',
+                            border: '2px solid gray',
+                            boxShadow: 24,
+                            p: 4,
+                            borderRadius: '10px',
+                        }}
+                    >
+
+                        <Typography variant="h6" gutterBottom>
+                            Add Points
+                        </Typography>
+
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} sm={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Point Name"
+                                    variant="outlined"
+                                    required
+                                    value={newPointName}
+                                    onChange={(e) => setNewPointName(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <LoyaltyIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Box sx={{display: "flex", justifyContent: "flex-end", marginTop: "30px"}}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleAddPoint}
-                            sx={{
-                                padding: "12px 24px",
-                                fontWeight: "bold",
-                                borderRadius: "4px",
-                                backgroundColor: "#3f51b5",
-                                color: "#fff",
-                                "&:hover": {
-                                    backgroundColor: "#303f9f",
-                                },
-                            }}
-                        >
-                            Add Point
-                        </Button>
+
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleAddPoint}
+                                sx={{ marginRight: '8px' }}
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleClose}
+                                sx={{ backgroundColor: 'gray' }}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
                     </Box>
+                </Modal>
+
+
+                <Box sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2,
+                    mt: 3,
+                    flexWrap: "wrap",
+                    gap: 2
+                }}>
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                            Points Management
+                        </Typography>
+                    </Box>
+                    <Button
+                        variant="contained"
+                        onClick={() => setAddmodel(true)}
+                        sx={{
+                            padding: "6px 24px",
+                            fontWeight: "bold",
+                            borderRadius: "4px",
+                            height: "40px",
+                            backgroundColor: "#3f51b5",
+                            color: "#fff",
+                            "&:hover": {
+                                backgroundColor: "#303f9f",
+                            },
+                        }}
+                    >
+                        Add Points
+                    </Button>
                 </Box>
 
                 {/* Table Section */}
-                <Typography variant="h6" sx={{marginTop: "40px", marginBottom: "20px"}}>
+                {/* <Typography variant="h6" sx={{ marginTop: "40px", marginBottom: "20px" }}>
                     All Points
-                </Typography>
+                </Typography> */}
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Point Name</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Point Name</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {points.map((point) => (
-                                <TableRow key={point.id}>
-                                    <TableCell>{point.name}</TableCell>
-                                    <TableCell align="right">
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleOpen(point)}
-                                            sx={{marginRight: "8px"}}
-                                        >
-                                            <EditIcon/>
-                                        </IconButton>
-                                        <IconButton color="error" onClick={() => handleDelete(point.id)}>
-                                            <DeleteIcon/>
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {points
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((point) => (
+                                    <TableRow key={point.id}>
+                                        <TableCell sx={{ py: 0 }}>{point.name}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleOpen(point)}
+                                                sx={{ marginRight: "8px" }}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton color="error" onClick={() => handleDelete(point.id)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        component="div"
+                        count={points.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Edit Modal */}
@@ -208,14 +290,14 @@ const PointsManagement = () => {
                             name="name"
                             value={currentPoint?.name || ""}
                             onChange={handleInputChange}
-                            sx={{marginBottom: "16px"}}
+                            sx={{ marginBottom: "16px" }}
                         />
-                        <Box sx={{display: "flex", justifyContent: "flex-end"}}>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSave}
-                                sx={{marginRight: "8px"}}
+                                sx={{ marginRight: "8px" }}
                             >
                                 Save
                             </Button>
@@ -223,7 +305,7 @@ const PointsManagement = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleClose}
-                                sx={{backgroundColor: "gray"}}
+                                sx={{ backgroundColor: "gray" }}
                             >
                                 Cancel
                             </Button>
