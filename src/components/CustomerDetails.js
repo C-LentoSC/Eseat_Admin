@@ -214,7 +214,7 @@ const CustomerDetails = () => {
                                 <TableCell sx={{ py: 1 }}>ID</TableCell>
                                 <TableCell sx={{ py: 1 }}>Name</TableCell>
                                 <TableCell sx={{ py: 1 }}>Mobile</TableCell>
-                                <TableCell sx={{ py: 1 }}>NIC</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">NIC</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -225,7 +225,7 @@ const CustomerDetails = () => {
                                         <TableCell sx={{ py: 0 }}>{customer.id}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{customer.name}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{customer.mobile}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{customer.nic}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">{customer.nic}</TableCell>
                                     </TableRow>
                                 ))}
                         </TableBody>
