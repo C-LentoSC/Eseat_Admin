@@ -876,6 +876,7 @@ const BusReport = () => {
                           e.target.value,
                           schedule.tripStatus
                         )}
+                        sx={{ height : 30 }}
                       >
                         {tripStatuses.map((status) => (
                           <MenuItem key={status} value={status}>
@@ -889,7 +890,7 @@ const BusReport = () => {
                         <VisibilityIcon />
                       </IconButton>
                       {schedule?.bookings.length > 0 && (
-                        <Button size="small" variant="contained" sx={{ ml: 1 }} onClick={() => handleTransfer(schedule)}>
+                        <Button size="small" variant="contained" sx={{ ml: 1, height: 25 }} onClick={() => handleTransfer(schedule)}>
                           Transfer
                         </Button>
                       )}
