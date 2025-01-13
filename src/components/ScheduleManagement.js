@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
     Autocomplete, TextField, InputAdornment,
     Chip
 } from '@mui/material';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 // import DeleteIcon from '@mui/icons-material/Delete';
 
 // import CustomAlert from "./Parts/CustomAlert";
 
 const ScheduleManagement = () => {
 
-     // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+     const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Sample initial data
-    const [schedules] = useState([
+    const [schedules,setSchedules] = useState([
         {
             id: 1,
             scheduleNumber: "SCH001",
@@ -57,6 +59,16 @@ const ScheduleManagement = () => {
             status: "Active"
         }
     ]);
+    useEffect(() => {
+        loadAll()
+    }, []);
+    const loadAll=()=>{
+        api.get('admin/schedule-management/get-all')
+            .then(res=>{
+                setSchedules(res.data);
+            })
+            .catch(handleError)
+    }
 
     // Filter states
     const [selectedScheduleNo, setSelectedScheduleNo] = useState(null);
@@ -114,6 +126,8 @@ const ScheduleManagement = () => {
 
     return (
         <Container component="main" maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Schedule Management
