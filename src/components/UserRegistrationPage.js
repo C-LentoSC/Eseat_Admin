@@ -65,6 +65,7 @@ const UserRegistrationPage = () => {
     const saveNewUser = () => {
         api.post('admin/manage-admin/add', { name, username, email, mobile, password, role_id }).then(r => {
             if (r.data.status === "ok") {
+                handleClose();
                 sendAlert("new user added")
                 loadAllUsers()
                 setName("")
@@ -138,12 +139,10 @@ const UserRegistrationPage = () => {
             setOpen={setAlert} /> : <></>}
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             {/* Title Section */}
-            <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
-                User Registration
-            </Typography>
+
 
             {/* Registration Form Section */}
-            <Modal open={addmodel} onClose={() => setAddmodel(false)}>
+            <Modal open={addmodel} onClose={handleClose}>
                 <Box
                     sx={{
                         position: 'absolute',
@@ -151,6 +150,7 @@ const UserRegistrationPage = () => {
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
                         width: "90%",
+                        maxWidth: 600,
                         bgcolor: 'background.paper',
                         border: '2px solid gray',
                         boxShadow: 24,
@@ -165,7 +165,7 @@ const UserRegistrationPage = () => {
 
                     {/* First Row (3 fields) */}
                     <Grid container spacing={3}>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
                                 value={name}
@@ -180,7 +180,7 @@ const UserRegistrationPage = () => {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
                                 value={email}
@@ -196,7 +196,7 @@ const UserRegistrationPage = () => {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
                                 value={mobile}
@@ -212,9 +212,7 @@ const UserRegistrationPage = () => {
                                 }}
                             />
                         </Grid>
-                    </Grid>
-                    <Grid container spacing={3} sx={{ marginTop: '20px' }}>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
                                 value={username}
@@ -229,7 +227,7 @@ const UserRegistrationPage = () => {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
                                 value={password}
@@ -245,7 +243,7 @@ const UserRegistrationPage = () => {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={6}>
                             <FormControl fullWidth variant="outlined" required>
                                 <InputLabel shrink id="role-label">
                                     Role
@@ -272,7 +270,7 @@ const UserRegistrationPage = () => {
                         </Grid>
                     </Grid>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
                         <Button
                             variant="contained"
                             color="primary"
@@ -309,7 +307,9 @@ const UserRegistrationPage = () => {
                 gap: 2
             }}>
                 <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
-
+                    <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
+                        User Registration
+                    </Typography>
                 </Box>
                 <Button
                     variant="contained"
