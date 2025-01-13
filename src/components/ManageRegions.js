@@ -18,6 +18,7 @@ import {
     InputAdornment,
     FormControlLabel,
     Switch,
+    TablePagination
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -228,6 +229,19 @@ const ManageRegions = () => {
     //     reader.readAsText(file);
     // };
 
+    //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
@@ -401,25 +415,27 @@ const ManageRegions = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Region Name</TableCell>
-                                <TableCell>Mobile</TableCell>
-                                <TableCell>Email</TableCell>
-                                <TableCell>Address</TableCell>
-                                <TableCell>Description</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Region Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>Mobile</TableCell>
+                                <TableCell sx={{ py: 1 }}>Email</TableCell>
+                                <TableCell sx={{ py: 1 }}>Address</TableCell>
+                                <TableCell sx={{ py: 1 }}>Description</TableCell>
+                                <TableCell sx={{ py: 1 }}>Status</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {regions.map((region) => (
+                            {regions
+                            .slice(startIndex, startIndex + rowsPerPage)
+                            .map((region) => (
                                 <TableRow key={region.id}>
-                                    <TableCell>{region.regionName}</TableCell>
-                                    <TableCell>{region.mobile}</TableCell>
-                                    <TableCell>{region.email}</TableCell>
-                                    <TableCell>{region.address}</TableCell>
-                                    <TableCell>{region.description}</TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ py: 0 }}>{region.regionName}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{region.mobile}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{region.email}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{region.address}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{region.description}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -430,7 +446,7 @@ const ManageRegions = () => {
                                             label={region.active ? "Active" : "Inactive"}
                                         />
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell sx={{ py: 0 }} align="right">
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleOpen(region)}
@@ -449,6 +465,15 @@ const ManageRegions = () => {
                             ))}
                         </TableBody>
                     </Table>
+                     <TablePagination
+                                            component="div"
+                                            count={regions.length}
+                                            page={page}
+                                            onPageChange={handleChangePage}
+                                            rowsPerPage={rowsPerPage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                            rowsPerPageOptions={[10, 25, 50, 100]}
+                                        />
                 </TableContainer>
 
                 {/* Edit Modal */}

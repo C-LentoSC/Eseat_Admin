@@ -18,7 +18,8 @@ import {
     Switch,
     IconButton,
     Autocomplete,
-    InputAdornment
+    InputAdornment,
+    TablePagination
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -183,6 +184,19 @@ const ManageDepots = () => {
             })
             .catch(handleError)
     };
+
+    //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
 
     return (
         <Container component="main" maxWidth="lg">
@@ -353,29 +367,31 @@ const ManageDepots = () => {
                     <TableContainer component={Paper}>
                         <Table>
                             <TableHead>
-                                <TableRow>
-                                    <TableCell>Region</TableCell>
-                                    <TableCell>Depot Name</TableCell>
-                                    <TableCell>DS Name</TableCell>
-                                    <TableCell>Mobile</TableCell>
-                                    <TableCell>Email</TableCell>
-                                    <TableCell>Address</TableCell>
-                                    <TableCell>Description</TableCell>
-                                    <TableCell>Status</TableCell>
-                                    <TableCell align="right">Actions</TableCell>
+                                <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                    <TableCell sx={{ py: 1 }}>Region</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Depot Name</TableCell>
+                                    <TableCell sx={{ py: 1 }}>DS Name</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Mobile</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Email</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Address</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Description</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Status</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {depots.map((depot) => (
+                                {depots
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((depot) => (
                                     <TableRow key={depot.id}>
-                                        <TableCell>{depot.region}</TableCell>
-                                        <TableCell>{depot.depotName}</TableCell>
-                                        <TableCell>{depot.dsName}</TableCell>
-                                        <TableCell>{depot.mobile}</TableCell>
-                                        <TableCell>{depot.email}</TableCell>
-                                        <TableCell>{depot.address}</TableCell>
-                                        <TableCell>{depot.description}</TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.region}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.depotName}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.dsName}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.mobile}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.email}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.address}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.description}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
                                             <FormControlLabel
                                                 control={
                                                     <Switch
@@ -386,7 +402,7 @@ const ManageDepots = () => {
                                                 label={depot.active ? "Active" : "Inactive"}
                                             />
                                         </TableCell>
-                                        <TableCell align="right">
+                                        <TableCell sx={{ py: 0 }} align="right">
                                             <IconButton
                                                 color="primary"
                                                 onClick={() => handleOpen(depot)}
@@ -404,6 +420,15 @@ const ManageDepots = () => {
                                 ))}
                             </TableBody>
                         </Table>
+                         <TablePagination
+                                                component="div"
+                                                count={depots.length}
+                                                page={page}
+                                                onPageChange={handleChangePage}
+                                                rowsPerPage={rowsPerPage}
+                                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                                rowsPerPageOptions={[10, 25, 50, 100]}
+                                            />
                     </TableContainer>
                 </Box>
 
