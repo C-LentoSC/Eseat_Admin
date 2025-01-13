@@ -18,6 +18,7 @@ import {
     InputAdornment,
     FormControlLabel,
     Switch,
+    TablePagination
 } from "@mui/material";
 import Autocomplete from '@mui/material/Autocomplete';
 import EditIcon from "@mui/icons-material/Edit";
@@ -195,6 +196,19 @@ const RouteManagement = () => {
         };
         reader.readAsText(file);
     };
+
+        //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
 
     return (
         <Container component="main" maxWidth="lg">
@@ -393,25 +407,27 @@ const RouteManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Route No</TableCell>
-                                <TableCell>Start Point</TableCell>
-                                <TableCell>End Point</TableCell>
-                                <TableCell>Description</TableCell>
-                                <TableCell>Bus Fare</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Route No</TableCell>
+                                <TableCell sx={{ py: 1 }}>Start Point</TableCell>
+                                <TableCell sx={{ py: 1 }}>End Point</TableCell>
+                                <TableCell sx={{ py: 1 }}>Description</TableCell>
+                                <TableCell sx={{ py: 1 }}>Bus Fare</TableCell>
+                                <TableCell sx={{ py: 1 }}>Status</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {routes.map((route) => (
+                            {routes
+                             .slice(startIndex, startIndex + rowsPerPage)
+                             .map((route) => (
                                 <TableRow key={route.id}>
-                                    <TableCell>{route.routeNo}</TableCell>
-                                    <TableCell>{route.startPoint}</TableCell>
-                                    <TableCell>{route.endPoint}</TableCell>
-                                    <TableCell>{route.description}</TableCell>
-                                    <TableCell>LKR {route.busFare}</TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ py: 0 }}>{route.routeNo}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{route.startPoint}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{route.endPoint}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{route.description}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>LKR {route.busFare}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -422,7 +438,7 @@ const RouteManagement = () => {
                                             label={route.active ? "Active" : "Inactive"}
                                         />
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell sx={{ py: 0 }} align="right">
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleOpen(route)}
@@ -441,6 +457,15 @@ const RouteManagement = () => {
                             ))}
                         </TableBody>
                     </Table>
+                     <TablePagination
+                                            component="div"
+                                            count={routes.length}
+                                            page={page}
+                                            onPageChange={handleChangePage}
+                                            rowsPerPage={rowsPerPage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                            rowsPerPageOptions={[10, 25, 50, 100]}
+                                        />
                 </TableContainer>
 
                 {/* Edit Modal */}
