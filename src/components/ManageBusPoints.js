@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -27,9 +27,9 @@ import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ReorderIcon from "@mui/icons-material/Reorder";
-import {setroutval} from "./DashboardLayoutAccount";
-import {Reorder} from "framer-motion";
-import {Item} from "./Parts/ItemPart";
+import { setroutval } from "./DashboardLayoutAccount";
+import { Reorder } from "framer-motion";
+import { Item } from "./Parts/ItemPart";
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
 
@@ -69,8 +69,8 @@ const ManageBusPoints = () => {
             .catch(handleError)
 
     }
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
     const [busPoints, setBusPoints] = useState([]);
@@ -126,13 +126,13 @@ const ManageBusPoints = () => {
 
     // Handle Input Changes for Edit Modal
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        setCurrentBusPoint({...currentBusPoint, [name]: value});
+        const { name, value } = e.target;
+        setCurrentBusPoint({ ...currentBusPoint, [name]: value });
     };
 
     // Delete Bus Point
     const handleDeleteBusPoint = (id) => {
-        api.post('admin/routes/points/delete', {id})
+        api.post('admin/routes/points/delete', { id })
             .then(res => {
                 sendAlert("deleted")
                 allPointGet()
@@ -142,7 +142,7 @@ const ManageBusPoints = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        api.post('admin/routes/points/toggle-status', {id})
+        api.post('admin/routes/points/toggle-status', { id })
             .then(res => {
                 allPointGet()
             })
@@ -160,7 +160,7 @@ const ManageBusPoints = () => {
         );
         const csvContent = ["Direction,Route Point,Status"].concat(csvData).join("\n");
 
-        const blob = new Blob([csvContent], {type: "text/csv;charset=utf-8;"});
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "bus_points.csv";
@@ -189,8 +189,8 @@ const ManageBusPoints = () => {
                     return null;
                 })
                 .filter((busPoint) => busPoint !== null);
-            api.post('admin/routes/points/import', {route: RouteID, data: newBusPoints})
-                .then(res=>{
+            api.post('admin/routes/points/import', { route: RouteID, data: newBusPoints })
+                .then(res => {
                     allPointGet()
                     sendAlert('import success')
                 })
@@ -216,7 +216,7 @@ const ManageBusPoints = () => {
                 order: i
             }
         })
-        api.post('admin/routes/points/change-order', {data: newOrder})
+        api.post('admin/routes/points/change-order', { data: newOrder })
             .then(res => {
                 allPointGet()
             })
@@ -241,23 +241,23 @@ const ManageBusPoints = () => {
     };
 
     //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
 
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
-            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+                setOpen={setAlert} /> : <></>}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 
                 <Box sx={{
                     display: "flex",
@@ -266,16 +266,16 @@ const ManageBusPoints = () => {
                     marginBottom: "20px",
                     justifyContent: "center"
                 }}>
-                    <IconButton onClick={handleBackClick} sx={{marginRight: "10px", padding: '0'}}>
-                        <ArrowBackIcon/>
+                    <IconButton onClick={handleBackClick} sx={{ marginRight: "10px", padding: '0' }}>
+                        <ArrowBackIcon />
                     </IconButton>
-                    <Typography variant="h5" sx={{fontWeight: 600}}>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
                         Manage Bus Points ({details.CityName})
                     </Typography>
                 </Box>
 
                 {/* Form Section */}
-                <Box component="form" sx={{width: "100%"}}>
+                <Box component="form" sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6}>
                             <Autocomplete
@@ -324,7 +324,7 @@ const ManageBusPoints = () => {
                         </Grid>
                     </Grid>
 
-                    <Box sx={{display: "flex", justifyContent: "flex-end", marginTop: "30px"}}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
                         <Button
                             variant="contained"
                             color="primary"
@@ -357,34 +357,34 @@ const ManageBusPoints = () => {
                 }}>
                     <Typography variant="h6">All Bus Points</Typography>
 
-                    <Box sx={{display: "flex", justifyContent: "flex-end", gap: 2}}>
-                        <Button variant="contained" color="primary" startIcon={<DownloadIcon/>} onClick={handleExport}
-                                sx={{
-                                    backgroundColor: "#3f51b5",
-                                    color: "#fff",
-                                    "&:hover": {
-                                        backgroundColor: "#303f9f",
-                                    },
-                                }}
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+                        <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleExport}
+                            sx={{
+                                backgroundColor: "#3f51b5",
+                                color: "#fff",
+                                "&:hover": {
+                                    backgroundColor: "#303f9f",
+                                },
+                            }}
                         >
                             Export
                         </Button>
-                        <Button variant="contained" component="label" startIcon={<UploadIcon/>}
-                                sx={{
-                                    backgroundColor: "#4caf50",
-                                    color: "#fff",
-                                    "&:hover": {
-                                        backgroundColor: "#388e3c",
-                                    },
-                                }}
+                        <Button variant="contained" component="label" startIcon={<UploadIcon />}
+                            sx={{
+                                backgroundColor: "#4caf50",
+                                color: "#fff",
+                                "&:hover": {
+                                    backgroundColor: "#388e3c",
+                                },
+                            }}
                         >
                             Import
-                            <input type="file" accept=".csv" hidden onChange={handleImport}/>
+                            <input type="file" accept=".csv" hidden onChange={handleImport} />
                         </Button>
                         <Button
                             variant="contained"
                             color="secondary"
-                            startIcon={<ReorderIcon/>}
+                            startIcon={<ReorderIcon />}
                             onClick={handleOpenOrderModal}
                             sx={{
                                 backgroundColor: "#3f51b5",
@@ -411,44 +411,44 @@ const ManageBusPoints = () => {
                         </TableHead>
                         <TableBody>
                             {busPoints
-                            .slice(startIndex, startIndex + rowsPerPage)
-                            .map((busPoint) => (
-                                <TableRow key={busPoint.key}>
-                                    <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={busPoint.active}
-                                                    onChange={() => handleActiveChange(busPoint.id)}
-                                                />
-                                            }
-                                            label={busPoint.active ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{ py: 0 }} align="right">
-                                        <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)}
-                                                    sx={{marginRight: "8px"}}>
-                                            <EditIcon/>
-                                        </IconButton>
-                                        <IconButton color="error" onClick={() => handleDeleteBusPoint(busPoint.id)}>
-                                            <DeleteIcon/>
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((busPoint) => (
+                                    <TableRow key={busPoint.key}>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={busPoint.active}
+                                                        onChange={() => handleActiveChange(busPoint.id)}
+                                                    />
+                                                }
+                                                label={busPoint.active ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)}
+                                                sx={{ marginRight: "8px" }}>
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton color="error" onClick={() => handleDeleteBusPoint(busPoint.id)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                     <TablePagination
-                                            component="div"
-                                            count={busPoints.length}
-                                            page={page}
-                                            onPageChange={handleChangePage}
-                                            rowsPerPage={rowsPerPage}
-                                            onRowsPerPageChange={handleChangeRowsPerPage}
-                                            rowsPerPageOptions={[10, 25, 50, 100]}
-                                        />
+                    <TablePagination
+                        component="div"
+                        count={busPoints.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Edit Modal */}
@@ -486,7 +486,7 @@ const ManageBusPoints = () => {
                                     label="Direction"
                                     variant="outlined"
                                     required
-                                    sx={{marginBottom: "16px"}}
+                                    sx={{ marginBottom: "16px" }}
                                 />
                             )}
                         />
@@ -506,17 +506,17 @@ const ManageBusPoints = () => {
                                     label="Route Point"
                                     variant="outlined"
                                     required
-                                    sx={{marginBottom: "16px"}}
+                                    sx={{ marginBottom: "16px" }}
                                 />
                             )}
                         />
 
-                        <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSaveBusPoint}
-                                sx={{marginRight: '8px'}}
+                                sx={{ marginRight: '8px' }}
                             >
                                 Save
                             </Button>
@@ -524,7 +524,7 @@ const ManageBusPoints = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleCloseModal}
-                                sx={{backgroundColor: 'gray'}}
+                                sx={{ backgroundColor: 'gray' }}
                             >
                                 Cancel
                             </Button>
@@ -549,7 +549,7 @@ const ManageBusPoints = () => {
                             overflowY: "auto",
                         }}
                     >
-                        <Typography variant="h6" component="h2" sx={{marginBottom: 2}}>
+                        <Typography variant="h6" component="h2" sx={{ marginBottom: 2 }}>
                             Reorder Boarding and Dropping Points
                         </Typography>
 
@@ -565,7 +565,7 @@ const ManageBusPoints = () => {
                                         {busPoints
                                             .filter((point) => point.direction === "Boarding")
                                             .map((busPoint) => (
-                                                <Item key={busPoint.key} busPoint={busPoint}/>
+                                                <Item key={busPoint.key} busPoint={busPoint} />
                                             ))}
                                     </Reorder.Group>
                                 </Grid>
@@ -580,14 +580,14 @@ const ManageBusPoints = () => {
                                         {busPoints
                                             .filter((point) => point.direction === "Dropping")
                                             .map((busPoint) => (
-                                                <Item key={busPoint.key} busPoint={busPoint}/>
+                                                <Item key={busPoint.key} busPoint={busPoint} />
                                             ))}
                                     </Reorder.Group>
                                 </Grid>
                             </Grid>
                         </Box>
 
-                        <Box sx={{display: "flex", justifyContent: "flex-end", marginTop: "30px"}}>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
                             <Button variant="contained" color="primary" onClick={handleSaveOrder}>
                                 Save Order
                             </Button>
@@ -595,7 +595,7 @@ const ManageBusPoints = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleCloseOrderModal}
-                                sx={{marginLeft: 2, backgroundColor: 'gray'}}
+                                sx={{ marginLeft: 2, backgroundColor: 'gray' }}
 
                             >
                                 Cancel
