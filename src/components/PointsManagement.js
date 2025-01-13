@@ -16,6 +16,7 @@ import {
     Modal,
     IconButton,
     InputAdornment,
+    TablePagination
 } from "@mui/material";
 import LoyaltyIcon from "@mui/icons-material/Loyalty";
 import EditIcon from "@mui/icons-material/Edit";
@@ -96,6 +97,20 @@ const PointsManagement = () => {
             .catch(handleError)
     };
 
+
+        //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
@@ -155,16 +170,18 @@ const PointsManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Point Name</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Point Name</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {points.map((point) => (
+                            {points
+                             .slice(startIndex, startIndex + rowsPerPage)
+                             .map((point) => (
                                 <TableRow key={point.id}>
-                                    <TableCell>{point.name}</TableCell>
-                                    <TableCell align="right">
+                                    <TableCell sx={{ py: 0 }}>{point.name}</TableCell>
+                                    <TableCell sx={{ py: 0 }} align="right">
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleOpen(point)}
@@ -180,6 +197,15 @@ const PointsManagement = () => {
                             ))}
                         </TableBody>
                     </Table>
+                     <TablePagination
+                                            component="div"
+                                            count={points.length}
+                                            page={page}
+                                            onPageChange={handleChangePage}
+                                            rowsPerPage={rowsPerPage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                            rowsPerPageOptions={[10, 25, 50, 100]}
+                                        />
                 </TableContainer>
 
                 {/* Edit Modal */}

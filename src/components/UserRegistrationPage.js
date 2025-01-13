@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -19,7 +19,8 @@ import {
     TableRow,
     Paper,
     Modal,
-    IconButton
+    IconButton,
+    TablePagination
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
@@ -51,15 +52,15 @@ const UserRegistrationPage = () => {
         loadAllUsers()
 
     }, []);
-     const sendAlert = (text) => setAlert({message: text, severity: "info"})
-     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
     const loadAllUsers = () => {
         api.get('admin/manage-admin/all').then(r => {
             setUsers(r.data)
         }).catch(handleError)
     }
     const saveNewUser = () => {
-        api.post('admin/manage-admin/add', {name, username, email, mobile, password, role_id}).then(r => {
+        api.post('admin/manage-admin/add', { name, username, email, mobile, password, role_id }).then(r => {
             if (r.data.status === "ok") {
                 sendAlert("new user added")
                 loadAllUsers()
@@ -91,7 +92,7 @@ const UserRegistrationPage = () => {
         api.post('admin/manage-admin/update', currentUser)
             .then(r => {
                 if (r.data.status === "ok") {
-                    sendAlert(r.data.message||"user is updated")
+                    sendAlert(r.data.message || "user is updated")
                     loadAllUsers();
                     handleClose();
                 }
@@ -101,12 +102,12 @@ const UserRegistrationPage = () => {
     };
 
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        setCurrentUser({...currentUser, [name]: value});
+        const { name, value } = e.target;
+        setCurrentUser({ ...currentUser, [name]: value });
 
     };
     const handleDeleteUser = (user) => {
-        api.post("admin/manage-admin/delete", {id: user.id})
+        api.post("admin/manage-admin/delete", { id: user.id })
             .then(res => {
                 sendAlert(res.data.message)
                 loadAllUsers()
@@ -115,17 +116,30 @@ const UserRegistrationPage = () => {
     }
 
 
-    return (<Container component="main" maxWidth="lg" sx={{py: 0}}>
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
+    return (<Container component="main" maxWidth="lg" sx={{ py: 0 }}>
         {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                              setOpen={setAlert}/> : <></>}
-        <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+            setOpen={setAlert} /> : <></>}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             {/* Title Section */}
-            <Typography variant="h5" sx={{fontWeight: 600, marginBottom: '20px'}}>
+            <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
                 User Registration
             </Typography>
 
             {/* Registration Form Section */}
-            <Box component="form" sx={{width: '100%'}}>
+            <Box component="form" sx={{ width: '100%' }}>
                 {/* First Row (3 fields) */}
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={4}>
@@ -138,7 +152,7 @@ const UserRegistrationPage = () => {
                             required
                             InputProps={{
                                 startAdornment: (<InputAdornment position="start">
-                                    <PersonIcon/>
+                                    <PersonIcon />
                                 </InputAdornment>),
                             }}
                         />
@@ -154,7 +168,7 @@ const UserRegistrationPage = () => {
                             type="email"
                             InputProps={{
                                 startAdornment: (<InputAdornment position="start">
-                                    <EmailIcon/>
+                                    <EmailIcon />
                                 </InputAdornment>),
                             }}
                         />
@@ -170,13 +184,13 @@ const UserRegistrationPage = () => {
                             type="tel"
                             InputProps={{
                                 startAdornment: (<InputAdornment position="start">
-                                    <PhoneIcon/>
+                                    <PhoneIcon />
                                 </InputAdornment>),
                             }}
                         />
                     </Grid>
                 </Grid>
-                <Grid container spacing={3} sx={{marginTop: '20px'}}>
+                <Grid container spacing={3} sx={{ marginTop: '20px' }}>
                     <Grid item xs={12} sm={4}>
                         <TextField
                             fullWidth
@@ -187,7 +201,7 @@ const UserRegistrationPage = () => {
                             required
                             InputProps={{
                                 startAdornment: (<InputAdornment position="start">
-                                    <AccountCircleIcon/>
+                                    <AccountCircleIcon />
                                 </InputAdornment>),
                             }}
                         />
@@ -203,7 +217,7 @@ const UserRegistrationPage = () => {
                             type="password"
                             InputProps={{
                                 startAdornment: (<InputAdornment position="start">
-                                    <LockIcon/>
+                                    <LockIcon />
                                 </InputAdornment>),
                             }}
                         />
@@ -219,7 +233,7 @@ const UserRegistrationPage = () => {
                                 labelId="role-label"
                                 defaultValue=""
                                 displayEmpty
-                                inputProps={{'aria-label': 'Role'}}
+                                inputProps={{ 'aria-label': 'Role' }}
                                 label="Role"
                             >
 
@@ -236,7 +250,7 @@ const UserRegistrationPage = () => {
                 </Grid>
 
                 {/* Submit Button Section */}
-                <Box sx={{display: 'flex', justifyContent: 'flex-end', marginTop: '30px'}}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '30px' }}>
                     <Button
                         onClick={saveNewUser}
                         variant="contained"
@@ -258,48 +272,59 @@ const UserRegistrationPage = () => {
             </Box>
 
             {/* User Table Section */}
-            <Typography variant="h6" sx={{marginTop: '40px', marginBottom: '20px'}}>
+            <Typography variant="h6" sx={{ marginTop: '40px', marginBottom: '20px' }}>
                 Registered Users
             </Typography>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>Phone</TableCell>
-                            <TableCell>Username</TableCell>
-                            <TableCell>Role</TableCell>
-                            <TableCell align="right">Actions</TableCell>
+                        <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                            <TableCell sx={{ py: 1 }}>Name</TableCell>
+                            <TableCell sx={{ py: 1 }}>Email</TableCell>
+                            <TableCell sx={{ py: 1 }}>Phone</TableCell>
+                            <TableCell sx={{ py: 1 }}>Username</TableCell>
+                            <TableCell sx={{ py: 1 }}>Role</TableCell>
+                            <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {users.map((user) => (<TableRow key={user.id}>
-                            <TableCell>{user.name}</TableCell>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell>{user.phone}</TableCell>
-                            <TableCell>{user.username}</TableCell>
-                            <TableCell>{user.role}</TableCell>
-                            <TableCell align="right">
-                                <IconButton
-                                    color="primary"
-                                    onClick={() => {
+                        {users
+                            .slice(startIndex, startIndex + rowsPerPage)
+                            .map((user) => (<TableRow key={user.id}>
+                                <TableCell sx={{ py: 0 }}>{user.name}</TableCell>
+                                <TableCell sx={{ py: 0 }}>{user.email}</TableCell>
+                                <TableCell sx={{ py: 0 }}>{user.phone}</TableCell>
+                                <TableCell sx={{ py: 0 }}>{user.username}</TableCell>
+                                <TableCell sx={{ py: 0 }}>{user.role}</TableCell>
+                                <TableCell sx={{ py: 0 }} align="right">
+                                    <IconButton
+                                        color="primary"
+                                        onClick={() => {
 
-                                        handleOpen(user)
-                                    }}
-                                    sx={{marginRight: '8px'}}
-                                >
-                                    <EditIcon/>
-                                </IconButton>
-                                <IconButton color="error">
-                                    <DeleteIcon onClick={() => {
-                                        handleDeleteUser(user)
-                                    }}/>
-                                </IconButton>
-                            </TableCell>
-                        </TableRow>))}
+                                            handleOpen(user)
+                                        }}
+                                        sx={{ marginRight: '8px' }}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton color="error">
+                                        <DeleteIcon onClick={() => {
+                                            handleDeleteUser(user)
+                                        }} />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>))}
                     </TableBody>
                 </Table>
+                <TablePagination
+                    component="div"
+                    count={users.length}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    rowsPerPageOptions={[10, 25, 50, 100]}
+                />
             </TableContainer>
 
             {/* Edit User Modal */}
@@ -328,7 +353,7 @@ const UserRegistrationPage = () => {
                         name="name"
                         value={currentUser?.name || ''}
                         onChange={handleInputChange}
-                        sx={{marginBottom: '16px'}}
+                        sx={{ marginBottom: '16px' }}
                     />
                     <TextField
                         fullWidth
@@ -338,7 +363,7 @@ const UserRegistrationPage = () => {
                         name="email"
                         value={currentUser?.email || ''}
                         onChange={handleInputChange}
-                        sx={{marginBottom: '16px'}}
+                        sx={{ marginBottom: '16px' }}
                     />
                     <TextField
                         fullWidth
@@ -348,7 +373,7 @@ const UserRegistrationPage = () => {
                         name="phone"
                         value={currentUser?.phone || ''}
                         onChange={handleInputChange}
-                        sx={{marginBottom: '16px'}}
+                        sx={{ marginBottom: '16px' }}
                     />
                     <TextField
                         fullWidth
@@ -357,7 +382,7 @@ const UserRegistrationPage = () => {
                         name="username"
                         value={currentUser?.username || ''}
                         onChange={handleInputChange}
-                        sx={{marginBottom: '16px'}}
+                        sx={{ marginBottom: '16px' }}
                     />
                     <TextField
                         fullWidth
@@ -366,9 +391,9 @@ const UserRegistrationPage = () => {
                         name="password"
                         value={currentUser?.password || ''}
                         onChange={handleInputChange}
-                        sx={{marginBottom: '16px'}}
+                        sx={{ marginBottom: '16px' }}
                     />
-                    <FormControl fullWidth variant="outlined" sx={{marginBottom: '16px'}}>
+                    <FormControl fullWidth variant="outlined" sx={{ marginBottom: '16px' }}>
                         <InputLabel>Role</InputLabel>
                         <Select
                             name="role_id"
@@ -380,12 +405,12 @@ const UserRegistrationPage = () => {
 
                         </Select>
                     </FormControl>
-                    <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={handleSave}
-                            sx={{marginRight: '8px'}}
+                            sx={{ marginRight: '8px' }}
                         >
                             Save
                         </Button>
@@ -393,7 +418,7 @@ const UserRegistrationPage = () => {
                             variant="contained"
                             color="secondary"
                             onClick={handleClose}
-                            sx={{backgroundColor: 'gray'}}
+                            sx={{ backgroundColor: 'gray' }}
                         >
                             Cancel
                         </Button>

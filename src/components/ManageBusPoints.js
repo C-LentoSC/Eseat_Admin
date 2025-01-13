@@ -18,6 +18,7 @@ import {
     InputAdornment,
     FormControlLabel,
     Switch,
+    TablePagination
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -239,6 +240,19 @@ const ManageBusPoints = () => {
         setBusPoints([...boardingItems, ...newOrder]);
     };
 
+    //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
@@ -388,19 +402,21 @@ const ManageBusPoints = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Direction</TableCell>
-                                <TableCell>Route Point</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Direction</TableCell>
+                                <TableCell sx={{ py: 1 }}>Route Point</TableCell>
+                                <TableCell sx={{ py: 1 }}>Status</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {busPoints.map((busPoint) => (
+                            {busPoints
+                            .slice(startIndex, startIndex + rowsPerPage)
+                            .map((busPoint) => (
                                 <TableRow key={busPoint.key}>
-                                    <TableCell>{busPoint.direction}</TableCell>
-                                    <TableCell>{busPoint.routePoint}</TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -411,7 +427,7 @@ const ManageBusPoints = () => {
                                             label={busPoint.active ? "Active" : "Inactive"}
                                         />
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell sx={{ py: 0 }} align="right">
                                         <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)}
                                                     sx={{marginRight: "8px"}}>
                                             <EditIcon/>
@@ -424,6 +440,15 @@ const ManageBusPoints = () => {
                             ))}
                         </TableBody>
                     </Table>
+                     <TablePagination
+                                            component="div"
+                                            count={busPoints.length}
+                                            page={page}
+                                            onPageChange={handleChangePage}
+                                            rowsPerPage={rowsPerPage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                            rowsPerPageOptions={[10, 25, 50, 100]}
+                                        />
                 </TableContainer>
 
                 {/* Edit Modal */}
