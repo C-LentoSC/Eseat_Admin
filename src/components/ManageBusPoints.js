@@ -276,47 +276,54 @@ const ManageBusPoints = () => {
 
                 {/* Form Section */}
                 <Box component="form" sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <Autocomplete
-                        value={direction}
-                        onChange={(event, newValue) => setDirection(newValue)}
-                        options={["Boarding", "Dropping"]}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Direction"
-                                variant="outlined"
-                                InputProps={{
-                                    ...params.InputProps,
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            {/* <AccountCircleIcon /> */}
-                                        </InputAdornment>
-                                    ),
-                                }}
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={4}>
+                            <Autocomplete
+                                value={direction}
+                                onChange={(event, newValue) => setDirection(newValue)}
+                                options={["Boarding", "Dropping"]}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Direction"
+                                        variant="outlined"
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    {/* <AccountCircleIcon /> */}
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                )}
                             />
-                        )}
-                    />
+                        </Grid>
 
-                    <Autocomplete
-                        value={routePoint}
-                        onChange={(event, newValue) => setRoutePoint(newValue)}
-                        options={allPoints}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Route Point"
-                                variant="outlined"
-                                InputProps={{
-                                    ...params.InputProps,
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            {/* <AccountCircleIcon /> */}
-                                        </InputAdornment>
-                                    ),
-                                }}
+                        <Grid item xs={12} sm={4}>
+                            <Autocomplete
+                                value={routePoint}
+                                onChange={(event, newValue) => setRoutePoint(newValue)}
+                                options={allPoints}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Route Point"
+                                        variant="outlined"
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    {/* <AccountCircleIcon /> */}
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                )}
                             />
-                        )}
-                    />
+                        </Grid>
+                        
+                    </Grid>
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
                         <Button
@@ -324,6 +331,7 @@ const ManageBusPoints = () => {
                             color="primary"
                             onClick={handleAddBusPoint}
                             sx={{
+                                width: "200px",
                                 padding: "12px 24px",
                                 fontWeight: "bold",
                                 borderRadius: "4px",
