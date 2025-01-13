@@ -16,6 +16,7 @@ import {
     Modal,
     IconButton,
     InputAdornment,
+    TablePagination
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -124,6 +125,18 @@ const ManageBusFacilities = () => {
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
 
+        //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
     return (
         <Container component="main" maxWidth="lg" sx={{py: 0}}>
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
@@ -215,24 +228,26 @@ const ManageBusFacilities = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Facility Name</TableCell>
-                                <TableCell>Icon</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Facility Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>Icon</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {facilities.map((facility) => (
+                            {facilities
+                            .slice(startIndex, startIndex + rowsPerPage)
+                            .map((facility) => (
                                 <TableRow key={facility.id}>
-                                    <TableCell>{facility.name}</TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ py: 0 }}>{facility.name}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>
                                         <img
                                             src={facility.icon}
                                             alt={facility.name}
                                             style={{width: '40px', height: '40px'}}
                                         />
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell sx={{ py: 0 }} align="right">
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleOpen(facility)}
@@ -248,6 +263,15 @@ const ManageBusFacilities = () => {
                             ))}
                         </TableBody>
                     </Table>
+                      <TablePagination
+                                            component="div"
+                                            count={facilities.length}
+                                            page={page}
+                                            onPageChange={handleChangePage}
+                                            rowsPerPage={rowsPerPage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                            rowsPerPageOptions={[10, 25, 50, 100]}
+                                        />
                 </TableContainer>
 
                 {/* Edit Facility Modal */}
