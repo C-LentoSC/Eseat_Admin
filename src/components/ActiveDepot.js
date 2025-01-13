@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Container,
@@ -29,17 +29,17 @@ const ActiveDepot = () => {
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Sample data
-    const [depots,setDepots] = useState([]);
-    const loadAllDepots=()=>{
+    const [depots, setDepots] = useState([]);
+    const loadAllDepots = () => {
         api.get('admin/bus/all-depot')
-            .then(res=>{
+            .then(res => {
                 setDepots(res.data)
             })
             .catch(handleError)
     }
-    const loadAllRegions=()=>{
+    const loadAllRegions = () => {
         api.get('admin/bus/all-regions')
-            .then(res=>{
+            .then(res => {
                 setRegions(res.data)
             })
             .catch(handleError)
@@ -53,7 +53,7 @@ const ActiveDepot = () => {
     const [selectedDepot, setSelectedDepot] = useState(null);
 
     // Sample regions and depots
-    const [regions,setRegions] = useState([]);
+    const [regions, setRegions] = useState([]);
     const depotNames = depots.map(depot => depot.name);
 
     // Filter handlers
@@ -78,7 +78,7 @@ const ActiveDepot = () => {
         return true;
     });
 
-        //Pagination
+    //Pagination
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const handleChangePage = (event, newPage) => {
@@ -90,11 +90,11 @@ const ActiveDepot = () => {
     };
     const startIndex = page * rowsPerPage;
     //End Pagination
-    
+
     return (
         <Container component="main" maxWidth="lg">
 
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert} setOpen={setAlert} /> : <></>}
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert} setOpen={setAlert} /> : <></>}
 
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
@@ -160,7 +160,7 @@ const ActiveDepot = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}} >
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }} >
                                 <TableCell sx={{ py: 1 }}>Depot ID</TableCell>
                                 <TableCell sx={{ py: 1 }}>Depot Name</TableCell>
                                 <TableCell sx={{ py: 1 }}>Region</TableCell>
@@ -170,26 +170,26 @@ const ActiveDepot = () => {
                         </TableHead>
                         <TableBody>
                             {filteredDepots
-                             .slice(startIndex, startIndex + rowsPerPage)
-                             .map((depot) => (
-                                <TableRow key={depot.id}>
-                                    <TableCell sx={{ py: 0 }}>{depot.id}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{depot.name}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{depot.region}</TableCell>
-                                    <TableCell sx={{ py: 0 }} align="center">{depot.activeBusCount}</TableCell>
-                                    <TableCell sx={{ py: 0 }} align="right">
-                                        <IconButton
-                                            color="info"
-                                            onClick={() => handleView(depot.id)}
-                                        >
-                                            <VisibilityIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((depot) => (
+                                    <TableRow key={depot.id}>
+                                        <TableCell sx={{ py: 0 }}>{depot.id}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.name}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.region}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="center">{depot.activeBusCount}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton
+                                                color="info"
+                                                onClick={() => handleView(depot.id)}
+                                            >
+                                                <VisibilityIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                        <TablePagination
+                    <TablePagination
                         component="div"
                         count={filteredDepots.length}
                         page={page}

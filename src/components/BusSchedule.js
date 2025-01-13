@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -19,6 +19,7 @@ import {
     Chip,
     FormControlLabel,
     Checkbox,
+    TablePagination
 } from "@mui/material";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -33,21 +34,21 @@ import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
 
 const BusSchedule = () => {
-      const BusID = sessionStorage.getItem('currentValueID');
+    const BusID = sessionStorage.getItem('currentValueID');
 
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
-    const [details,setDetails] =
-    useState({
-        routID: BusID,
-        ScheduleNum: "",
-        CityName: "",
-    });
-    const loadInfo=()=>{
+    const [details, setDetails] =
+        useState({
+            routID: BusID,
+            ScheduleNum: "",
+            CityName: "",
+        });
+    const loadInfo = () => {
         api.get(`admin/bus/schedule/${BusID}/info`)
-            .then(res=>{
+            .then(res => {
                 setDetails(res.data.main)
                 setCities(res.data.sub)
                 setSelected(res.data.layout)
@@ -81,7 +82,7 @@ const BusSchedule = () => {
         blockedSeats: []
     });
 
-    const [cities,setCities] = useState([]);
+    const [cities, setCities] = useState([]);
 
     const handleDateSelect = (date) => {
         const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -100,7 +101,7 @@ const BusSchedule = () => {
                 .filter(([_, isBlocked]) => isBlocked)
                 .map(([seatId]) => seatId)
         };
-        let arr=[]
+        let arr = []
 
         if (enableMultiDates && selectedDates.length > 0) {
             const baseTravel = dayjs(formData.travelDate);
@@ -121,7 +122,7 @@ const BusSchedule = () => {
 
             arr.push(...newSchedules);
         } else {
-            arr.push( {
+            arr.push({
                 id: BusID,
                 ...scheduleData,
                 travelDate: dayjs(formData.travelDate).format('YYYY-MM-DD'),
@@ -129,9 +130,9 @@ const BusSchedule = () => {
                 closingDate: dayjs(formData.closingDate).format('YYYY-MM-DD')
             });
         }
-        arr.forEach(i=>{
-            api.post('admin/bus/schedule/add',i)
-                .then(res=>{
+        arr.forEach(i => {
+            api.post('admin/bus/schedule/add', i)
+                .then(res => {
                     loadInfo()
                     handleCloseAdd();
                 })
@@ -145,7 +146,7 @@ const BusSchedule = () => {
         item.blockedSeats?.forEach(seatId => {
             blockedSeatsObj[seatId] = true;
         });
-        setShowSeatLayout(item.blockedSeats.length!==0)
+        setShowSeatLayout(item.blockedSeats.length !== 0)
         setBlockedSeats(blockedSeatsObj);
         setCurrentSchedule({
             ...item,
@@ -168,8 +169,8 @@ const BusSchedule = () => {
             closingDate: dayjs(currentSchedule.closingDate).format('YYYY-MM-DD')
         };
 
-        api.post('admin/bus/schedule/edit',updatedSchedule)
-            .then(res=>{
+        api.post('admin/bus/schedule/edit', updatedSchedule)
+            .then(res => {
                 loadInfo()
                 setOpenEdit(false);
                 setBlockedSeats({});
@@ -204,8 +205,8 @@ const BusSchedule = () => {
     };
 
     const handleDelete = (id) => {
-        api.post('admin/bus/schedule/delete',{id})
-            .then(res=>{
+        api.post('admin/bus/schedule/delete', { id })
+            .then(res => {
                 loadInfo()
             })
             .catch(handleError)
@@ -284,7 +285,7 @@ const BusSchedule = () => {
         </div>
     );
 
-    const [selectedLayout,setSelected] = useState(
+    const [selectedLayout, setSelected] = useState(
         {
             id: 1,
             layoutName: "2x2 Luxury Layout",
@@ -353,11 +354,24 @@ const BusSchedule = () => {
         }));
     };
 
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Container maxWidth="lg">
                 {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                      setOpen={setAlert}/> : <></>}
+                    setOpen={setAlert} /> : <></>}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 3, py: 2 }}>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
@@ -392,49 +406,60 @@ const BusSchedule = () => {
                     <TableContainer component={Paper}>
                         <Table>
                             <TableHead>
-                                <TableRow>
-                                    <TableCell>From - To</TableCell>
-                                    <TableCell>Travel Date</TableCell>
-                                    <TableCell>Start Time</TableCell>
-                                    <TableCell>End Date</TableCell>
-                                    <TableCell>End Time</TableCell>
-                                    <TableCell>Closing Date</TableCell>
-                                    <TableCell>ClosingTimes</TableCell>
-                                    <TableCell align="right">Actions</TableCell>
+                                <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                    <TableCell sx={{ py: 1 }}>From - To</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Travel Date</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Start Time</TableCell>
+                                    <TableCell sx={{ py: 1 }}>End Date</TableCell>
+                                    <TableCell sx={{ py: 1 }}>End Time</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Closing Date</TableCell>
+                                    <TableCell sx={{ py: 1 }}>ClosingTimes</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {schedule.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>{item.from} - {item.to}</TableCell>
-                                        <TableCell>{item.travelDate}</TableCell>
-                                        <TableCell>{item.startTime}</TableCell>
-                                        <TableCell>{item.endDate}</TableCell>
-                                        <TableCell>{item.endTime}</TableCell>
-                                        <TableCell>{item.closingDate}</TableCell>
-                                        <TableCell>
-                                            {item.closingTime}
-                                        </TableCell>
-                                        <TableCell align="right">
+                                {schedule
+                                    .slice(startIndex, startIndex + rowsPerPage)
+                                    .map((item) => (
+                                        <TableRow key={item.id}>
+                                            <TableCell sx={{ py: 0 }}>{item.from} - {item.to}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>{item.travelDate}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>{item.startTime}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>{item.endDate}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>{item.endTime}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>{item.closingDate}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>
+                                                {item.closingTime}
+                                            </TableCell>
+                                            <TableCell sx={{ py: 0 }} align="right">
 
-                                            <IconButton
-                                                color="primary"
-                                                onClick={() => handleEdit(item)}
-                                                sx={{ marginRight: "8px" }}
-                                            >
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                color="error"
-                                                onClick={() => handleDelete(item.id)}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                                <IconButton
+                                                    color="primary"
+                                                    onClick={() => handleEdit(item)}
+                                                    sx={{ marginRight: "8px" }}
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton
+                                                    color="error"
+                                                    onClick={() => handleDelete(item.id)}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                             </TableBody>
                         </Table>
+                        <TablePagination
+                            component="div"
+                            count={schedule.length}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            rowsPerPage={rowsPerPage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            rowsPerPageOptions={[10, 25, 50, 100]}
+                        />
                     </TableContainer>
 
 
