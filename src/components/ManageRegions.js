@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -30,7 +30,7 @@ import api from "../model/API";
 const ManageRegions = () => {
     const [regions, setRegions] = useState([]);//
     const [alert, setAlert] = useState(null)
-
+    const [addmodel, setAddmodel] = useState(false);
 
     const [regionName, setRegionName] = useState("");
     const [mobile, setMobile] = useState("");
@@ -39,9 +39,9 @@ const ManageRegions = () => {
     const [description, setDescription] = useState("");
     const [open, setOpen] = useState(false);
     const [currentRegion, setCurrentRegion] = useState(null);
-    const loadRegions=()=>{
+    const loadRegions = () => {
         api.get('admin/region/all')
-            .then(res=>{
+            .then(res => {
                 setRegions(res.data)
             })
             .catch(handleError)
@@ -49,12 +49,12 @@ const ManageRegions = () => {
     useEffect(() => {
         loadRegions()
     }, []);
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Add new region
     const handleAddRegion = () => {
-        if (regionName && mobile && address && email ) {
+        if (regionName && mobile && address && email) {
             const newRegion = {
                 regionName,
                 mobile,
@@ -63,8 +63,9 @@ const ManageRegions = () => {
                 description,
 
             };
-            api.post('admin/region/add',newRegion)
-                .then(res=>{
+            api.post('admin/region/add', newRegion)
+                .then(res => {
+                    handleClose();
                     loadRegions()
                     setRegionName("");
                     setMobile("");
@@ -88,12 +89,13 @@ const ManageRegions = () => {
     const handleClose = () => {
         setCurrentRegion(null);
         setOpen(false);
+        setAddmodel(false);
     };
 
     // Save Edited Region
     const handleSave = () => {
-        api.post('admin/region/edit',currentRegion)
-            .then(res=>{
+        api.post('admin/region/edit', currentRegion)
+            .then(res => {
                 loadRegions()
                 sendAlert('updated')
                 handleClose();
@@ -103,14 +105,14 @@ const ManageRegions = () => {
 
     // Handle Input Changes
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        setCurrentRegion({...currentRegion, [name]: value});
+        const { name, value } = e.target;
+        setCurrentRegion({ ...currentRegion, [name]: value });
     };
 
     // Delete Region
     const handleDelete = (id) => {
-        api.post('admin/region/delete',{id})
-            .then(res=>{
+        api.post('admin/region/delete', { id })
+            .then(res => {
                 loadRegions()
                 sendAlert('deleted')
             })
@@ -119,8 +121,8 @@ const ManageRegions = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        api.post('admin/region/toggle-status',{id})
-            .then(res=>{
+        api.post('admin/region/toggle-status', { id })
+            .then(res => {
                 loadRegions()
             })
             .catch(handleError)
@@ -230,136 +232,193 @@ const ManageRegions = () => {
     // };
 
     //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
 
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
-            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+                setOpen={setAlert} /> : <></>}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
-                <Typography variant="h5" sx={{fontWeight: 600, marginBottom: "20px"}}>
+                {/* <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
                     Manage Regions
-                </Typography>
+                </Typography> */}
 
-                {/* Form Section */}
-                <Box component="form" sx={{width: "100%"}}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Region Name"
-                                variant="outlined"
-                                required
-                                value={regionName}
-                                onChange={(e) => setRegionName(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
 
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Mobile"
-                                variant="outlined"
-                                required
-                                value={mobile}
-                                onChange={(e) => setMobile(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
+                {/* Registration Form Section */}
+                <Modal open={addmodel} onClose={handleClose}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: "90%",
+                            maxWidth: 600,
+                            bgcolor: 'background.paper',
+                            border: '2px solid gray',
+                            boxShadow: 24,
+                            p: 4,
+                            borderRadius: '10px',
+                        }}
+                    >
 
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Email"
-                                variant="outlined"
-                                required
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Address"
-                                variant="outlined"
-                                required
-                                value={address}
-                                onChange={(e) => setAddress(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Description"
-                                variant="outlined"
-                                required
-                                multiline
-                                rows={4}
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                            />
-                        </Grid>
-                    </Grid>
-
-                    <Box sx={{display: "flex", justifyContent: "flex-end", marginTop: "30px"}}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleAddRegion}
-                            sx={{
-                                padding: "12px 24px",
-                                fontWeight: "bold",
-                                borderRadius: "4px",
-                                backgroundColor: "#3f51b5",
-                                color: "#fff",
-                                "&:hover": {
-                                    backgroundColor: "#303f9f",
-                                },
-                            }}
-                        >
+                        <Typography variant="h6" gutterBottom>
                             Add Region
-                        </Button>
+                        </Typography>
+
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Region Name"
+                                    variant="outlined"
+                                    required
+                                    value={regionName}
+                                    onChange={(e) => setRegionName(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Mobile"
+                                    variant="outlined"
+                                    required
+                                    value={mobile}
+                                    onChange={(e) => setMobile(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Email"
+                                    variant="outlined"
+                                    required
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Address"
+                                    variant="outlined"
+                                    required
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Description"
+                                    variant="outlined"
+                                    required
+                                    multiline
+                                    rows={4}
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                />
+                            </Grid>
+                        </Grid>
+
+
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleAddRegion}
+                                sx={{ marginRight: '8px' }}
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleClose}
+                                sx={{ backgroundColor: 'gray' }}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
                     </Box>
+                </Modal>
+
+                <Box sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2,
+                    mt: 3,
+                    flexWrap: "wrap",
+                    gap: 2
+                }}>
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
+                            Manage Regions
+                        </Typography>
+                    </Box>
+                    <Button
+                        variant="contained"
+                        onClick={() => setAddmodel(true)}
+                        sx={{
+                            padding: "6px 24px",
+                            fontWeight: "bold",
+                            borderRadius: "4px",
+                            height: "40px",
+                            backgroundColor: "#3f51b5",
+                            color: "#fff",
+                            "&:hover": {
+                                backgroundColor: "#303f9f",
+                            },
+                        }}
+                    >
+                        Add Region
+                    </Button>
                 </Box>
 
-                <Box
+
+                {/* <Box
                     sx={{
                         width: "100%",
                         display: "flex",
@@ -374,7 +433,7 @@ const ManageRegions = () => {
                         All Regions
                     </Typography>
 
-                    {/* <Box sx={{
+                     <Box sx={{
                         display: "flex",
                         justifyContent: "flex-end",
                         gap: 2,
@@ -409,8 +468,8 @@ const ManageRegions = () => {
                             Import
                             <input type="file" accept=".csv" hidden onChange={handleImport} />
                         </Button>
-                    </Box> */}
-                </Box>
+                    </Box>
+                </Box>  */}
 
                 <TableContainer component={Paper}>
                     <Table>
@@ -427,53 +486,53 @@ const ManageRegions = () => {
                         </TableHead>
                         <TableBody>
                             {regions
-                            .slice(startIndex, startIndex + rowsPerPage)
-                            .map((region) => (
-                                <TableRow key={region.id}>
-                                    <TableCell sx={{ py: 0 }}>{region.regionName}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{region.mobile}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{region.email}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{region.address}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{region.description}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={region.active}
-                                                    onChange={() => handleActiveChange(region.id)}
-                                                />
-                                            }
-                                            label={region.active ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{ py: 0 }} align="right">
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleOpen(region)}
-                                            sx={{marginRight: "8px"}}
-                                        >
-                                            <EditIcon/>
-                                        </IconButton>
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDelete(region.id)}
-                                        >
-                                            <DeleteIcon/>
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((region) => (
+                                    <TableRow key={region.id}>
+                                        <TableCell sx={{ py: 0 }}>{region.regionName}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{region.mobile}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{region.email}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{region.address}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{region.description}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={region.active}
+                                                        onChange={() => handleActiveChange(region.id)}
+                                                    />
+                                                }
+                                                label={region.active ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleOpen(region)}
+                                                sx={{ marginRight: "8px" }}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleDelete(region.id)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                     <TablePagination
-                                            component="div"
-                                            count={regions.length}
-                                            page={page}
-                                            onPageChange={handleChangePage}
-                                            rowsPerPage={rowsPerPage}
-                                            onRowsPerPageChange={handleChangeRowsPerPage}
-                                            rowsPerPageOptions={[10, 25, 50, 100]}
-                                        />
+                    <TablePagination
+                        component="div"
+                        count={regions.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Edit Modal */}
@@ -502,7 +561,7 @@ const ManageRegions = () => {
                             name="regionName"
                             value={currentRegion?.regionName || ""}
                             onChange={handleInputChange}
-                            sx={{marginBottom: "16px"}}
+                            sx={{ marginBottom: "16px" }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -517,7 +576,7 @@ const ManageRegions = () => {
                             name="mobile"
                             value={currentRegion?.mobile || ""}
                             onChange={handleInputChange}
-                            sx={{marginBottom: "16px"}}
+                            sx={{ marginBottom: "16px" }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -533,7 +592,7 @@ const ManageRegions = () => {
                             type="email"
                             value={currentRegion?.email || ""}
                             onChange={handleInputChange}
-                            sx={{marginBottom: "16px"}}
+                            sx={{ marginBottom: "16px" }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -548,7 +607,7 @@ const ManageRegions = () => {
                             name="address"
                             value={currentRegion?.address || ""}
                             onChange={handleInputChange}
-                            sx={{marginBottom: "16px"}}
+                            sx={{ marginBottom: "16px" }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -565,14 +624,14 @@ const ManageRegions = () => {
                             rows={4}
                             value={currentRegion?.description || ""}
                             onChange={handleInputChange}
-                            sx={{marginBottom: "16px"}}
+                            sx={{ marginBottom: "16px" }}
                         />
-                        <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSave}
-                                sx={{marginRight: "8px"}}
+                                sx={{ marginRight: "8px" }}
                             >
                                 Save
                             </Button>

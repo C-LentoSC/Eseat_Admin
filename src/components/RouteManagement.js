@@ -383,7 +383,7 @@ const RouteManagement = () => {
                         All Routes
                     </Typography> */}
 
-                    <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
                         Route Management
                     </Typography>
 
