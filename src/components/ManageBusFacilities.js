@@ -158,7 +158,7 @@ const ManageBusFacilities = () => {
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
                             width: "90%",
-                            maxWidth: 600,
+                            maxWidth: 400,
                             bgcolor: 'background.paper',
                             border: '2px solid gray',
                             boxShadow: 24,
@@ -172,7 +172,7 @@ const ManageBusFacilities = () => {
                         </Typography>
 
                         <Grid container spacing={3}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={12}>
                                 <TextField
                                     fullWidth
                                     label="Facility Name"
@@ -189,7 +189,7 @@ const ManageBusFacilities = () => {
                                     }}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'row' }}>
+                            <Grid item xs={12} sm={12} sx={{ display: 'flex', flexDirection: 'row' }}>
                                 <Button
                                     variant="contained"
                                     component="label"
