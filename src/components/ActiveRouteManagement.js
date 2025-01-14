@@ -122,7 +122,7 @@ const ActiveRouteManagement = () => {
                     </Typography>
 
 
-                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1, justifyContent: "flex-end" }}>
                         <TextField
                             label="Route No"
                             value={fillRouteNo}
