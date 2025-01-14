@@ -386,7 +386,7 @@ const RouteManagement = () => {
                         width: "100%",
                         display: "flex",
                         flexDirection: "row",
-                        marginTop: "50px",
+                        marginTop: "20px",
                         marginBottom: "20px",
                         justifyContent: "space-between",
                         alignItems: "center",
