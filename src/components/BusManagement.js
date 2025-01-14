@@ -1097,7 +1097,7 @@ const BusManagement = () => {
                         />)}
                     />
                     <TextField
-                        label="Bus Code"
+                        label="Schedule No"
                         value={selectedBusCode}
                         onChange={(e) => setSelectedBusCode(e.target.value)}
                         InputProps={{
