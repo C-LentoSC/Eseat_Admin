@@ -461,14 +461,14 @@ const BusManagement = () => {
         const layout = layouts.find(l => l.id === bus.layoutId);
 
         setNewBus({
-            ...bus, 
+            ...bus,
             paymentMethods: bus.paymentMethods || {
                 card: false, cash: false, bank: false, ezcash: false, reload: false
             },
             bookactivity: {
                 online: false, counter: false
             },
-             settings: bus.settings || {
+            settings: bus.settings || {
                 onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
             }
         });
@@ -878,26 +878,28 @@ const BusManagement = () => {
                         />
                     </div>
 
-                    <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="bg-gray-500">
-                                <th style={{ color: '#FFFFFF' }} className="border pl-2 p-1 text-left">Boarding
-                                    Point
-                                </th>
-                                <th style={{ color: '#FFFFFF' }} className="border pl-2 p-1 text-left">Dropping
-                                    Point
-                                </th>
-                                <th style={{ color: '#FFFFFF' }} className="border pl-2 p-1 text-left">Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {routeData.Points.map((point, index) => (<tr key={index}>
-                                <td className="border p-2">{point.boardingPoints}</td>
-                                <td className="border p-2">{point.droppingPoints}</td>
-                                <td className="border p-2">{point.price}</td>
-                            </tr>))}
-                        </tbody>
-                    </table>
+                    <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr className="bg-gray-500">
+                                    <th style={{ color: '#FFFFFF' }} className="border pl-2 p-1 text-left">Boarding
+                                        Point
+                                    </th>
+                                    <th style={{ color: '#FFFFFF' }} className="border pl-2 p-1 text-left">Dropping
+                                        Point
+                                    </th>
+                                    <th style={{ color: '#FFFFFF' }} className="border pl-2 p-1 text-left">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {routeData.Points.map((point, index) => (<tr key={index}>
+                                    <td className="border pl-2">{point.boardingPoints}</td>
+                                    <td className="border pl-2">{point.droppingPoints}</td>
+                                    <td className="border pl-2">{point.price}</td>
+                                </tr>))}
+                            </tbody>
+                        </table>
+                    </div>
                 </>)}
 
             </Grid>
