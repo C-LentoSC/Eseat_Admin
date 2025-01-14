@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Container,
@@ -23,8 +23,11 @@ import api from "../model/API";
 
 const ActiveRouteManagement = () => {
 
-    const [routes,setRoutes] = useState([ ]);
+    const [routes, setRoutes] = useState([]);
     const [alert, setAlert] = useState(null)
+    const [fillRouteNo, setFillRouteNo] = useState("");
+    const [fillStartPoint, setFillStartPoint] = useState("");
+    const [fillEndPoint, setFillEndPoint] = useState("");
 
     useEffect(() => {
         loadAllPoints()
@@ -32,7 +35,7 @@ const ActiveRouteManagement = () => {
     }, [])
     const loadAllRoutes = () => {
         api.get('admin/routes/load-all')
-            .then(res => setRoutes(res.data.filter(r=>r.active)))
+            .then(res => setRoutes(res.data.filter(r => r.active)))
             .catch(handleError)
     }
     const loadAllPoints = () => {
@@ -41,14 +44,14 @@ const ActiveRouteManagement = () => {
             .catch(handleError)
 
     }
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
 
     // State to manage the menu anchor
     const [menuAnchor, setMenuAnchor] = useState(null);
-    const [menuAnchorRoute,setMenuAnchorRoute]=useState(null)
+    const [menuAnchorRoute, setMenuAnchorRoute] = useState(null)
 
     const handleMenuOpen = (event, route) => {
         setMenuAnchor(event.currentTarget);
@@ -72,7 +75,15 @@ const ActiveRouteManagement = () => {
         handleMenuClose();
     };
 
-        //Pagination
+    const filteredRoute = routes.filter(route => {
+        const idMatch = !fillRouteNo || route.routeNo.toString().includes(fillRouteNo);
+        const startMatch = !fillStartPoint || route.startPoint.toLowerCase().includes(fillStartPoint.toLowerCase());
+        const endMatch = !fillEndPoint || route.endPoint.toLowerCase().includes(fillEndPoint.toLowerCase());
+        return idMatch && startMatch && endMatch;
+    });
+
+
+    //Pagination
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const handleChangePage = (event, newPage) => {
@@ -84,20 +95,91 @@ const ActiveRouteManagement = () => {
     };
     const startIndex = page * rowsPerPage;
     //End Pagination
-    
+
     return (
         <Container component="main" maxWidth="lg">
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                      setOpen={setAlert}/> : <></>}
+                    setOpen={setAlert} /> : <></>}
                 {/* Table Section */}
-                <Typography variant="h6" sx={{ marginBottom: "20px" }}>
-                    All Active Routes
-                </Typography>
+
+                <Box
+                    sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "row",
+                        marginTop: "50px",
+                        marginBottom: "20px",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
+
+                    <Typography variant="h6" sx={{}}>
+                        All Active Routes
+                    </Typography>
+
+
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+                        <TextField
+                            label="Route No"
+                            value={fillRouteNo}
+                            onChange={(e) => setFillRouteNo(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Start Point"
+                            value={fillStartPoint}
+                            onChange={(e) => setFillStartPoint(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="End Point"
+                            value={fillEndPoint}
+                            onChange={(e) => setFillEndPoint(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                    </Box>
+
+
+                </Box>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                                 <TableCell sx={{ py: 1 }}>Route No</TableCell>
                                 <TableCell sx={{ py: 1 }}>Start Point</TableCell>
                                 <TableCell sx={{ py: 1 }}>End Point</TableCell>
@@ -107,30 +189,30 @@ const ActiveRouteManagement = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {routes
-                         .slice(startIndex, startIndex + rowsPerPage)
-                         .map((route) => (
-                                <TableRow key={route.id}>
-                                    <TableCell sx={{ py: 0 }}>{route.routeNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{route.startPoint}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{route.endPoint}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{route.description}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>LKR {route.busFare}</TableCell>
-                                    <TableCell sx={{ py: 0 }} align="right">
-                                        <IconButton
-                                            onClick={(event) => handleMenuOpen(event, route.id)}
+                            {filteredRoute
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((route) => (
+                                    <TableRow key={route.id}>
+                                        <TableCell sx={{ py: 0 }}>{route.routeNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{route.startPoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{route.endPoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{route.description}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>LKR {route.busFare}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton
+                                                onClick={(event) => handleMenuOpen(event, route.id)}
 
-                                        >
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                            >
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                                 <TablePagination
+                    <TablePagination
                         component="div"
-                        count={routes.length}
+                        count={filteredRoute.length}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
