@@ -352,7 +352,6 @@ const ManageRegions = () => {
                                     fullWidth
                                     label="Description"
                                     variant="outlined"
-                                    required
                                     multiline
                                     rows={4}
                                     value={description}
