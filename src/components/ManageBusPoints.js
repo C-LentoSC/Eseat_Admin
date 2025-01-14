@@ -358,7 +358,7 @@ const ManageBusPoints = () => {
                             color="primary"
                             onClick={handleAddBusPoint}
                             sx={{
-                                width: "150px",
+                                width: "160px",
                                 padding: "12px 24px",
                                 fontWeight: "bold",
                                 borderRadius: "4px",
@@ -546,7 +546,7 @@ const ManageBusPoints = () => {
                             type="time"
                             label="Time"
                             value={currentBusPoint?.timePoint || ""}
-                            onChange={(e, newValue) => handleInputChange({ target: { name: "timePoint", value: newValue } })}
+                            onChange={(e) => handleInputChange({ target: { name: "timePoint", value: e.target.value } })}
                             InputLabelProps={{ shrink: true }}
                             sx={{
                                 width: '100%',
