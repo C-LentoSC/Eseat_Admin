@@ -34,6 +34,8 @@ const PointsManagement = () => {
     const [alert, setAlert] = useState(null)
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const [filterPointName, setFilterPointName] = useState("");
+
 
     useEffect(() => {
         loadAllPoints()
@@ -100,6 +102,10 @@ const PointsManagement = () => {
             .catch(handleError)
     };
 
+    const filteredPoint = points.filter(point => {
+        const nameMatch = !filterPointName || point.name.toLowerCase().includes(filterPointName.toLowerCase());
+        return nameMatch;
+    });
 
     //Pagination
     const [page, setPage] = useState(0);
@@ -120,6 +126,9 @@ const PointsManagement = () => {
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
+                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                    Points Management
+                </Typography>
 
 
                 <Modal open={addmodel} onClose={handleClose}>
@@ -196,9 +205,23 @@ const PointsManagement = () => {
                     gap: 2
                 }}>
                     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
-                            Points Management
-                        </Typography>
+                        <TextField
+                            label="Point Name"
+                            value={filterPointName}
+                            onChange={(e) => setFilterPointName(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 250,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
                     </Box>
                     <Button
                         variant="contained"
@@ -232,7 +255,7 @@ const PointsManagement = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {points
+                            {filteredPoint
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((point) => (
                                     <TableRow key={point.id}>
@@ -255,7 +278,7 @@ const PointsManagement = () => {
                     </Table>
                     <TablePagination
                         component="div"
-                        count={points.length}
+                        count={filteredPoint.length}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
