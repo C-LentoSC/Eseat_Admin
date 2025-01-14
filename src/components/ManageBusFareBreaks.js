@@ -85,6 +85,9 @@ const ManageBusFareBreaks = () => {
     const [currentBusPoint, setCurrentBusPoint] = useState(null);
     const [openOrderModal, setOpenOrderModal] = useState(false);
 
+        const [filterBoarding,setFilterBoarding] = useState("");
+        const [filterDropping,setFilterDropping] = useState("");
+
     // Add new bus point
     const handleAddBusPoint = () => {
         if (direction && routePoint && fare) {
@@ -247,6 +250,13 @@ const ManageBusFareBreaks = () => {
     };
 
 
+    const filteredOption = busPoints.filter(option => {
+        const nameMatch = !filterBoarding || option.direction.toLowerCase().includes(filterBoarding.toLowerCase());
+        const nameMatch2 = !filterDropping || option.routePoint.toLowerCase().includes(filterDropping.toLowerCase());
+        return nameMatch && nameMatch2;
+    });
+
+
     //Pagination
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -358,13 +368,13 @@ const ManageBusFareBreaks = () => {
                         </Grid>
                     </Grid>
 
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", ml:2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", ml: 2 }}>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={handleAddBusPoint}
                             sx={{
-                                width:'160px',
+                                width: '160px',
                                 padding: "12px 12px",
                                 fontWeight: "bold",
                                 borderRadius: "4px",
@@ -381,8 +391,46 @@ const ManageBusFareBreaks = () => {
                 </Box>
 
                 {/* Bus Points Table Section */}
-                <Box sx={{ width: "100%", display: "flex", flexDirection: "row", marginTop: "20px", marginBottom: "20px", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="h6">All Bus Fare Breaks</Typography>
+                <Box sx={{ width: "100%", display: "flex", flexDirection: "row", marginTop: "40px", marginBottom: "20px", justifyContent: "space-between", alignItems: "center" }}>
+
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+
+
+                        <TextField
+                            label="Boarding Point"
+                            value={filterBoarding}
+                            onChange={(e) => setFilterBoarding(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 250,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Dropping Point"
+                            value={filterDropping}
+                            onChange={(e) => setFilterDropping(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 250,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                    </Box>
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
                         <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleExport} sx={{
@@ -437,7 +485,7 @@ const ManageBusFareBreaks = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {busPoints
+                            {filteredOption
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((busPoint) => (
                                     <TableRow key={busPoint.key}>
@@ -469,7 +517,7 @@ const ManageBusFareBreaks = () => {
                     </Table>
                     <TablePagination
                         component="div"
-                        count={busPoints.length}
+                        count={filteredOption.length}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
