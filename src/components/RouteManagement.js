@@ -42,6 +42,10 @@ const RouteManagement = () => {
     const [allPoints, setAllPoints] = useState([])
     const [alert, setAlert] = useState(null)
 
+    const [fillRouteNo, setFillRouteNo] = useState("");
+    const [fillStartPoint, setFillStartPoint] = useState("");
+    const [fillEndPoint, setFillEndPoint] = useState("");
+
     useEffect(() => {
         loadAllPoints()
         loadAllRoutes()
@@ -200,6 +204,13 @@ const RouteManagement = () => {
         reader.readAsText(file);
     };
 
+    const filteredRoute = routes.filter(route => {
+        const idMatch = !fillRouteNo || route.routeNo.toString().includes(fillRouteNo);
+        const startMatch = !fillStartPoint || route.startPoint.toLowerCase().includes(fillStartPoint.toLowerCase());
+        const endMatch = !fillEndPoint || route.endPoint.toLowerCase().includes(fillEndPoint.toLowerCase());
+        return idMatch && startMatch && endMatch;
+    });
+
     //Pagination
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -219,6 +230,9 @@ const RouteManagement = () => {
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    Route Management
+                </Typography>
 
                 <Modal open={addmodel} onClose={handleClose}>
                     <Box
@@ -378,13 +392,60 @@ const RouteManagement = () => {
                         alignItems: "center",
                     }}
                 >
-                    {/* <Typography variant="h6" sx={{}}>
-                        All Routes
-                    </Typography> */}
 
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        Route Management
-                    </Typography>
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+                        <TextField
+                            label="Route No"
+                            value={fillRouteNo}
+                            onChange={(e) => setFillRouteNo(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Start Point"
+                            value={fillStartPoint}
+                            onChange={(e) => setFillStartPoint(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="End Point"
+                            value={fillEndPoint}
+                            onChange={(e) => setFillEndPoint(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                    </Box>
 
                     <Box sx={{
                         display: "flex",
@@ -453,7 +514,7 @@ const RouteManagement = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {routes
+                            {filteredRoute
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((route) => (
                                     <TableRow key={route.id}>
@@ -494,7 +555,7 @@ const RouteManagement = () => {
                     </Table>
                     <TablePagination
                         component="div"
-                        count={routes.length}
+                        count={filteredRoute.length}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
