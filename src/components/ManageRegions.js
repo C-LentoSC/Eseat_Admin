@@ -32,6 +32,10 @@ const ManageRegions = () => {
     const [alert, setAlert] = useState(null)
     const [addmodel, setAddmodel] = useState(false);
 
+    const [filterRegionName,setFilterRegionName] = useState("");
+    const [filterMobile,setFilterMobile] = useState("");
+    const [filterEmail,setFilterEmail] = useState("");
+
     const [regionName, setRegionName] = useState("");
     const [mobile, setMobile] = useState("");
     const [address, setAddress] = useState("");
@@ -231,6 +235,14 @@ const ManageRegions = () => {
     //     reader.readAsText(file);
     // };
 
+
+    const filteredoption = regions.filter(option => {
+        const nameMatch = !filterRegionName || option.regionName.toLowerCase().includes(filterRegionName.toLowerCase());
+        const nameMatch2 = !filterMobile|| option.mobile.toLowerCase().includes(filterMobile.toLowerCase());
+        const nameMatch3 = !filterEmail|| option.email.toLowerCase().includes(filterEmail.toLowerCase());
+        return nameMatch && nameMatch2 && nameMatch3;
+    });
+
     //Pagination
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -253,6 +265,9 @@ const ManageRegions = () => {
                 {/* <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
                     Manage Regions
                 </Typography> */}
+                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
+                    Manage Regions
+                </Typography>
 
 
                 {/* Registration Form Section */}
@@ -393,9 +408,57 @@ const ManageRegions = () => {
                     gap: 2
                 }}>
                     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
-                            Manage Regions
-                        </Typography>
+                        <TextField
+                            label="Region Name"
+                            value={filterRegionName}
+                            onChange={(e) => setFilterRegionName(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Mobile"
+                            value={filterMobile}
+                            onChange={(e) => setFilterMobile(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Email"
+                            value={filterEmail}
+                            onChange={(e) => setFilterEmail(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
                     </Box>
                     <Button
                         variant="contained"
@@ -484,7 +547,7 @@ const ManageRegions = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {regions
+                            {filteredoption
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((region) => (
                                     <TableRow key={region.id}>
@@ -525,7 +588,7 @@ const ManageRegions = () => {
                     </Table>
                     <TablePagination
                         component="div"
-                        count={regions.length}
+                        count={filteredoption.length}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}

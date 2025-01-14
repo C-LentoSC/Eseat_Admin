@@ -80,6 +80,10 @@ const ManageDepots = () => {
     const [open, setOpen] = useState(false);
     const [currentDepot, setCurrentDepot] = useState(null);
 
+    const [filterRegion, setFilterRegion] = useState("");
+    const [filterDepotName, setFilterDepotName] = useState("");
+    const [filterDSName, setFilterDSName] = useState("");
+    const [filterMobile, setFilterMobile] = useState("");
 
 
     // Handle form input changes
@@ -188,6 +192,15 @@ const ManageDepots = () => {
             .catch(handleError)
     };
 
+
+    const filteredoption = depots.filter(option => {
+        const nameMatch = !filterRegion || option.region.toLowerCase().includes(filterRegion.toLowerCase());
+        const nameMatch2 = !filterDepotName|| option.depotName.toLowerCase().includes(filterDepotName.toLowerCase());
+        const nameMatch3 = !filterDSName|| option.dsName.toLowerCase().includes(filterDSName.toLowerCase());
+        const nameMatch4 = !filterMobile|| option.mobile.toLowerCase().includes(filterMobile.toLowerCase());
+        return nameMatch && nameMatch2 && nameMatch3 && nameMatch4;
+    });
+
     //Pagination
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -210,7 +223,9 @@ const ManageDepots = () => {
                 {/* <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
                     Manage Depots
                 </Typography> */}
-
+                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
+                    Manage Depots
+                </Typography>
 
 
 
@@ -395,9 +410,75 @@ const ManageDepots = () => {
                     gap: 2
                 }}>
                     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
-                            Manage Depots
-                        </Typography>
+
+                        <TextField
+                            label="Region"
+                            value={filterRegion}
+                            onChange={(e) => setFilterRegion(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 150,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Depot Name"
+                            value={filterDepotName}
+                            onChange={(e) => setFilterDepotName(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 150,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="DS Name"
+                            value={filterDSName}
+                            onChange={(e) => setFilterDSName(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 150,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Mobile"
+                            value={filterMobile}
+                            onChange={(e) => setFilterMobile(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 150,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
                     </Box>
                     <Button
                         variant="contained"
@@ -440,7 +521,7 @@ const ManageDepots = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {depots
+                            {filteredoption
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((depot) => (
                                     <TableRow key={depot.id}>
@@ -482,7 +563,7 @@ const ManageDepots = () => {
                     </Table>
                     <TablePagination
                         component="div"
-                        count={depots.length}
+                        count={filteredoption.length}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
