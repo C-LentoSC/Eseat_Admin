@@ -32,7 +32,8 @@ import dayjs from 'dayjs';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 const BusReport = () => {
 
   const [schedules, setSchedules] = useState([
@@ -342,6 +343,19 @@ const BusReport = () => {
       summary: [],
     },
   ]);
+  const loadAll=()=>{
+    api.get('admin/schedule-report/get-all')
+        .then(res=>{
+          setSchedules(res.data);
+        })
+        .catch(handleError)
+  }
+  useEffect(() => {
+    loadAll()
+  }, []);
+  const [alert, setAlert] = useState(null);
+  const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+  const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -694,6 +708,52 @@ const BusReport = () => {
     </Box>
   );
 
+  // const renderSeatLayout = (layout) => {
+  //   const rows = 6;
+  //   const cols = 13;
+  //   const grid = [];
+  //
+  //   for (let i = 0; i < rows; i++) {
+  //     for (let j = 0; j < cols; j++) {
+  //       const seatId = `seat-${i}-${j}`;
+  //       const seatInfo = layout.seatDetails[seatId];
+  //
+  //       // Add seat (selected or empty) to the grid
+  //       grid.push(
+  //         seatInfo ? (
+  //           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1">
+  //             <SeatIcon status={seatInfo.status} />
+  //             {seatInfo?.seatNumber && (
+  //               <span style={{ left: "11px", fontWeight: "bold", color: "#FFFFFF" }} className="setpadding01 absolute text-xs font-medium cursor-pointer">
+  //                 {seatInfo.seatNumber}
+  //               </span>
+  //             )}
+  //           </div>
+  //         ) : (
+  //           <div key={seatId} >
+  //             <EmpltySeatIcon />
+  //           </div>
+  //         )
+  //       );
+  //     }
+  //   }
+  //
+  //   return (
+  //     <div
+  //       style={{
+  //         display: 'grid',
+  //         gridTemplateRows: `repeat(${rows}, 1fr)`,
+  //         gridTemplateColumns: `repeat(${cols}, 1fr)`,
+  //         // gap: '10px',
+  //         marginTop: '10px',
+  //         maxWidth: '800px',
+  //         maxHeight: '400px',
+  //       }}
+  //     >
+  //       {grid}
+  //     </div>
+  //   );
+  // };
   const renderSeatLayout = (layout) => {
     const rows = 6;
     const cols = 13;
@@ -706,38 +766,52 @@ const BusReport = () => {
 
         // Add seat (selected or empty) to the grid
         grid.push(
-          seatInfo ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1">
-              <SeatIcon status={seatInfo.status} />
-              {seatInfo?.seatNumber && (
-                <span style={{ left: "11px", fontWeight: "bold", color: "#FFFFFF" }} className="setpadding01 absolute text-xs font-medium cursor-pointer">
-                  {seatInfo.seatNumber}
-                </span>
-              )}
-            </div>
-          ) : (
-            <div key={seatId} >
-              <EmpltySeatIcon />
-            </div>
-          )
+            seatInfo ? (
+                <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    key={seatId}
+                    className="relative m-1"
+                >
+                  <SeatIcon status={seatInfo.status || "default"} />
+                  {seatInfo.seatNumber && (
+                      <span
+                          style={{
+                            left: "11px",
+                            fontWeight: "bold",
+                            color: "#FFFFFF",
+                          }}
+                          className="setpadding01 absolute text-xs font-medium cursor-pointer"
+                      >
+                {String(seatInfo.seatNumber)}
+              </span>
+                  )}
+                </div>
+            ) : (
+                <div key={seatId}>
+                  <EmpltySeatIcon />
+                </div>
+            )
         );
       }
     }
 
     return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateRows: `repeat(${rows}, 1fr)`,
-          gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          // gap: '10px',
-          marginTop: '10px',
-          maxWidth: '800px',
-          maxHeight: '400px',
-        }}
-      >
-        {grid}
-      </div>
+        <div
+            style={{
+              display: 'grid',
+              gridTemplateRows: `repeat(${rows}, 1fr)`,
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              marginTop: '10px',
+              maxWidth: '800px',
+              maxHeight: '400px',
+            }}
+        >
+          {grid}
+        </div>
     );
   };
 
@@ -754,9 +828,12 @@ const BusReport = () => {
     const startIndex = page * rowsPerPage;
     //End Pagination
 
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container component="main" maxWidth="lg">
+        {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                              setOpen={setAlert}/> : <></>}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
             Bus Schedule Report
@@ -1074,7 +1151,7 @@ const BusReport = () => {
                         ))}
                       </TableBody>
                     </Table>
-                          
+
                   </TableContainer>
                 </div>
 
@@ -1107,7 +1184,7 @@ const BusReport = () => {
                         ))}
                       </TableBody>
                     </Table>
-                        
+
                   </TableContainer>
                 </div>
 

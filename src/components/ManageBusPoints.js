@@ -74,7 +74,7 @@ const ManageBusPoints = () => {
 
 
     const [busPoints, setBusPoints] = useState([]);
-
+    const [timePoint, setTimePoint] = useState("");
     const [direction, setDirection] = useState("");
     const [routePoint, setRoutePoint] = useState("");
     const [open, setOpen] = useState(false);
@@ -275,7 +275,7 @@ const ManageBusPoints = () => {
                 </Box>
 
                 {/* Form Section */}
-                <Box component="form" sx={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", height:'45px' }}>
+                <Box component="form" sx={{ width: "100%", display: "flex", justifyContent: "center", height: "45px" }}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={4}>
                             <Autocomplete
@@ -294,6 +294,11 @@ const ManageBusPoints = () => {
                                                     {/* <AccountCircleIcon /> */}
                                                 </InputAdornment>
                                             ),
+                                        }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                height: '45px',
+                                            }
                                         }}
                                     />
                                 )}
@@ -318,14 +323,36 @@ const ManageBusPoints = () => {
                                                 </InputAdornment>
                                             ),
                                         }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                height: '45px',
+                                            }
+                                        }}
                                     />
                                 )}
                             />
                         </Grid>
-                        
+
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                type="time"
+                                label="Time"
+                                value={timePoint}
+                                onChange={(e) => setTimePoint(e.target.value)}
+                                InputLabelProps={{ shrink: true }}
+                                sx={{
+                                    width: "100%",
+                                    '& .MuiOutlinedInput-root': {
+                                        height: '45px',
+                                    }
+                                }}
+                            />
+
+                        </Grid>
+
                     </Grid>
 
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", ml: 2 }}>
                         <Button
                             variant="contained"
                             color="primary"
@@ -407,6 +434,7 @@ const ManageBusPoints = () => {
                             <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                                 <TableCell sx={{ py: 1 }}>Direction</TableCell>
                                 <TableCell sx={{ py: 1 }}>Route Point</TableCell>
+                                <TableCell sx={{ py: 1 }}>Time</TableCell>
                                 <TableCell sx={{ py: 1 }}>Status</TableCell>
                                 <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
@@ -418,6 +446,7 @@ const ManageBusPoints = () => {
                                     <TableRow key={busPoint.key}>
                                         <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.timePoint}</TableCell>
                                         <TableCell sx={{ py: 0 }}>
                                             <FormControlLabel
                                                 control={
@@ -511,6 +540,20 @@ const ManageBusPoints = () => {
                                     sx={{ marginBottom: "16px" }}
                                 />
                             )}
+                        />
+
+                        <TextField
+                            type="time"
+                            label="Time"
+                            value={currentBusPoint?.timePoint || ""}
+                            onChange={(e, newValue) => handleInputChange({ target: { name: "timePoint", value: newValue } })}
+                            InputLabelProps={{ shrink: true }}
+                            sx={{
+                                width: '100%',
+                                marginBottom: "16px",
+                                '& .MuiOutlinedInput-root': {
+                                }
+                            }}
                         />
 
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -607,7 +650,7 @@ const ManageBusPoints = () => {
                 </Modal>
 
             </Box>
-        </Container>
+        </Container >
     );
 };
 
