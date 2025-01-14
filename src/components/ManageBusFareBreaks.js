@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -35,15 +35,15 @@ import CustomAlert from "./Parts/CustomAlert";
 
 const ManageBusFareBreaks = () => {
 
-      const RouteID = sessionStorage.getItem('currentValueID');
+    const RouteID = sessionStorage.getItem('currentValueID');
 
-    const [details,setDetails] =useState({
-        id:RouteID,
-        CityName:""
+    const [details, setDetails] = useState({
+        id: RouteID,
+        CityName: ""
     })
     const [alert, setAlert] = useState(null)
-    const [d,setD]=useState([])
-    const [b,setB]=useState([])
+    const [d, setD] = useState([])
+    const [b, setB] = useState([])
     useEffect(() => {
         getInfo()
         loadPoints()
@@ -65,15 +65,15 @@ const ManageBusFareBreaks = () => {
             .catch(handleError)
     }
 
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     const [busPoints, setBusPoints] = useState([
 
     ]);
-    const loadAll=()=>{
-        api.get('admin/routes/fare/all?id='+RouteID)
-            .then(res=>{
+    const loadAll = () => {
+        api.get('admin/routes/fare/all?id=' + RouteID)
+            .then(res => {
                 setBusPoints(res.data)
             })
             .catch(handleError)
@@ -97,8 +97,8 @@ const ManageBusFareBreaks = () => {
                 active: true,
             };
             // setBusPoints((prev) => [...prev, newBusPoint]);
-            api.post('admin/routes/fare/add',newBusPoint)
-                .then(res=>{
+            api.post('admin/routes/fare/add', newBusPoint)
+                .then(res => {
                     loadAll()
                     setDirection("");
                     setRoutePoint("");
@@ -124,8 +124,8 @@ const ManageBusFareBreaks = () => {
 
     // Save Edited Bus Point
     const handleSaveBusPoint = () => {
-        api.post('admin/routes/fare/edit',currentBusPoint)
-            .then(res=>{
+        api.post('admin/routes/fare/edit', currentBusPoint)
+            .then(res => {
                 loadAll()
                 handleCloseModal();
                 sendAlert('updated')
@@ -143,8 +143,8 @@ const ManageBusFareBreaks = () => {
 
     // Delete Bus Point
     const handleDeleteBusPoint = (id) => {
-        api.post('admin/routes/fare/delete',{id})
-            .then(res=>{
+        api.post('admin/routes/fare/delete', { id })
+            .then(res => {
                 loadAll()
                 sendAlert('deleted')
             }).catch(handleError)
@@ -152,8 +152,8 @@ const ManageBusFareBreaks = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        api.post('admin/routes/fare/toggle-status',{id})
-            .then(res=>{
+        api.post('admin/routes/fare/toggle-status', { id })
+            .then(res => {
                 loadAll()
             })
             .catch(handleError)
@@ -202,8 +202,8 @@ const ManageBusFareBreaks = () => {
                 })
                 .filter((busPoint) => busPoint !== null);
             // setBusPoints((prev) => [...prev, ...newBusPoints]);
-            api.post('admin/routes/fare/import',{id:RouteID,data:newBusPoints})
-                .then(res=>{
+            api.post('admin/routes/fare/import', { id: RouteID, data: newBusPoints })
+                .then(res => {
                     loadAll()
                     sendAlert('import succsess')
                 })
@@ -223,12 +223,14 @@ const ManageBusFareBreaks = () => {
 
     // Save the reordered bus points
     const handleSaveOrder = () => {
-        const nO=(busPoints.map((value, index) => {return {
-            id:value.id,
-            key:index
-        }}))
-        api.post('admin/routes/fare/change-order',{data:nO})
-            .then(res=>{
+        const nO = (busPoints.map((value, index) => {
+            return {
+                id: value.id,
+                key: index
+            }
+        }))
+        api.post('admin/routes/fare/change-order', { data: nO })
+            .then(res => {
                 loadAll()
             })
             .catch(handleError)
@@ -245,22 +247,22 @@ const ManageBusFareBreaks = () => {
     };
 
 
-        //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
+                setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 
                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginBottom: "20px", justifyContent: "center" }}>
@@ -273,7 +275,7 @@ const ManageBusFareBreaks = () => {
                 </Box>
 
                 {/* Form Section */}
-                <Box component="form" sx={{ width: "100%" }}>
+                <Box component="form" sx={{ width: "100%", display: "flex", justifyContent: "center", height: "45px" }}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={4}>
                             <Autocomplete
@@ -292,6 +294,11 @@ const ManageBusFareBreaks = () => {
                                                     {/* <AccountCircleIcon /> */}
                                                 </InputAdornment>
                                             ),
+                                        }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                height: '45px',
+                                            }
                                         }}
                                     />
                                 )}
@@ -316,6 +323,11 @@ const ManageBusFareBreaks = () => {
                                                 </InputAdornment>
                                             ),
                                         }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                height: '45px',
+                                            }
+                                        }}
                                     />
                                 )}
                             />
@@ -337,17 +349,23 @@ const ManageBusFareBreaks = () => {
                                         </InputAdornment>
                                     ),
                                 }}
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        height: '45px',
+                                    }
+                                }}
                             />
                         </Grid>
                     </Grid>
 
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", ml:2 }}>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={handleAddBusPoint}
                             sx={{
-                                padding: "12px 24px",
+                                width:'160px',
+                                padding: "12px 12px",
                                 fontWeight: "bold",
                                 borderRadius: "4px",
                                 backgroundColor: "#3f51b5",
@@ -363,7 +381,7 @@ const ManageBusFareBreaks = () => {
                 </Box>
 
                 {/* Bus Points Table Section */}
-                <Box sx={{ width: "100%", display: "flex", flexDirection: "row", marginTop: "50px", marginBottom: "20px", justifyContent: "space-between", alignItems: "center" }}>
+                <Box sx={{ width: "100%", display: "flex", flexDirection: "row", marginTop: "20px", marginBottom: "20px", justifyContent: "space-between", alignItems: "center" }}>
                     <Typography variant="h6">All Bus Fare Breaks</Typography>
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
@@ -420,44 +438,44 @@ const ManageBusFareBreaks = () => {
                         </TableHead>
                         <TableBody>
                             {busPoints
-                            .slice(startIndex, startIndex + rowsPerPage)
-                            .map((busPoint) => (
-                                <TableRow key={busPoint.key}>
-                                    <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{busPoint.fare}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={busPoint.active}
-                                                    onChange={() => handleActiveChange(busPoint.id)}
-                                                />
-                                            }
-                                            label={busPoint.active ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{ py: 0 }} align="right">
-                                        <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)} sx={{ marginRight: "8px" }}>
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton color="error" onClick={() => handleDeleteBusPoint(busPoint.id)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((busPoint) => (
+                                    <TableRow key={busPoint.key}>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.fare}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={busPoint.active}
+                                                        onChange={() => handleActiveChange(busPoint.id)}
+                                                    />
+                                                }
+                                                label={busPoint.active ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)} sx={{ marginRight: "8px" }}>
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton color="error" onClick={() => handleDeleteBusPoint(busPoint.id)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                      <TablePagination
-                                            component="div"
-                                            count={busPoints.length}
-                                            page={page}
-                                            onPageChange={handleChangePage}
-                                            rowsPerPage={rowsPerPage}
-                                            onRowsPerPageChange={handleChangeRowsPerPage}
-                                            rowsPerPageOptions={[10, 25, 50, 100]}
-                                        />
+                    <TablePagination
+                        component="div"
+                        count={busPoints.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Edit Modal */}
