@@ -81,6 +81,9 @@ const ManageBusPoints = () => {
     const [currentBusPoint, setCurrentBusPoint] = useState(null);
     const [openOrderModal, setOpenOrderModal] = useState(false);
 
+    const [filterDirection,setFilterDirection] = useState("");
+    const [filterRoute,setFilterRoute] = useState("");
+
     // Add new bus point
     const handleAddBusPoint = () => {
         if (direction && routePoint) {
@@ -240,6 +243,13 @@ const ManageBusPoints = () => {
         setBusPoints([...boardingItems, ...newOrder]);
     };
 
+
+    const filteredOption = busPoints.filter(option => {
+        const nameMatch = !filterDirection || option.direction.toLowerCase().includes(filterDirection.toLowerCase());
+        const nameMatch2 = !filterRoute || option.routePoint.toLowerCase().includes(filterRoute.toLowerCase());
+        return nameMatch && nameMatch2;
+    });
+
     //Pagination
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -379,12 +389,58 @@ const ManageBusPoints = () => {
                     width: "100%",
                     display: "flex",
                     flexDirection: "row",
-                    marginTop: "20px",
+                    marginTop: "40px",
                     marginBottom: "20px",
                     justifyContent: "space-between",
                     alignItems: "center"
                 }}>
-                    <Typography variant="h6">All Bus Points</Typography>
+
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+
+                        <Autocomplete
+                            value={filterDirection}
+                            onChange={(event, newValue) => setFilterDirection(newValue)}
+                            options={["Boarding", "Dropping"]}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Direction"
+                                    variant="outlined"
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                {/* <AccountCircleIcon /> */}
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    sx={{
+                                        width: 250,
+                                        '& .MuiOutlinedInput-root': {
+                                            height: '40px',
+                                        }
+                                    }}
+                                />
+                            )}
+                        />
+                        <TextField
+                            label="Route"
+                            value={filterRoute}
+                            onChange={(e) => setFilterRoute(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 250,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                    </Box>
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
                         <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleExport}
@@ -440,7 +496,7 @@ const ManageBusPoints = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {busPoints
+                            {filteredOption
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((busPoint) => (
                                     <TableRow key={busPoint.key}>
@@ -473,7 +529,7 @@ const ManageBusPoints = () => {
                     </Table>
                     <TablePagination
                         component="div"
-                        count={busPoints.length}
+                        count={filteredOption.length}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
