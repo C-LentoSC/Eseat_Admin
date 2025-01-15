@@ -90,7 +90,8 @@ const ManageBusPoints = () => {
             const newBusPoint = {
                 direction,
                 routePoint,
-                route: RouteID
+                route: RouteID,
+                timePoint
             };
             api.post("admin/routes/points/add", newBusPoint)
                 .then(res => {
@@ -98,6 +99,7 @@ const ManageBusPoints = () => {
                     sendAlert('new point added')
                     setDirection("");
                     setRoutePoint("");
+                    setTimePoint("")
                 })
                 .catch(handleError)
         }
@@ -122,6 +124,7 @@ const ManageBusPoints = () => {
                 sendAlert("updated")
                 allPointGet()
                 handleCloseModal();
+                setTimePoint(null)
             })
             .catch(handleError)
 
