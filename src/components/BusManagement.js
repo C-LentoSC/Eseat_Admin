@@ -107,133 +107,7 @@ const BusManagement = () => {
             .catch(handleError)
     }
 
-    const [layouts, setLayOuts] = useState([{
-        id: 1,
-        layoutName: "2x2 Luxury Layout",
-        busType: "Luxury Buses",
-        seatsCount: 40,
-        description: "Standard luxury bus layout with 2x2 configuration",
-        seatDetails: {
-            "seat-0-0": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }, "seat-0-12": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }, "seat-5-0": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }, "seat-5-12": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }, "seat-4-12": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }, "seat-3-12": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }, "seat-2-12": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }, "seat-1-12": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }, "seat-0-13": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }, "seat-0-1": {
-                seatNumber: "A1",
-                serviceChargeCTB: "100",
-                serviceChargeHGH: "150",
-                serviceChargeOther: "50",
-                corporateTax: "25",
-                vat: "15",
-                discount: "10",
-                otherCharges: "30",
-                agentCommission: "75",
-                bankCharges: "20"
-            }
-        }
-    }, {
-        id: 2,
-        layoutName: "3x2 Normal Layout",
-        busType: "Normal Buses",
-        seatsCount: 50,
-        description: "Standard normal bus layout with 3x2 configuration",
-        seatDetails: {}
-    }]);
+    const [layouts, setLayOuts] = useState([]);
 
     const [buses, setBuses] = useState([]);
 
@@ -354,7 +228,7 @@ const BusManagement = () => {
                 oi.push(r)
             } else oi.push(otherImages[i])
         }
-        console.log(selectedFacilities)
+
         const formattedBus = {
             id: newBus.id || Math.max(...buses.map(b => b.id)) + 1,
             scheduleNumber: newBus.scheduleNumber,
@@ -377,7 +251,8 @@ const BusManagement = () => {
                 main: (mainImage.startsWith('blob')) ? (await fetch(mainImage).then(res => res.blob())) : mainImage,
                 others: oi
             },
-            layoutId: selectedLayout?.id
+            layoutId: selectedLayout?.id,
+            bookactivity:newBus.bookactivity??{}
         };
         if (editMode) api.post('admin/bus/edit', formattedBus, { headers: { "Content-Type": "multipart/form-data" } })
             .then(res => {
@@ -402,7 +277,7 @@ const BusManagement = () => {
                         wifi: false, usb: false, seatBelt: false, phoneCharger: false
                     },
                     settings: {
-                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
+                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
                     }
                 });
                 setEditMode(false)
@@ -465,9 +340,7 @@ const BusManagement = () => {
             paymentMethods: bus.paymentMethods || {
                 card: false, cash: false, bank: false, ezcash: false, reload: false
             },
-            bookactivity: {
-                online: false, counter: false
-            },
+
             settings: bus.settings || {
                 onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
             }
@@ -748,7 +621,7 @@ const BusManagement = () => {
             <Grid item xs={12} sm={6}>
                 <FormControlLabel
                     control={<Checkbox
-                        checked={newBus.bookactivity.online}
+                        checked={newBus.bookactivity.online||false}
                         onChange={(e) => setNewBus(prev => ({
                             ...prev, bookactivity: {
                                 ...prev.bookactivity, online: e.target.checked
@@ -761,7 +634,7 @@ const BusManagement = () => {
             <Grid item xs={12} sm={6}>
                 <FormControlLabel
                     control={<Checkbox
-                        checked={newBus.bookactivity.counter}
+                        checked={newBus.bookactivity.counter||false}
                         onChange={(e) => setNewBus(prev => ({
                             ...prev, bookactivity: {
                                 ...prev.bookactivity, counter: e.target.checked
@@ -1204,6 +1077,30 @@ const BusManagement = () => {
                 open={addModalOpen}
                 onClose={() => {
                     setAddModalOpen(false);
+                    setEditMode(false)
+                    setMainImage(null)
+                    setOtherImages([])
+                    setNewBus({
+                        scheduleNumber: "",
+                        busType: "",
+                        route: "",
+                        routeNo: "",
+                        seats: "",
+                        busModel: "",
+                        status: true,
+                        paymentMethods: {
+                            card: false, cash: false, bank: false, ezcash: false, reload: false
+                        },
+                        bookactivity: {
+                            online: false, counter: false
+                        },
+                        facilities: {
+
+                        },
+                        settings: {
+                            onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
+                        }
+                    });
                 }}
             >
                 <Box sx={{
