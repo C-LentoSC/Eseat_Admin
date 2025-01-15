@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, IconButton,
-    Dialog, DialogTitle, DialogContent, DialogActions, Button, TablePagination
+    Dialog, DialogTitle, DialogContent, DialogActions, Button
 } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
 import dayjs from 'dayjs';
@@ -65,20 +65,6 @@ const TicketCancelRequests = () => {
         setConfirmDialogOpen(false);
     };
 
-
-    //Pagination
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-    const startIndex = page * rowsPerPage;
-    //End Pagination
-
     return (
         <Container component="main" maxWidth="lg">
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -90,65 +76,54 @@ const TicketCancelRequests = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                <TableCell sx={{ py: 1 }}>Ref.</TableCell>
-                                <TableCell sx={{ py: 1 }}>Request Date</TableCell>
-                                <TableCell sx={{ py: 1 }}>Book Date</TableCell>
-                                <TableCell sx={{ py: 1 }}>Travel Date</TableCell>
-                                <TableCell sx={{ py: 1 }}>Cancel Type</TableCell>
-                                <TableCell sx={{ py: 1 }}>Canceled By</TableCell>
-                                <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Depot</TableCell>
-                                <TableCell sx={{ py: 1 }}>Route</TableCell>
-                                <TableCell sx={{ py: 1 }}>Seats No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Name</TableCell>
-                                <TableCell sx={{ py: 1 }}>Mobile No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Bank Info</TableCell>
-                                <TableCell sx={{ py: 1 }}>Net Amount</TableCell>
-                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
+                            <TableRow>
+                                <TableCell>Ref.</TableCell>
+                                <TableCell>Request Date</TableCell>
+                                <TableCell>Book Date</TableCell>
+                                <TableCell>Travel Date</TableCell>
+                                <TableCell>Cancel Type</TableCell>
+                                <TableCell>Canceled By</TableCell>
+                                <TableCell>Schedule No</TableCell>
+                                <TableCell>Depot</TableCell>
+                                <TableCell>Route</TableCell>
+                                <TableCell>Seats No</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Mobile No</TableCell>
+                                <TableCell>Bank Info</TableCell>
+                                <TableCell>Net Amount</TableCell>
+                                <TableCell align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {requests
-                                .slice(startIndex, startIndex + rowsPerPage)
-                                .map((request) => (
-                                    <TableRow key={request.id}>
-                                        <TableCell sx={{ py: 0 }}>{request.refNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{dayjs(request.requestDate).format('YYYY-MM-DD')}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{dayjs(request.bookDate).format('YYYY-MM-DD')}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{dayjs(request.travelDate).format('YYYY-MM-DD')}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.cancelType}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.canceledBy}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.scheduleNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.depot}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.route}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.seatNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.name}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.mobileNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.bankInfo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{request.netAmount}</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
-                                            <IconButton
-                                                onClick={() => handleCancelClick(request)}
-                                                color="error"
-                                                disabled={request.isCanceled}
-                                            >
-                                                <Cancel />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                            {requests.map((request) => (
+                                <TableRow key={request.id}>
+                                    <TableCell>{request.refNo}</TableCell>
+                                    <TableCell>{dayjs(request.requestDate).format('YYYY-MM-DD')}</TableCell>
+                                    <TableCell>{dayjs(request.bookDate).format('YYYY-MM-DD')}</TableCell>
+                                    <TableCell>{dayjs(request.travelDate).format('YYYY-MM-DD')}</TableCell>
+                                    <TableCell>{request.cancelType}</TableCell>
+                                    <TableCell>{request.canceledBy}</TableCell>
+                                    <TableCell>{request.scheduleNo}</TableCell>
+                                    <TableCell>{request.depot}</TableCell>
+                                    <TableCell>{request.route}</TableCell>
+                                    <TableCell>{request.seatNo}</TableCell>
+                                    <TableCell>{request.name}</TableCell>
+                                    <TableCell>{request.mobileNo}</TableCell>
+                                    <TableCell>{request.bankInfo}</TableCell>
+                                    <TableCell>{request.netAmount}</TableCell>
+                                    <TableCell align="right">
+                                        <IconButton
+                                            onClick={() => handleCancelClick(request)}
+                                            color="error"
+                                            disabled={request.isCanceled}
+                                        >
+                                            <Cancel />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
-                    <TablePagination
-                        component="div"
-                        count={requests.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                    />
                 </TableContainer>
 
                 {/* Cancel Confirmation Dialog */}

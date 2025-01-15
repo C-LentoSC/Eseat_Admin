@@ -4,7 +4,7 @@ import {
     TableContainer, TableHead, TableRow, Paper, Grid,
     TextField, InputAdornment, Button, IconButton,
     Dialog, DialogTitle, DialogContent, DialogActions,
-    Modal,Autocomplete, TablePagination
+    Modal,Autocomplete
 } from '@mui/material';
 import { NoteAdd, CheckCircle, FileDownload } from '@mui/icons-material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -176,19 +176,6 @@ const RefundBooking = () => {
         URL.revokeObjectURL(url);
     };
 
-        //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
-
     return (
         <Container component="main" maxWidth="lg">
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -330,40 +317,38 @@ const RefundBooking = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                <TableCell sx={{ py: 1 }}>Ref.</TableCell>
-                                <TableCell sx={{ py: 1 }}>V-Code</TableCell>
-                                <TableCell sx={{ py: 1 }}>Book Date</TableCell>
-                                <TableCell sx={{ py: 1 }}>Travel Date</TableCell>
-                                <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Depot</TableCell>
-                                <TableCell sx={{ py: 1 }}>Route</TableCell>
-                                <TableCell sx={{ py: 1 }}>Seats No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Name</TableCell>
-                                <TableCell sx={{ py: 1 }}>Mobile No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Net Amount</TableCell>
-                                <TableCell sx={{ py: 1 }}>Bank Details</TableCell>
-                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
+                            <TableRow>
+                                <TableCell>Ref.</TableCell>
+                                <TableCell>V-Code</TableCell>
+                                <TableCell>Book Date</TableCell>
+                                <TableCell>Travel Date</TableCell>
+                                <TableCell>Schedule No</TableCell>
+                                <TableCell>Depot</TableCell>
+                                <TableCell>Route</TableCell>
+                                <TableCell>Seats No</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Mobile No</TableCell>
+                                <TableCell>Net Amount</TableCell>
+                                <TableCell>Bank Details</TableCell>
+                                <TableCell align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredBookings
-                             .slice(startIndex, startIndex + rowsPerPage)
-                             .map((booking) => (
+                            {filteredBookings.map((booking) => (
                                 <TableRow key={booking.id}>
-                                    <TableCell sx={{ py: 0 }}>{booking.refNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.vCode}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.bookDate}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.travelDate}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.scheduleNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.depot}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.route}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.seatNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.name}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.mobileNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.netAmount}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.bankDetails}</TableCell>
-                                    <TableCell sx={{ py: 0 }} align="right">
+                                    <TableCell>{booking.refNo}</TableCell>
+                                    <TableCell>{booking.vCode}</TableCell>
+                                    <TableCell>{booking.bookDate}</TableCell>
+                                    <TableCell>{booking.travelDate}</TableCell>
+                                    <TableCell>{booking.scheduleNo}</TableCell>
+                                    <TableCell>{booking.depot}</TableCell>
+                                    <TableCell>{booking.route}</TableCell>
+                                    <TableCell>{booking.seatNo}</TableCell>
+                                    <TableCell>{booking.name}</TableCell>
+                                    <TableCell>{booking.mobileNo}</TableCell>
+                                    <TableCell>{booking.netAmount}</TableCell>
+                                    <TableCell>{booking.bankDetails}</TableCell>
+                                    <TableCell align="right">
                                         <IconButton
                                             onClick={() => handleNoteClick(booking)}
                                             color="primary"
@@ -382,15 +367,6 @@ const RefundBooking = () => {
                             ))}
                         </TableBody>
                     </Table>
-                     <TablePagination
-                                            component="div"
-                                            count={filteredBookings.length}
-                                            page={page}
-                                            onPageChange={handleChangePage}
-                                            rowsPerPage={rowsPerPage}
-                                            onRowsPerPageChange={handleChangeRowsPerPage}
-                                            rowsPerPageOptions={[10, 25, 50, 100]}
-                                        />
                 </TableContainer>
 
                 {/* Note Modal */}

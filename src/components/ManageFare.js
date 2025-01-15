@@ -14,8 +14,7 @@ import {
     TableHead,
     TableBody,
     TableRow,
-    TableCell,
-    TablePagination
+    TableCell
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -125,19 +124,6 @@ const ManageFare = () => {
             })
             .catch(handleError)
     };
-
-    //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
 
     return (
         <Container maxWidth="lg">
@@ -290,20 +276,18 @@ const ManageFare = () => {
                     <TableContainer>
                         <Table>
                             <TableHead>
-                                <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                    <TableCell sx={{ py: 1 }}>Route</TableCell>
-                                    <TableCell sx={{ py: 1 }} align="right">Current Fare</TableCell>
-                                    <TableCell sx={{ py: 1 }} align="center">=</TableCell>
-                                    <TableCell sx={{ py: 1 }} align="right">New Fare</TableCell>
+                                <TableRow>
+                                    <TableCell>Route</TableCell>
+                                    <TableCell align="right">Current Fare</TableCell>
+                                    <TableCell align="center">=</TableCell>
+                                    <TableCell align="right">New Fare</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {routes
-                                .slice(startIndex, startIndex + rowsPerPage)
-                                .map((route) => (
+                                {routes.map((route) => (
                                     <TableRow key={route.id}>
-                                        <TableCell sx={{ py: 0 }}>{route.name}</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
+                                        <TableCell>{route.name}</TableCell>
+                                        <TableCell align="right">
                                             <TextField
                                                 disabled
                                                 value={`LKR ${route.oldFare}`}
@@ -311,8 +295,8 @@ const ManageFare = () => {
                                                 sx={{ width: 150 }}
                                             />
                                         </TableCell>
-                                        <TableCell sx={{ py: 0 }} align="center">=</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
+                                        <TableCell align="center">=</TableCell>
+                                        <TableCell align="right">
                                             <TextField
                                                 value={route.newFare}
                                                 onChange={(e) => handleFareChange(route.id, e.target.value)}
@@ -327,15 +311,6 @@ const ManageFare = () => {
                                 ))}
                             </TableBody>
                         </Table>
-                         <TablePagination
-                                                component="div"
-                                                count={routes.length}
-                                                page={page}
-                                                onPageChange={handleChangePage}
-                                                rowsPerPage={rowsPerPage}
-                                                onRowsPerPageChange={handleChangeRowsPerPage}
-                                                rowsPerPageOptions={[10, 25, 50, 100]}
-                                            />
                     </TableContainer>
                 </Paper>
             </Box>

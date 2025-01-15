@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
-    TextField, InputAdornment, Button, TablePagination
+    TextField, InputAdornment, Button
 } from '@mui/material';
 import { FileDownload } from '@mui/icons-material';
 import dayjs from 'dayjs';
@@ -47,11 +47,11 @@ const TicketMarkingSystem = () => {
 
     // Filter tickets based on criteria
     const filteredTickets = tickets.filter(ticket => {
-        const depotMatch = !depot ||
+        const depotMatch = !depot || 
             ticket.depot.toLowerCase().includes(depot.toLowerCase());
-        const scheduleMatch = !scheduleNo ||
+        const scheduleMatch = !scheduleNo || 
             ticket.scheduleNo.toLowerCase().includes(scheduleNo.toLowerCase());
-        const vCodeMatch = !vCode ||
+        const vCodeMatch = !vCode || 
             ticket.vCode.toLowerCase().includes(vCode.toLowerCase());
 
         return depotMatch && scheduleMatch && vCodeMatch;
@@ -117,20 +117,6 @@ const TicketMarkingSystem = () => {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     };
-
-
-    //Pagination
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-    const startIndex = page * rowsPerPage;
-    //End Pagination
 
     return (
         <Container component="main" maxWidth="lg">
@@ -222,49 +208,38 @@ const TicketMarkingSystem = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                <TableCell sx={{ py: 1 }}>Ref No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Ticket Type</TableCell>
-                                <TableCell sx={{ py: 1 }}>Seat No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Depot</TableCell>
-                                <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
-                                <TableCell sx={{ py: 1 }}>V-Code</TableCell>
-                                <TableCell sx={{ py: 1 }}>Mode of Pay</TableCell>
-                                <TableCell sx={{ py: 1 }}>Route</TableCell>
-                                <TableCell sx={{ py: 1 }}>NIC</TableCell>
-                                <TableCell sx={{ py: 1 }}>Booked By</TableCell>
-                                <TableCell sx={{ py: 1 }}>Booked Date</TableCell>
+                            <TableRow>
+                                <TableCell>Ref No</TableCell>
+                                <TableCell>Ticket Type</TableCell>
+                                <TableCell>Seat No</TableCell>
+                                <TableCell>Depot</TableCell>
+                                <TableCell>Schedule No</TableCell>
+                                <TableCell>V-Code</TableCell>
+                                <TableCell>Mode of Pay</TableCell>
+                                <TableCell>Route</TableCell>
+                                <TableCell>NIC</TableCell>
+                                <TableCell>Booked By</TableCell>
+                                <TableCell>Booked Date</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredTickets
-                                .slice(startIndex, startIndex + rowsPerPage)
-                                .map((ticket) => (
-                                    <TableRow key={ticket.id}>
-                                        <TableCell sx={{ py: 0 }}>{ticket.refNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.ticketType}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.seatNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.depot}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.scheduleNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.vCode}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.modeOfPay}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.route}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.nic}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.bookedBy}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.bookedDate}</TableCell>
-                                    </TableRow>
-                                ))}
+                            {filteredTickets.map((ticket) => (
+                                <TableRow key={ticket.id}>
+                                    <TableCell>{ticket.refNo}</TableCell>
+                                    <TableCell>{ticket.ticketType}</TableCell>
+                                    <TableCell>{ticket.seatNo}</TableCell>
+                                    <TableCell>{ticket.depot}</TableCell>
+                                    <TableCell>{ticket.scheduleNo}</TableCell>
+                                    <TableCell>{ticket.vCode}</TableCell>
+                                    <TableCell>{ticket.modeOfPay}</TableCell>
+                                    <TableCell>{ticket.route}</TableCell>
+                                    <TableCell>{ticket.nic}</TableCell>
+                                    <TableCell>{ticket.bookedBy}</TableCell>
+                                    <TableCell>{ticket.bookedDate}</TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
-                    <TablePagination
-                        component="div"
-                        count={filteredTickets.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                    />
                 </TableContainer>
             </Box>
         </Container>

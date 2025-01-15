@@ -3,7 +3,7 @@ import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Stack,
     FormControlLabel, Switch, Autocomplete, TextField,
-    Button, Grid, InputAdornment, TablePagination
+    Button, Grid, InputAdornment
 } from '@mui/material';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
@@ -100,19 +100,6 @@ const BulkBusManagement = () => {
             .catch(handleError)
     };
 
-        //Pagination
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-    const startIndex = page * rowsPerPage;
-    //End Pagination
-    
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
@@ -337,28 +324,26 @@ const BulkBusManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
-                                <TableCell sx={{ py: 1 }}>Depot</TableCell>
-                                <TableCell sx={{ py: 1 }}>Region</TableCell>
-                                <TableCell sx={{ py: 1 }}>Route</TableCell>
-                                <TableCell sx={{ py: 1 }}>Bus Type</TableCell>
-                                <TableCell sx={{ py: 1 }}>Schedule Number</TableCell>
-                                <TableCell sx={{ py: 1 }}>Online Booking</TableCell>
-                                <TableCell sx={{ py: 1 }}>Agent Booking</TableCell>
-                                <TableCell sx={{ py: 1 }}>Bus Status</TableCell>
+                            <TableRow>
+                                <TableCell>Depot</TableCell>
+                                <TableCell>Region</TableCell>
+                                <TableCell>Route</TableCell>
+                                <TableCell>Bus Type</TableCell>
+                                <TableCell>Schedule Number</TableCell>
+                                <TableCell>Online Booking</TableCell>
+                                <TableCell>Agent Booking</TableCell>
+                                <TableCell>Bus Status</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredBuses
-                              .slice(startIndex, startIndex + rowsPerPage)
-                    .map((bus) => (
+                            {filteredBuses.map((bus) => (
                                 <TableRow key={bus.id}>
-                                    <TableCell sx={{ py: 0 }}>{bus.depot}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{bus.region}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{bus.route}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{bus.busType}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{bus.scheduleNumber}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>
+                                    <TableCell>{bus.depot}</TableCell>
+                                    <TableCell>{bus.region}</TableCell>
+                                    <TableCell>{bus.route}</TableCell>
+                                    <TableCell>{bus.busType}</TableCell>
+                                    <TableCell>{bus.scheduleNumber}</TableCell>
+                                    <TableCell>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -369,7 +354,7 @@ const BulkBusManagement = () => {
                                             label={bus.onlineBookingStatus ? "Active" : "Inactive"}
                                         />
                                     </TableCell>
-                                    <TableCell sx={{ py: 0 }}>
+                                    <TableCell>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -380,7 +365,7 @@ const BulkBusManagement = () => {
                                             label={bus.agentBookingStatus ? "Active" : "Inactive"}
                                         />
                                     </TableCell>
-                                    <TableCell sx={{ py: 0 }}>
+                                    <TableCell>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -395,15 +380,6 @@ const BulkBusManagement = () => {
                             ))}
                         </TableBody>
                     </Table>
-                                 <TablePagination
-                        component="div"
-                        count={filteredBuses.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                    />
                 </TableContainer>
             </Box>
         </Container>
