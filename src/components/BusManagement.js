@@ -1076,31 +1076,34 @@ const BusManagement = () => {
             <Modal
                 open={addModalOpen}
                 onClose={() => {
-                    setAddModalOpen(false);
-                    setEditMode(false)
-                    setMainImage(null)
-                    setOtherImages([])
-                    setNewBus({
-                        scheduleNumber: "",
-                        busType: "",
-                        route: "",
-                        routeNo: "",
-                        seats: "",
-                        busModel: "",
-                        status: true,
-                        paymentMethods: {
-                            card: false, cash: false, bank: false, ezcash: false, reload: false
-                        },
-                        bookactivity: {
-                            online: false, counter: false
-                        },
-                        facilities: {
-
-                        },
-                        settings: {
-                            onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
-                        }
-                    });
+                setNewBus({
+                    scheduleNumber: "",
+                    busType: "",
+                    route: "",
+                    routeNo: "",
+                    seats: "",
+                    busModel: "",
+                    status: true,
+                    paymentMethods: {
+                        card: false, cash: false, bank: false, ezcash: false, reload: false
+                    },
+                    bookactivity: {
+                        online: false, counter: false
+                    },
+                    facilities: {
+                        wifi: false, usb: false, seatBelt: false, phoneCharger: false
+                    },
+                    settings: {
+                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
+                    }
+                });
+                setEditMode(false)
+                setSelectedLayout(null);
+                setMainImage(null);
+                setOtherImages([]);
+                setSelectedFacilities([])
+                setRouteData(null);
+                setAddModalOpen(false);
                 }}
             >
                 <Box sx={{
@@ -1139,34 +1142,34 @@ const BusManagement = () => {
                             variant="contained"
                             color="secondary"
                             onClick={() => {
-                                setNewBus({
-                                    scheduleNumber: "",
-                                    busType: "",
-                                    route: "",
-                                    routeNo: "",
-                                    seats: "",
-                                    busModel: "",
-                                    status: true,
-                                    paymentMethods: {
-                                        card: false, cash: false, bank: false, ezcash: false, reload: false
-                                    },
-                                    facilities: {
-                                        wifi: false, usb: false, seatBelt: false, phoneCharger: false
-                                    },
-                                    settings: {
-                                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
-                                    }
-                                });
-                                setEditMode(false)
-                                setSelectedLayout(null);
-                                setMainImage(null);
-                                setOtherImages([]);
-                                setSelectedFacilities(facilities.reduce((acc, facility) => ({
-                                    ...acc, [facility.id]: false
-                                }), {}));
-                                setRouteData(null);
-                                setAddModalOpen(false);
-
+                               setNewBus({
+                    scheduleNumber: "",
+                    busType: "",
+                    route: "",
+                    routeNo: "",
+                    seats: "",
+                    busModel: "",
+                    status: true,
+                    paymentMethods: {
+                        card: false, cash: false, bank: false, ezcash: false, reload: false
+                    },
+                    bookactivity: {
+                        online: false, counter: false
+                    },
+                    facilities: {
+                        wifi: false, usb: false, seatBelt: false, phoneCharger: false
+                    },
+                    settings: {
+                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
+                    }
+                });
+                setEditMode(false)
+                setSelectedLayout(null);
+                setMainImage(null);
+                setOtherImages([]);
+                setSelectedFacilities([])
+                setRouteData(null);
+                setAddModalOpen(false);
                             }}
                             sx={{ backgroundColor: 'gray' }}
                         >
