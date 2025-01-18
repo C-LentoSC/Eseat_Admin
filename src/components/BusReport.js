@@ -347,6 +347,11 @@ const BusReport = () => {
     api.get('admin/schedule-report/get-all')
         .then(res=>{
           setSchedules(res.data);
+          if(!isModalOpen)return
+          let s=(res.data.filter(s=>s.id===selectedBus.id)[0])
+          if(s){
+            setSelectedBus(s)
+          }
         })
         .catch(handleError)
   }
@@ -355,7 +360,7 @@ const BusReport = () => {
   }, []);
   const [alert, setAlert] = useState(null);
   const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-  const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+  const handleError = (err) => setAlert({ message: err?.response?.data?.message??"error", severity: "error" })
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -487,18 +492,22 @@ const BusReport = () => {
     </Modal>
   );
 
-  const handleBookingToggle = React.useCallback((status) => () => {
+  const handleBookingToggle = React.useCallback((status,bus) => () => {
     setBookingAction(status === "opened" ? "close" : "open");
     setIsBookingStatusModalOpen(true);
   }, []);
 
   const handleBookingConfirm = () => {
     // Add your logic here to handle the status change
-    console.log({
+    api.post("admin/schedule-report/toggle-status",{
       action: bookingAction,
       conductorMobile,
-      busNumber
-    });
+      ...selectedBus
+    }).then(res=>{
+      sendAlert("status changed")
+            loadAll()
+    })
+        .catch(handleError)
 
     setIsBookingStatusModalOpen(false);
   };
@@ -514,13 +523,13 @@ const BusReport = () => {
 
   const handleStatusChangeConfirm = () => {
     const { scheduleId, newStatus } = statusChangeDialog;
-    setSchedules(prevSchedules =>
-      prevSchedules.map(schedule =>
-        schedule.id === scheduleId
-          ? { ...schedule, tripStatus: newStatus }
-          : schedule
-      )
-    );
+    console.log(scheduleId, newStatus);
+    api.post("admin/schedule-report/status-change",statusChangeDialog)
+        .then(res=>{
+          sendAlert("status changed")
+          loadAll()
+        })
+    .catch(handleError)
     setStatusChangeDialog({ open: false, scheduleId: null, newStatus: '', oldStatus: '' });
   };
 
@@ -1066,7 +1075,7 @@ const BusReport = () => {
                   <Button
                     variant="contained"
                     color={selectedBus?.status === "opened" ? "secondary" : "primary"}
-                    onClick={handleBookingToggle(selectedBus?.status)}
+                    onClick={handleBookingToggle(selectedBus?.status,selectedBus)}
                   >
                     <span className="setpadding01">{selectedBus?.status === "opened" ? 'Close Booking' : 'Open Booking'}</span>
                   </Button>
