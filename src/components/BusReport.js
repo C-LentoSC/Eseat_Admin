@@ -22,7 +22,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  TablePagination
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -31,7 +32,8 @@ import dayjs from 'dayjs';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 const BusReport = () => {
 
   const [schedules, setSchedules] = useState([
@@ -341,6 +343,19 @@ const BusReport = () => {
       summary: [],
     },
   ]);
+  const loadAll=()=>{
+    api.get('admin/schedule-report/get-all')
+        .then(res=>{
+          setSchedules(res.data);
+        })
+        .catch(handleError)
+  }
+  useEffect(() => {
+    loadAll()
+  }, []);
+  const [alert, setAlert] = useState(null);
+  const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+  const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -417,34 +432,45 @@ const BusReport = () => {
         <TableContainer component={Paper}>
           <Table size="small">
             <TableHead>
-              <TableRow>
-                <TableCell>Ref No</TableCell>
-                <TableCell>Seat No</TableCell>
-                <TableCell>V-Code</TableCell>
-                <TableCell>Mode Of Pay</TableCell>
-                <TableCell>Route</TableCell>
-                <TableCell>NIC</TableCell>
-                <TableCell>Book By</TableCell>
-                <TableCell>Book Date</TableCell>
+              <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                <TableCell sx={{ py: 1 }}>Ref No</TableCell>
+                <TableCell sx={{ py: 1 }}>Seat No</TableCell>
+                <TableCell sx={{ py: 1 }}>V-Code</TableCell>
+                <TableCell sx={{ py: 1 }}>Mode Of Pay</TableCell>
+                <TableCell sx={{ py: 1 }}>Route</TableCell>
+                <TableCell sx={{ py: 1 }}>NIC</TableCell>
+                <TableCell sx={{ py: 1 }}>Book By</TableCell>
+                <TableCell sx={{ py: 1 }}>Book Date</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {selectedTransferBus?.bookings.map((row, index) => (
+              {selectedTransferBus?.bookings
+            .slice(startIndex, startIndex + rowsPerPage)
+          .map((row, index) => (
                 row.seatStatus === 'transfer' ? (
                   <TableRow key={index}>
-                    <TableCell>{row.refNo}</TableCell>
-                    <TableCell>{row.seatNo}</TableCell>
-                    <TableCell>{row.vCode}</TableCell>
-                    <TableCell>{row.modeOfPay}</TableCell>
-                    <TableCell>{row.route}</TableCell>
-                    <TableCell>{row.nic}</TableCell>
-                    <TableCell>{row.bookedBy}</TableCell>
-                    <TableCell>{row.bookedDate}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.refNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.seatNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.vCode}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.modeOfPay}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.route}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.nic}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.bookedBy}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.bookedDate}</TableCell>
                   </TableRow>
                 ) : null
               ))}
             </TableBody>
           </Table>
+              <TablePagination
+                        component="div"
+                        count={selectedTransferBus?.bookings.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
         </TableContainer>
 
         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
@@ -682,6 +708,52 @@ const BusReport = () => {
     </Box>
   );
 
+  // const renderSeatLayout = (layout) => {
+  //   const rows = 6;
+  //   const cols = 13;
+  //   const grid = [];
+  //
+  //   for (let i = 0; i < rows; i++) {
+  //     for (let j = 0; j < cols; j++) {
+  //       const seatId = `seat-${i}-${j}`;
+  //       const seatInfo = layout.seatDetails[seatId];
+  //
+  //       // Add seat (selected or empty) to the grid
+  //       grid.push(
+  //         seatInfo ? (
+  //           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1">
+  //             <SeatIcon status={seatInfo.status} />
+  //             {seatInfo?.seatNumber && (
+  //               <span style={{ left: "11px", fontWeight: "bold", color: "#FFFFFF" }} className="setpadding01 absolute text-xs font-medium cursor-pointer">
+  //                 {seatInfo.seatNumber}
+  //               </span>
+  //             )}
+  //           </div>
+  //         ) : (
+  //           <div key={seatId} >
+  //             <EmpltySeatIcon />
+  //           </div>
+  //         )
+  //       );
+  //     }
+  //   }
+  //
+  //   return (
+  //     <div
+  //       style={{
+  //         display: 'grid',
+  //         gridTemplateRows: `repeat(${rows}, 1fr)`,
+  //         gridTemplateColumns: `repeat(${cols}, 1fr)`,
+  //         // gap: '10px',
+  //         marginTop: '10px',
+  //         maxWidth: '800px',
+  //         maxHeight: '400px',
+  //       }}
+  //     >
+  //       {grid}
+  //     </div>
+  //   );
+  // };
   const renderSeatLayout = (layout) => {
     const rows = 6;
     const cols = 13;
@@ -694,44 +766,74 @@ const BusReport = () => {
 
         // Add seat (selected or empty) to the grid
         grid.push(
-          seatInfo ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1">
-              <SeatIcon status={seatInfo.status} />
-              {seatInfo?.seatNumber && (
-                <span style={{ left: "11px", fontWeight: "bold", color: "#FFFFFF" }} className="setpadding01 absolute text-xs font-medium cursor-pointer">
-                  {seatInfo.seatNumber}
-                </span>
-              )}
-            </div>
-          ) : (
-            <div key={seatId} >
-              <EmpltySeatIcon />
-            </div>
-          )
+            seatInfo ? (
+                <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    key={seatId}
+                    className="relative m-1"
+                >
+                  <SeatIcon status={seatInfo.status || "default"} />
+                  {seatInfo.seatNumber && (
+                      <span
+                          style={{
+                            left: "11px",
+                            fontWeight: "bold",
+                            color: "#FFFFFF",
+                          }}
+                          className="setpadding01 absolute text-xs font-medium cursor-pointer"
+                      >
+                {String(seatInfo.seatNumber)}
+              </span>
+                  )}
+                </div>
+            ) : (
+                <div key={seatId}>
+                  <EmpltySeatIcon />
+                </div>
+            )
         );
       }
     }
 
     return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateRows: `repeat(${rows}, 1fr)`,
-          gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          // gap: '10px',
-          marginTop: '10px',
-          maxWidth: '800px',
-          maxHeight: '400px',
-        }}
-      >
-        {grid}
-      </div>
+        <div
+            style={{
+              display: 'grid',
+              gridTemplateRows: `repeat(${rows}, 1fr)`,
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              marginTop: '10px',
+              maxWidth: '800px',
+              maxHeight: '400px',
+            }}
+        >
+          {grid}
+        </div>
     );
   };
+
+ //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container component="main" maxWidth="lg">
+        {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                              setOpen={setAlert}/> : <></>}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
             Bus Schedule Report
@@ -839,35 +941,37 @@ const BusReport = () => {
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>Schedule No</TableCell>
-                  <TableCell>Start date</TableCell>
-                  <TableCell>Start Time</TableCell>
-                  <TableCell>Start Point</TableCell>
-                  <TableCell>End Point</TableCell>
-                  <TableCell>Route No</TableCell>
-                  <TableCell>Bus Type</TableCell>
-                  <TableCell>Bus No</TableCell>
-                  <TableCell>Conductor No</TableCell>
-                  <TableCell>Deport</TableCell>
-                  <TableCell align="center">Status</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                  <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
+                  <TableCell sx={{ py: 1 }}>Start date</TableCell>
+                  <TableCell sx={{ py: 1 }}>Start Time</TableCell>
+                  <TableCell sx={{ py: 1 }}>Start Point</TableCell>
+                  <TableCell sx={{ py: 1 }}>End Point</TableCell>
+                  <TableCell sx={{ py: 1 }}>Route No</TableCell>
+                  <TableCell sx={{ py: 1 }}>Bus Type</TableCell>
+                  <TableCell sx={{ py: 1 }}>Bus No</TableCell>
+                  <TableCell sx={{ py: 1 }}>Conductor No</TableCell>
+                  <TableCell sx={{ py: 1 }}>Deport</TableCell>
+                  <TableCell sx={{ py: 1 }} align="center">Status</TableCell>
+                  <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredSchedules.map((schedule) => (
+                {filteredSchedules
+                   .slice(startIndex, startIndex + rowsPerPage)
+                  .map((schedule) => (
                   <TableRow key={schedule.id}>
-                    <TableCell>{schedule.scheduleNo}</TableCell>
-                    <TableCell>{schedule.startDate}</TableCell>
-                    <TableCell>{schedule.startTime}</TableCell>
-                    <TableCell>{schedule.startPoint}</TableCell>
-                    <TableCell>{schedule.endPoint}</TableCell>
-                    <TableCell>{schedule.routeNo}</TableCell>
-                    <TableCell>{schedule.busType}</TableCell>
-                    <TableCell>{schedule.busNo}</TableCell>
-                    <TableCell>{schedule.conductorNo}</TableCell>
-                    <TableCell>{schedule.depot}</TableCell>
-                    <TableCell align="center">
+                    <TableCell sx={{ py: 0 }}>{schedule.scheduleNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.startDate}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.startTime}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.startPoint}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.endPoint}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.routeNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.busType}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.busNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.conductorNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.depot}</TableCell>
+                    <TableCell sx={{ py: 0 }} align="center">
                       <Select
                         size="small"
                         value={schedule.tripStatus}
@@ -876,6 +980,7 @@ const BusReport = () => {
                           e.target.value,
                           schedule.tripStatus
                         )}
+                           sx={{ height : 30 }}
                       >
                         {tripStatuses.map((status) => (
                           <MenuItem key={status} value={status}>
@@ -884,12 +989,12 @@ const BusReport = () => {
                         ))}
                       </Select>
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell sx={{ py: 0 }} align="right">
                       <IconButton onClick={() => handleView(schedule)}>
                         <VisibilityIcon />
                       </IconButton>
                       {schedule?.bookings.length > 0 && (
-                        <Button size="small" variant="contained" sx={{ ml: 1 }} onClick={() => handleTransfer(schedule)}>
+                        <Button size="small" variant="contained" sx={{ ml: 1, height: 25 }} onClick={() => handleTransfer(schedule)}>
                           Transfer
                         </Button>
                       )}
@@ -898,6 +1003,15 @@ const BusReport = () => {
                 ))}
               </TableBody>
             </Table>
+                   <TablePagination
+                        component="div"
+                        count={filteredSchedules.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
           </TableContainer>
 
           <Modal
@@ -1010,32 +1124,34 @@ const BusReport = () => {
                   <TableContainer component={Paper}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow>
-                          <TableCell>Ref No</TableCell>
-                          <TableCell>Seat no</TableCell>
-                          <TableCell>V-Code</TableCell>
-                          <TableCell>Mode of Pay</TableCell>
-                          <TableCell>Route</TableCell>
-                          <TableCell>NIC</TableCell>
-                          <TableCell>Booked By</TableCell>
-                          <TableCell>Booked Date</TableCell>
+                        <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Ref No</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Seat no</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">V-Code</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Mode of Pay</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Route</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">NIC</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked By</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked Date</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {selectedBus?.bookings.map((booking, index) => (
+                        {selectedBus?.bookings
+                      .map((booking, index) => (
                           <TableRow key={index}>
-                            <TableCell>{booking.refNo}</TableCell>
-                            <TableCell>{booking.seatNo}</TableCell>
-                            <TableCell>{booking.vCode}</TableCell>
-                            <TableCell>{booking.modeOfPay}</TableCell>
-                            <TableCell>{booking.route}</TableCell>
-                            <TableCell>{booking.nic}</TableCell>
-                            <TableCell>{booking.bookedBy}</TableCell>
-                            <TableCell>{booking.bookedDate}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.refNo}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.seatNo}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.vCode}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.modeOfPay}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.route}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.nic}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedBy}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedDate}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
+
                   </TableContainer>
                 </div>
 
@@ -1045,28 +1161,30 @@ const BusReport = () => {
                   <TableContainer component={Paper}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow>
-                          <TableCell>Booked By</TableCell>
-                          <TableCell>Mode of Pay</TableCell>
-                          <TableCell>Route</TableCell>
-                          <TableCell>Bus Fare</TableCell>
-                          <TableCell>No of Seats</TableCell>
-                          <TableCell align="right">Total Bus Fare</TableCell>
+                        <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked By</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Mode of Pay</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Route</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Bus Fare</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">No of Seats</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01" align="right">Total Bus Fare</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {selectedBus?.summary.map((summary, index) => (
+                        {selectedBus?.summary
+                        .map((summary, index) => (
                           <TableRow key={index}>
-                            <TableCell>{summary.bookedBy}</TableCell>
-                            <TableCell>{summary.modeOfPay}</TableCell>
-                            <TableCell>{summary.route}</TableCell>
-                            <TableCell>{summary.busFare}</TableCell>
-                            <TableCell>{summary.noOfSeate}</TableCell>
-                            <TableCell align="right">{summary.totalBusFare}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.bookedBy}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.modeOfPay}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.route}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.busFare}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.noOfSeate}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01" align="right">{summary.totalBusFare}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
+
                   </TableContainer>
                 </div>
 

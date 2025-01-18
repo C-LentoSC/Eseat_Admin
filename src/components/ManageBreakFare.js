@@ -14,7 +14,8 @@ import {
     TableHead,
     TableBody,
     TableRow,
-    TableCell
+    TableCell,
+    TablePagination
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -128,6 +129,18 @@ const ManageBreakFare = () => {
             .catch(handleError)
     };
 
+        //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
     return (
         <Container maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
@@ -277,18 +290,20 @@ const ManageBreakFare = () => {
                     <TableContainer>
                         <Table>
                             <TableHead>
-                                <TableRow>
-                                    <TableCell>Break Route</TableCell>
-                                    <TableCell align="right">Current Fare</TableCell>
-                                    <TableCell align="center">=</TableCell>
-                                    <TableCell align="right">New Fare</TableCell>
+                                <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                    <TableCell sx={{ py: 1 }}>Break Route</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="right">Current Fare</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="center">=</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="right">New Fare</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {breaks.map((breakRoute) => (
+                                {breaks
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((breakRoute) => (
                                     <TableRow key={breakRoute.id}>
-                                        <TableCell>{breakRoute.name}</TableCell>
-                                        <TableCell align="right">
+                                        <TableCell sx={{ py: 0 }}>{breakRoute.name}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
                                             <TextField
                                                 disabled
                                                 value={`LKR ${breakRoute.oldFare}`}
@@ -296,8 +311,8 @@ const ManageBreakFare = () => {
                                                 sx={{ width: 150 }}
                                             />
                                         </TableCell>
-                                        <TableCell align="center">=</TableCell>
-                                        <TableCell align="right">
+                                        <TableCell sx={{ py: 0 }} align="center">=</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
                                             <TextField
                                                 value={breakRoute.newFare}
                                                 onChange={(e) => handleBreakFareChange(breakRoute.id, e.target.value)}
@@ -312,6 +327,15 @@ const ManageBreakFare = () => {
                                 ))}
                             </TableBody>
                         </Table>
+                          <TablePagination
+                                                component="div"
+                                                count={breaks.length}
+                                                page={page}
+                                                onPageChange={handleChangePage}
+                                                rowsPerPage={rowsPerPage}
+                                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                                rowsPerPageOptions={[10, 25, 50, 100]}
+                                            />
                     </TableContainer>
                 </Paper>
             </Box>

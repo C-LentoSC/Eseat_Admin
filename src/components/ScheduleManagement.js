@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
     Autocomplete, TextField, InputAdornment,
-    Chip
+    Chip, TablePagination
 } from '@mui/material';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 // import DeleteIcon from '@mui/icons-material/Delete';
 
 // import CustomAlert from "./Parts/CustomAlert";
 
 const ScheduleManagement = () => {
 
-     // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+     const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Sample initial data
-    const [schedules] = useState([
+    const [schedules,setSchedules] = useState([
         {
             id: 1,
             scheduleNumber: "SCH001",
@@ -57,6 +59,16 @@ const ScheduleManagement = () => {
             status: "Active"
         }
     ]);
+    useEffect(() => {
+        loadAll()
+    }, []);
+    const loadAll=()=>{
+        api.get('admin/schedule-management/get-all')
+            .then(res=>{
+                setSchedules(res.data);
+            })
+            .catch(handleError)
+    }
 
     // Filter states
     const [selectedScheduleNo, setSelectedScheduleNo] = useState(null);
@@ -112,8 +124,23 @@ const ScheduleManagement = () => {
         />
     );
 
+        //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Schedule Management
@@ -159,33 +186,35 @@ const ScheduleManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Schedule Number</TableCell>
-                                <TableCell>Route No</TableCell>
-                                <TableCell>Route</TableCell>
-                                <TableCell>Travel Date</TableCell>
-                                <TableCell>Start Time</TableCell>
-                                <TableCell>End Date</TableCell>
-                                <TableCell>End Time</TableCell>
-                                <TableCell>Closing Date</TableCell>
-                                <TableCell>Closing Time</TableCell>
-                                <TableCell>Status</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Schedule Number</TableCell>
+                                <TableCell sx={{ py: 1 }}>Route No</TableCell>
+                                <TableCell sx={{ py: 1 }}>Route</TableCell>
+                                <TableCell sx={{ py: 1 }}>Travel Date</TableCell>
+                                <TableCell sx={{ py: 1 }}>Start Time</TableCell>
+                                <TableCell sx={{ py: 1 }}>End Date</TableCell>
+                                <TableCell sx={{ py: 1 }}>End Time</TableCell>
+                                <TableCell sx={{ py: 1 }}>Closing Date</TableCell>
+                                <TableCell sx={{ py: 1 }}>Closing Time</TableCell>
+                                <TableCell sx={{ py: 1 }}>Status</TableCell>
                                 {/* <TableCell>Actions</TableCell> */}
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredSchedules.map((schedule) => (
+                            {filteredSchedules
+                             .slice(startIndex, startIndex + rowsPerPage)
+                             .map((schedule) => (
                                 <TableRow key={schedule.id}>
-                                    <TableCell>{schedule.scheduleNumber}</TableCell>
-                                    <TableCell>{schedule.routeNo}</TableCell>
-                                    <TableCell>{schedule.route}</TableCell>
-                                    <TableCell>{schedule.travelDate}</TableCell>
-                                    <TableCell>{schedule.startTime}</TableCell>
-                                    <TableCell>{schedule.endDate}</TableCell>
-                                    <TableCell>{schedule.endTime}</TableCell>
-                                    <TableCell>{schedule.closingDate}</TableCell>
-                                    <TableCell>{schedule.closingTime}</TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.scheduleNumber}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.routeNo}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.route}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.travelDate}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.startTime}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.endDate}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.endTime}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.closingDate}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.closingTime}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>
                                         <Typography variant="body2" sx={{ color: schedule.status === 'Active' ? 'green' : 'red' }}>{schedule.status}</Typography>
                                     </TableCell>
                                     {/* <TableCell>
@@ -203,6 +232,15 @@ const ScheduleManagement = () => {
                             ))}
                         </TableBody>
                     </Table>
+                     <TablePagination
+                                            component="div"
+                                            count={filteredSchedules.length}
+                                            page={page}
+                                            onPageChange={handleChangePage}
+                                            rowsPerPage={rowsPerPage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                            rowsPerPageOptions={[10, 25, 50, 100]}
+                                        />
                 </TableContainer>
             </Box>
         </Container>

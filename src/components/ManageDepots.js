@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -18,7 +18,8 @@ import {
     Switch,
     IconButton,
     Autocomplete,
-    InputAdornment
+    InputAdornment,
+    TablePagination
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -40,28 +41,29 @@ const ManageDepots = () => {
         //     active: true,
         // },
     ]);
-    const [regions,setRegions]=useState([])
-    const loadAllDepots=()=>{
+    const [addmodel, setAddmodel] = useState(false);
+    const [regions, setRegions] = useState([])
+    const loadAllDepots = () => {
         api.get('admin/depots/get-all-depots')
-            .then(res=>{
+            .then(res => {
                 setDepots(res.data)
             })
             .catch(handleError)
     }
-    const loadAllRegions=()=>{
+    const loadAllRegions = () => {
         api.get('admin/depots/get-regions')
-            .then(res=>{
+            .then(res => {
                 setRegions(res.data)
             })
             .catch(handleError)
     }
-    useEffect(()=>{
+    useEffect(() => {
         loadAllDepots()
         loadAllRegions()
-    },[])
+    }, [])
     const [alert, setAlert] = useState(null)
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Form states
     const [formData, setFormData] = useState({
@@ -78,6 +80,10 @@ const ManageDepots = () => {
     const [open, setOpen] = useState(false);
     const [currentDepot, setCurrentDepot] = useState(null);
 
+    const [filterRegion, setFilterRegion] = useState("");
+    const [filterDepotName, setFilterDepotName] = useState("");
+    const [filterDSName, setFilterDSName] = useState("");
+    const [filterMobile, setFilterMobile] = useState("");
 
 
     // Handle form input changes
@@ -105,10 +111,11 @@ const ManageDepots = () => {
                 active: true,
             };
             // setDepots(prev => [...prev, newDepot]);
-            api.post('admin/depots/add',newDepot)
-                .then(res=>{
+            api.post('admin/depots/add', newDepot)
+                .then(res => {
                     sendAlert('added new')
                     loadAllDepots()
+                    handleClose();
                     setFormData({
                         region: "",
                         depotName: "",
@@ -135,12 +142,13 @@ const ManageDepots = () => {
     const handleClose = () => {
         setCurrentDepot(null);
         setOpen(false);
+        setAddmodel(false);
     };
 
     // Save edited depot
     const handleSave = () => {
-        api.post('admin/depots/edit',currentDepot)
-            .then(res=>{
+        api.post('admin/depots/edit', currentDepot)
+            .then(res => {
                 sendAlert('updated')
                 loadAllDepots()
                 handleClose();
@@ -167,8 +175,8 @@ const ManageDepots = () => {
 
     // Delete depot
     const handleDelete = (id) => {
-        api.post('admin/depots/delete',{id})
-            .then(res=>{
+        api.post('admin/depots/delete', { id })
+            .then(res => {
                 loadAllDepots()
                 sendAlert('deleted')
             })
@@ -177,205 +185,354 @@ const ManageDepots = () => {
 
     // Toggle active status
     const handleActiveChange = (id) => {
-        api.post('admin/depots/toggle-status',{id})
-            .then(res=>{
+        api.post('admin/depots/toggle-status', { id })
+            .then(res => {
                 loadAllDepots()
             })
             .catch(handleError)
     };
 
+
+    const filteredoption = depots.filter(option => {
+        const nameMatch = !filterRegion || option.region.toLowerCase().includes(filterRegion.toLowerCase());
+        const nameMatch2 = !filterDepotName|| option.depotName.toLowerCase().includes(filterDepotName.toLowerCase());
+        const nameMatch3 = !filterDSName|| option.dsName.toLowerCase().includes(filterDSName.toLowerCase());
+        const nameMatch4 = !filterMobile|| option.mobile.toLowerCase().includes(filterMobile.toLowerCase());
+        return nameMatch && nameMatch2 && nameMatch3 && nameMatch4;
+    });
+
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
+                setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
-                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                {/* <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                    Manage Depots
+                </Typography> */}
+                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
                     Manage Depots
                 </Typography>
 
-                {/* Form Section */}
-                <Box component="form" sx={{ width: "100%" }}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
-                            <Autocomplete
-                                value={formData.region}
-                                onChange={handleRegionChange}
-                                options={regions}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Region"
-                                        required
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                )}
-                            />
+
+
+                <Modal open={addmodel} onClose={handleClose}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: "90%",
+                            maxWidth: 600,
+                            bgcolor: 'background.paper',
+                            border: '2px solid gray',
+                            boxShadow: 24,
+                            p: 4,
+                            borderRadius: '10px',
+                        }}
+                    >
+
+                        <Typography variant="h6" gutterBottom>
+                            Add Region
+                        </Typography>
+
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} sm={6}>
+                                <Autocomplete
+                                    value={formData.region}
+                                    onChange={handleRegionChange}
+                                    options={regions}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Region"
+                                            required
+                                            InputProps={{
+                                                ...params.InputProps,
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Depot Name"
+                                    name="depotName"
+                                    value={formData.depotName}
+                                    onChange={handleInputChange}
+                                    required
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="DS Name"
+                                    name="dsName"
+                                    value={formData.dsName}
+                                    onChange={handleInputChange}
+                                    required
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Mobile"
+                                    name="mobile"
+                                    value={formData.mobile}
+                                    onChange={handleInputChange}
+                                    required
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Address"
+                                    name="address"
+                                    value={formData.address}
+                                    onChange={handleInputChange}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Description"
+                                    name="description"
+                                    multiline
+                                    rows={4}
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
                         </Grid>
 
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Depot Name"
-                                name="depotName"
-                                value={formData.depotName}
-                                onChange={handleInputChange}
-                                required
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="DS Name"
-                                name="dsName"
-                                value={formData.dsName}
-                                onChange={handleInputChange}
-                                required
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Mobile"
-                                name="mobile"
-                                value={formData.mobile}
-                                onChange={handleInputChange}
-                                required
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Email"
-                                name="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Address"
-                                name="address"
-                                value={formData.address}
-                                onChange={handleInputChange}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Description"
-                                name="description"
-                                multiline
-                                rows={4}
-                                value={formData.description}
-                                onChange={handleInputChange}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                    </Grid>
-
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleAddDepot}
-                            sx={{
-                                padding: "12px 24px",
-                                fontWeight: "bold",
-                                borderRadius: "4px",
-                                backgroundColor: "#3f51b5",
-                                color: "#fff",
-                                "&:hover": {
-                                    backgroundColor: "#303f9f",
-                                },
-                            }}
-                        >
-                            Add Depot
-                        </Button>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleAddDepot}
+                                sx={{ marginRight: '8px' }}
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleClose}
+                                sx={{ backgroundColor: 'gray' }}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
                     </Box>
+                </Modal>
+
+
+                <Box sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2,
+                    mt: 3,
+                    flexWrap: "wrap",
+                    gap: 2
+                }}>
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+
+                        <TextField
+                            label="Region"
+                            value={filterRegion}
+                            onChange={(e) => setFilterRegion(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 150,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Depot Name"
+                            value={filterDepotName}
+                            onChange={(e) => setFilterDepotName(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 150,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="DS Name"
+                            value={filterDSName}
+                            onChange={(e) => setFilterDSName(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 150,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Mobile"
+                            value={filterMobile}
+                            onChange={(e) => setFilterMobile(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 150,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                    </Box>
+                    <Button
+                        variant="contained"
+                        onClick={() => setAddmodel(true)}
+                        sx={{
+                            padding: "6px 24px",
+                            fontWeight: "bold",
+                            borderRadius: "4px",
+                            height: "40px",
+                            backgroundColor: "#3f51b5",
+                            color: "#fff",
+                            "&:hover": {
+                                backgroundColor: "#303f9f",
+                            },
+                        }}
+                    >
+                        Add Depot
+                    </Button>
                 </Box>
 
                 {/* Table Section */}
-                <Box sx={{ width: "100%", mt: 5 }}>
-                    <Typography variant="h6" sx={{ mb: 2 }}>
+                {/* <Box sx={{ width: "100%", mt: 5 }}> */}
+                {/* <Typography variant="h6" sx={{ mb: 2 }}>
                         All Depots
-                    </Typography>
+                    </Typography> */}
 
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Region</TableCell>
-                                    <TableCell>Depot Name</TableCell>
-                                    <TableCell>DS Name</TableCell>
-                                    <TableCell>Mobile</TableCell>
-                                    <TableCell>Email</TableCell>
-                                    <TableCell>Address</TableCell>
-                                    <TableCell>Description</TableCell>
-                                    <TableCell>Status</TableCell>
-                                    <TableCell align="right">Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {depots.map((depot) => (
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Region</TableCell>
+                                <TableCell sx={{ py: 1 }}>Depot Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>DS Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>Mobile</TableCell>
+                                <TableCell sx={{ py: 1 }}>Email</TableCell>
+                                <TableCell sx={{ py: 1 }}>Address</TableCell>
+                                <TableCell sx={{ py: 1 }}>Description</TableCell>
+                                <TableCell sx={{ py: 1 }}>Status</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {filteredoption
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((depot) => (
                                     <TableRow key={depot.id}>
-                                        <TableCell>{depot.region}</TableCell>
-                                        <TableCell>{depot.depotName}</TableCell>
-                                        <TableCell>{depot.dsName}</TableCell>
-                                        <TableCell>{depot.mobile}</TableCell>
-                                        <TableCell>{depot.email}</TableCell>
-                                        <TableCell>{depot.address}</TableCell>
-                                        <TableCell>{depot.description}</TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.region}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.depotName}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.dsName}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.mobile}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.email}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.address}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.description}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
                                             <FormControlLabel
                                                 control={
                                                     <Switch
@@ -386,7 +543,7 @@ const ManageDepots = () => {
                                                 label={depot.active ? "Active" : "Inactive"}
                                             />
                                         </TableCell>
-                                        <TableCell align="right">
+                                        <TableCell sx={{ py: 0 }} align="right">
                                             <IconButton
                                                 color="primary"
                                                 onClick={() => handleOpen(depot)}
@@ -402,10 +559,19 @@ const ManageDepots = () => {
                                         </TableCell>
                                     </TableRow>
                                 ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
+                        </TableBody>
+                    </Table>
+                    <TablePagination
+                        component="div"
+                        count={filteredoption.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
+                </TableContainer>
+                {/* </Box> */}
 
                 {/* Edit Modal */}
                 <Modal open={open} onClose={handleClose}>
