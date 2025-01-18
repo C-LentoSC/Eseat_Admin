@@ -128,7 +128,21 @@ const BusLayoutManagement = () => {
         if (currentStep === 1) {
             // Step 1: Only select/deselect seats
 
-            if(newLayout.seatDetails[seatId].hasRelations === false){
+            if(newLayout.seatDetails[seatId] && newLayout.seatDetails[seatId].hasRelations !== undefined){
+                if(newLayout.seatDetails[seatId].hasRelations === false){
+                    setNewLayout(prev => {
+                        const updatedDetails = { ...prev.seatDetails };
+                        if (updatedDetails[seatId]) {
+                            delete updatedDetails[seatId];
+                        } else {
+                            updatedDetails[seatId] = { seatNumber: "" };
+                        }
+                        return { ...prev, seatDetails: updatedDetails };
+                    });
+                }else{
+                    setAlert({message: "The selection cannot be removed. This seat is used", severity: "error"})
+                }
+            }else{
                 setNewLayout(prev => {
                     const updatedDetails = { ...prev.seatDetails };
                     if (updatedDetails[seatId]) {
@@ -138,9 +152,20 @@ const BusLayoutManagement = () => {
                     }
                     return { ...prev, seatDetails: updatedDetails };
                 });
-            }else{
-                setAlert({message: "The selection cannot be removed. This seat is used", severity: "error"})
             }
+            // if(newLayout.seatDetails[seatId].hasRelations === false){
+            //     setNewLayout(prev => {
+            //         const updatedDetails = { ...prev.seatDetails };
+            //         if (updatedDetails[seatId]) {
+            //             delete updatedDetails[seatId];
+            //         } else {
+            //             updatedDetails[seatId] = { seatNumber: "" };
+            //         }
+            //         return { ...prev, seatDetails: updatedDetails };
+            //     });
+            // }else{
+            //     setAlert({message: "The selection cannot be removed. This seat is used", severity: "error"})
+            // }
         } else if (currentStep === 2) {
             // Step 2: Open seat details modal
             setSelectedSeat(seatId);
@@ -186,6 +211,16 @@ const BusLayoutManagement = () => {
                     .then(res => {
                         loadLayOuts()
                         sendAlert('layout is updated')
+                        setCreateModalOpen(false);
+                        setIsEditMode(false);
+                        setNewLayout({
+                            layoutName: "",
+                            busType: "",
+                            seatsCount: 0,
+                            description: "",
+                            seatDetails: {}
+                        });
+                        setCurrentStep(1);
                     })
                     .catch(handleError)
             } else {
@@ -198,19 +233,20 @@ const BusLayoutManagement = () => {
                     .then(res => {
                         loadLayOuts()
                         sendAlert('a new layout is added')
+                        setCreateModalOpen(false);
+                        setIsEditMode(false);
+                        setNewLayout({
+                            layoutName: "",
+                            busType: "",
+                            seatsCount: 0,
+                            description: "",
+                            seatDetails: {}
+                        });
+                        setCurrentStep(1);
                     })
                     .catch(handleError)
             }
-            setCreateModalOpen(false);
-            setIsEditMode(false);
-            setNewLayout({
-                layoutName: "",
-                busType: "",
-                seatsCount: 0,
-                description: "",
-                seatDetails: {}
-            });
-            setCurrentStep(1);
+
         }
     };
 

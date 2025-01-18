@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
@@ -10,17 +10,18 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
-// import CustomAlert from "./Parts/CustomAlert";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 
 const AllBookings = () => {
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
     // Sample initial data
-    const [bookings] = useState([
+    const [bookings,setBookings] = useState([
         {
             id: 1,
             vCode: "V001",
@@ -123,6 +124,16 @@ const AllBookings = () => {
             deleteDate: "2025-01-06"
         }
     ]);
+    const loadAll=()=>{
+        api.get('admin/bookings/get-all')
+            .then(res=>{
+                setBookings(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(()=>{
+       loadAll()
+    },[])
 
     // States
     const [modalOpen, setModalOpen] = useState(false);
@@ -301,6 +312,8 @@ const AllBookings = () => {
     //End Pagination
     return (
         <Container component="main" maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     All Bookings (Live Updates)
