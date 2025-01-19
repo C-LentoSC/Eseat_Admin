@@ -22,6 +22,13 @@ const DeletedBookings = () => {
 
     // Sample initial data
     const [bookings,setBookings] = useState([]);
+    const loadAll=()=>{
+        api.get('admin/bookings/get-deleted')
+            .then(res=>{
+                setBookings(res.data)
+            })
+            .catch(handleError)
+    }
     useEffect(() => {
         let intv
 
