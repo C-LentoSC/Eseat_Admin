@@ -36,313 +36,7 @@ import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
 const BusReport = () => {
 
-  const [schedules, setSchedules] = useState([
-    {
-      id: 1,
-      scheduleNo: "KC002-5600MC",
-      startTime: "08:00",
-      startDate: "2025-01-04",
-      startPoint: "Colombo",
-      endPoint: "Kandy",
-      routeNo: "R001",
-      busType: "Luxury",
-      busCode: "BC001",
-      depot: "Central",
-      travelNo: "T123",
-      busNo: "NA-1234",
-      conductorNo: "C789",
-      manualClosedAt: "2024-01-03 17:00",
-      closedBy: "John Doe",
-      tripStatus: "No Action",
-      status: "closed",
-      seatDetails: {
-        "seat-0-0": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "blocked"
-        }, "seat-0-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }, "seat-5-0": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "blocked"
-        }, "seat-5-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "blocked"
-        }, "seat-4-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "hold"
-        }, "seat-3-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "hold"
-        }, "seat-2-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }, "seat-1-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }, "seat-0-13": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }, "seat-0-1": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }
-      },
-      bookings: [
-        {
-          refNo: "346408407807049",
-          seatNo: "1",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12",
-          seatStatus: 'transfer',
-        },
-        {
-          refNo: "346402643030861",
-          seatNo: "2",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-19 16:15",
-          seatStatus: 'direct',
-        },
-        {
-          refNo: "346408407807049",
-          seatNo: "3",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12",
-          seatStatus: 'transfer',
-        },
-        {
-          refNo: "346402643030861",
-          seatNo: "4",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-19 16:15",
-          seatStatus: 'direct',
-        },
-        {
-          refNo: "346408407807049",
-          seatNo: "5",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12",
-          seatStatus: 'direct',
-        },
-
-      ],
-      summary: [
-        {
-          bookedBy: "CBS-Praneeth",
-          modeOfPay: "Full Ticket",
-          route: "Colombo-Nuwaraeliya",
-          busFare: "603.00",
-          noOfSeate: "6",
-          totalBusFare: "3,618.00",
-        },
-        {
-          bookedBy: "Online",
-          modeOfPay: "Credit / Debit Card",
-          route: "Colombo-Talawakelle",
-          busFare: "603.00",
-          noOfSeate: "2",
-          totalBusFare: "1,206.00",
-        },
-        {
-          bookedBy: "Online",
-          modeOfPay: "Credit / Debit Card",
-          route: "Colombo-Hatton",
-          busFare: "603.00",
-          noOfSeate: "1",
-          totalBusFare: "603.00",
-        },
-        {
-          bookedBy: "Total",
-          modeOfPay: "",
-          route: "",
-          busFare: "",
-          noOfSeate: "9",
-          totalBusFare: "5,427.00",
-        },
-        //2nd table
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Full Ticket",
-          noOfSeate: "",
-          totalBusFare: "6",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Credit / Debit Card",
-          noOfSeate: "",
-          totalBusFare: "3",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Cash Pay",
-          noOfSeate: "",
-          totalBusFare: "3,618.00",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Transfer Pay",
-          noOfSeate: "",
-          totalBusFare: "0.00",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Online Pay",
-          noOfSeate: "",
-          totalBusFare: "1,809.00",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Net Total",
-          noOfSeate: "",
-          totalBusFare: "5,427.00",
-        },
-      ],
-    },
-    {
-      id: 2,
-      scheduleNo: "LK002-5600CC",
-      startTime: "08:00",
-      startDate: "2025-01-04",
-      startPoint: "Colombo",
-      endPoint: "Kandy",
-      routeNo: "R001",
-      busType: "Luxury",
-      busCode: "BC001",
-      depot: "Central",
-      travelNo: "T123",
-      busNo: "NA-1234",
-      conductorNo: "C789",
-      manualClosedAt: "2024-01-03 17:00",
-      closedBy: "John Doe",
-      tripStatus: "No Action",
-      status: "opened",
-      seatDetails: {},
-      bookings: [],
-      summary: [],
-    },
-  ]);
+  const [schedules, setSchedules] = useState([]);
   const loadAll=()=>{
     api.get('admin/schedule-report/get-all')
         .then(res=>{
@@ -382,8 +76,8 @@ const BusReport = () => {
   });
 
 
-  const depots = ["Central", "Northern", "Eastern"];
-  const routes = ["R001", "R002", "R003"];
+  const [depots,setDepots] = useState([]);
+  const [routes,setRoutes] = useState([]);
   const tripStatuses = ["No Action", "Trip Cancel", "Break Down", "Other", "Layout Change"];
 
   // Filter schedules based on selected filters
@@ -402,7 +96,19 @@ const BusReport = () => {
       setBusNumber(selectedBus.busNo || "");
     }
   }, [selectedBus]);
-
+  const loadInf=()=>{
+    api('admin/schedule-report/get-all-route')
+        .then(res=>{
+          setRoutes(res.data)
+        }).catch(handleError)
+    api('admin/schedule-report/get-all-depots')
+        .then(res=>{
+          setDepots(res.data)
+        }).catch(handleError)
+  }
+  useEffect(()=>{
+    loadInf()
+  },[])
 
   const handleTransfer = (schedule) => {
     setSelectedTransferBus(schedule);

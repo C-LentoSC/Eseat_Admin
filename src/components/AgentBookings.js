@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
@@ -10,120 +10,45 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
-// import CustomAlert from "./Parts/CustomAlert";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 
 const AgentBookings = () => {
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
     // Sample initial data
-    const [bookings] = useState([
-        {
-            id: 1,
-            vCode: "V001",
-            refNo: "REF001",
-            scheduleNo: "SCH001",
-            route: "Colombo-Kandy",
-            seatDetails: [
-                { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, status: 'Confirmed' },
-                { seatNo: "2A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, status: 'Confirmed' }
-            ],
-            name: "John Doe",
-            mobileNo: "0771234567",
-            travelDate: "2025-01-10",
-            bookBy: "Agent",
-            bookDate: "2025-01-01",
-            netAmount: 2500,
-            paymentType: "Credit Card",
-            bookingStatus: "Pending",
-            paymentStatus: "Pending",
-            deleteDate: null
-        },
-        {
-            id: 2,
-            vCode: "V002",
-            refNo: "REF002",
-            scheduleNo: "SCH002",
-            route: "Galle-Matara",
-            seatDetails: [
-                { seatNo: "3B", seatCost: 800, serviceCharge: 80, vat: 120, discount: 0, otherCharges: 0, status: 'Pending' }
-            ],
-            name: "John Doe",
-            mobileNo: "0777654321",
-            travelDate: "2025-01-15",
-            bookBy: "Agent",
-            bookDate: "2025-01-02",
-            netAmount: 1800,
-            paymentType: "Cash",
-            bookingStatus: "Failed",
-            paymentStatus: "Failed",
-            deleteDate: null
-        },
-        {
-            id: 3,
-            vCode: "V003",
-            refNo: "REF003",
-            scheduleNo: "SCH003",
-            route: "Colombo-Galle",
-            seatDetails: [
-                { seatNo: "5C", seatCost: 900, serviceCharge: 90, vat: 135, discount: 0, otherCharges: 0, status: 'Pending' }
-            ],
-            name: "Agen",
-            mobileNo: "0773456789",
-            travelDate: "2025-01-20",
-            bookBy: "Travel Agent X",
-            bookDate: "2025-01-03",
-            netAmount: 2000,
-            paymentType: "Bank Transfer",
-            bookingStatus: "Booked",
-            paymentStatus: "Paid",
-            deleteDate: null
-        },
-        {
-            id: 4,
-            vCode: "V004",
-            refNo: "REF004",
-            scheduleNo: "SCH004",
-            route: "Kandy-Colombo",
-            seatDetails: [
-                { seatNo: "7D", seatCost: 1200, serviceCharge: 120, vat: 180, discount: 100, otherCharges: 0, status: 'Pending' }
-            ],
-            name: "Guest",
-            mobileNo: "0779876543",
-            travelDate: "2025-01-25",
-            bookBy: "Sam Wilson",
-            bookDate: "2025-01-04",
-            netAmount: 1400,
-            paymentType: "Credit Card",
-            bookingStatus: "Failed",
-            paymentStatus: "Failed",
-            deleteDate: null
-        },
-        {
-            id: 5,
-            vCode: "V005",
-            refNo: "REF005",
-            scheduleNo: "SCH005",
-            route: "Matara-Colombo",
-            seatDetails: [
-                { seatNo: "8A", seatCost: 1100, serviceCharge: 110, vat: 165, discount: 0, otherCharges: 50, status: 'Pending' }
-            ],
-            name: "Guest",
-            mobileNo: "0775555555",
-            travelDate: "2025-01-30",
-            bookBy: "Mary Johnson",
-            bookDate: "2025-01-05",
-            netAmount: 1425,
-            paymentType: "Cash",
-            bookingStatus: "Deleted",
-            paymentStatus: "Pending",
-            deleteDate: "2025-01-06"
-        }
-    ]);
+    const [bookings,setBookings] = useState([]);
+    const loadAll=()=>{
+        api.get('admin/bookings/get-agents')
+            .then(res=>{
+                setBookings(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        let intv
 
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "hidden") {
+                clearInterval(intv)
+            } else if (document.visibilityState === "visible") {
+                loadAll()
+                intv = setInterval(loadAll, 5000)
+            }
+        }
+        loadAll()
+        intv = setInterval(loadAll, 5000)
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            clearInterval(intv)
+            document.removeEventListener("visibilitychange", handleVisibilityChange)
+        };
+    }, [])
     // States
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedBooking] = useState(null);
@@ -153,7 +78,7 @@ const AgentBookings = () => {
                 selectedBookingStatus === "All" ?
                 booking.bookingStatus !== "Deleted" :
                 booking.bookingStatus === selectedBookingStatus;
-        const agentMethodMatch = !selectedBookByStatus || booking.bookBy === selectedBookByStatus;
+        // const agentMethodMatch = !selectedBookByStatus || booking.bookBy === selectedBookByStatus;
         const paymentStatusMatch =
             !selectedPaymentStatus ||
             booking.paymentStatus === selectedPaymentStatus;
@@ -161,7 +86,9 @@ const AgentBookings = () => {
             dayjs(booking.bookDate).format('YYYY-MM-DD') === dayjs(selectedBookDate).format('YYYY-MM-DD');
 
         return bookingIdMatch && refNoMatch && mobileNoMatch &&
-            paymentMethodMatch && bookingStatusMatch && agentMethodMatch && paymentStatusMatch &&
+            paymentMethodMatch && bookingStatusMatch &&
+            // agentMethodMatch            &&
+            paymentStatusMatch &&
             bookDateMatch;
     });
 
@@ -305,6 +232,8 @@ const AgentBookings = () => {
     
     return (
         <Container component="main" maxWidth="lg">
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Agent Bookings (Live Updates)
