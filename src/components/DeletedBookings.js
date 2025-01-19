@@ -107,7 +107,11 @@ const DeletedBookings = () => {
     };
 
     const handleRestore = (bookingId) => {
-        console.log('Restoring booking:', bookingId);
+        api.post("admin/bookings/restore-booking", {id:bookingId})
+            .then(()=>{
+                sendAlert("booking restored")
+                loadAll()
+            }).catch(handleError)
     };
 
     const handleDelete = (bookingId) => {
@@ -488,7 +492,7 @@ const DeletedBookings = () => {
                                                 <IconButton onClick={() => handleRestore(booking.id)} color="primary">
                                                     <RestoreFromTrash />
                                                 </IconButton>
-                                                <IconButton onClick={() => handleDelete(booking.id)} color="error">
+                                                <IconButton hidden={true} onClick={() => handleDelete(booking.id)} color="error">
                                                     <Delete />
                                                 </IconButton>
                                             </>

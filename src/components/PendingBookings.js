@@ -107,7 +107,7 @@ const PendingBookings = () => {
     };
 
     const handleConfirmPayment = () => {
-        api.post('admin/bookings/confirm-booking',selectedBooking)
+        api.post('admin/bookings/confirm-booking', {id:selectedBooking.id,keys:Object.entries(selectedSeats).map((value) => value[0])})
             .then(res=>{
                 sendAlert("booking confirmed")
                 setModalOpen(false);
