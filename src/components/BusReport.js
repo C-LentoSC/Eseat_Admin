@@ -158,7 +158,7 @@ const BusReport = () => {
               {selectedTransferBus?.bookings
             .slice(startIndex, startIndex + rowsPerPage)
           .map((row, index) => (
-                row.seatStatus === 'transfer' ? (
+                (row.seatStatus === 'transfer'&&row.isActive===true) ? (
                   <TableRow key={index}>
                     <TableCell sx={{ py: 0 }}>{row.refNo}</TableCell>
                     <TableCell sx={{ py: 0 }}>{row.seatNo}</TableCell>
@@ -708,7 +708,10 @@ const BusReport = () => {
                       <IconButton onClick={() => handleView(schedule)}>
                         <VisibilityIcon />
                       </IconButton>
-                      {schedule?.bookings.length > 0 && (
+                      {schedule?.bookings.filter(booking => {
+                        const matchingBookings = schedule.bookings.filter(b => b.refNo === booking.refNo);
+                        return matchingBookings.length >= 2;
+                      }).length > 0 && (
                         <Button size="small" variant="contained" sx={{ ml: 1, height: 25 }} onClick={() => handleTransfer(schedule)}>
                           Transfer
                         </Button>
