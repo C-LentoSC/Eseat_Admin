@@ -255,6 +255,7 @@ const AgentManagement = () => {
                     <Table>
                         <TableHead>
                             <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                             <TableCell sx={{ py: 1 }}>Agent ID</TableCell>
                                 <TableCell sx={{ py: 1 }}>Agent Name</TableCell>
                                 <TableCell sx={{ py: 1 }}>Mobile Number</TableCell>
                                 <TableCell sx={{ py: 1 }}>Username</TableCell>
@@ -267,6 +268,7 @@ const AgentManagement = () => {
                                .slice(startIndex, startIndex + rowsPerPage)
                             .map((agent) => (
                                 <TableRow key={agent.id}>
+                                    <TableCell sx={{ py: 0 }}>{agent.id}</TableCell>
                                     <TableCell sx={{ py: 0 }}>{agent.name}</TableCell>
                                     <TableCell sx={{ py: 0 }}>{agent.mobile}</TableCell>
                                     <TableCell sx={{ py: 0 }}>{agent.username}</TableCell>
