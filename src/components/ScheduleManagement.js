@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
-    Autocomplete, TextField, InputAdornment
+    Autocomplete, TextField, InputAdornment, FormControlLabel,
+    Switch,
 } from '@mui/material';
 // import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -10,12 +11,12 @@ import {
 
 const ScheduleManagement = () => {
 
-     // const [alert, setAlert] = useState(null);
+    // const [alert, setAlert] = useState(null);
     // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
     // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Sample initial data
-    const [schedules] = useState([
+    const [schedules, setSchedules] = useState([
         {
             id: 1,
             scheduleNumber: "SCH001",
@@ -27,7 +28,8 @@ const ScheduleManagement = () => {
             endTime: "11:00",
             closingDate: "2025-01-09",
             closingTime: "20:00",
-            status: "Active"
+            active: true,
+            status: "Active",
         },
         {
             id: 2,
@@ -40,7 +42,8 @@ const ScheduleManagement = () => {
             endTime: "11:30",
             closingDate: "2025-01-14",
             closingTime: "21:00",
-            status: "Inactive"
+            active: false,
+            status: "Inactive",
         },
         {
             id: 3,
@@ -53,7 +56,8 @@ const ScheduleManagement = () => {
             endTime: "11:30",
             closingDate: "2025-01-14",
             closingTime: "21:00",
-            status: "Active"
+            active: true,
+            status: "Active",
         }
     ]);
 
@@ -83,6 +87,17 @@ const ScheduleManagement = () => {
     // const handleDelete = (id) => {
     //     setSchedules(schedules.filter(schedule => schedule.id !== id));
     // };
+
+
+    // Toggle Active/Inactive
+    const handleActiveChange = (id) => {
+        setSchedules((prev) =>
+            prev.map((route) =>
+                route.id === id ? { ...route, active: !route.active } : route
+            )
+        );
+    };
+
 
     // Reusable Autocomplete component
     const AutocompleteField = ({ value, onChange, options, label }) => (
@@ -185,7 +200,17 @@ const ScheduleManagement = () => {
                                     <TableCell>{schedule.closingDate}</TableCell>
                                     <TableCell>{schedule.closingTime}</TableCell>
                                     <TableCell>
-                                        <Typography variant="body2" sx={{ color: schedule.status === 'Active' ? 'green' : 'red' }}>{schedule.status}</Typography>
+                                        {/* <Typography variant="body2" sx={{ color: schedule.status === 'Active' ? 'green' : 'red' }}>{schedule.status}</Typography> */}
+
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    checked={schedule.active}
+                                                    onChange={() => handleActiveChange(schedule.id)}
+                                                />
+                                            }
+                                            label={schedule.active ? "Active" : "Inactive"}
+                                        />
                                     </TableCell>
                                     {/* <TableCell>
                                         {schedule.status === 'Duplicate' ? (
