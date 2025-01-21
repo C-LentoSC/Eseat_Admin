@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
@@ -103,11 +103,11 @@ const ScheduleManagement = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        setSchedules((prev) =>
-            prev.map((route) =>
-                route.id === id ? { ...route, active: !route.active } : route
-            )
-        );
+        api.post("admin/schedule-report/toggle-status", {id})
+            .then(res=>{
+                loadAll()
+            })
+            .catch(handleError)
     };
 
 
