@@ -33,6 +33,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import PersonIcon from '@mui/icons-material/Person';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
 
 
@@ -75,6 +76,7 @@ import RefundBooking from './RefundBooking';
 import TicketCancelRequests from './TicketCancelRequests';
 import TicketMarkingSystem from './TicketMarkingSystem';
 import CustomerDetails from './CustomerDetails';
+import BulkSeatTransfer from './BulkSeatTransfer';
 
 
 import CustomAlert from './Parts/CustomAlert';
@@ -241,6 +243,11 @@ const NAVIGATION = {
       icon: <ReceiptIcon />,
     },
     {
+      segment: 'bulkSeatTransfer',
+      title: 'Bulk Seat Transfer',
+      icon: <SwapHorizIcon />,
+    },
+    {
       segment: 'customerDetails',
       title: 'Customer Details',
       icon: <PersonIcon />,
@@ -335,61 +342,64 @@ function DemoPageContent({ pathname }) {
     case '/seatTransfer':
       content = <SeatTransfer />;
       break;
-      case '/manageFare':
-        content = <ManageFare />;
-        break;
-      case '/manageFare/manage-fare':
-        content = <ManageFare />;
-        break;
-      case '/manageFare/manage-break-fare':
-        content = <ManageBreakFare />;
-        break;
-      case '/bulkBusManagement':
-        content = <BulkBusManagement />;
-        break;
-      case '/busReport':
-        content = <BusReport />;
-        break;
-      case '/allBookings':
-        content = <AllBookings />;
-        break;
-      case '/allBookings/allBookings':
-        content = <AllBookings />;
-        break;
-      case '/allBookings/pendingBookings':
-        content = <PendingBookings />;
-        break;
-      case '/allBookings/manualCancelBookings':
-        content = <ManualCancelBookings />;
-        break;
-      case '/allBookings/agentBookings':
-        content = <AgentBookings />;
-        break;
-      case '/allBookings/failBookings':
-        content = <FailBookings />;
-        break;
-      case '/allBookings/deletedBookings':
-        content = <DeletedBookings />;
-        break;
-      case '/allBookings/bookingHistory':
-        content = <BookingHistory />;
-        break;
-      case '/scheduleManagement':
-        content = <ScheduleManagement />;
-        break;
-      case '/refundBooking':
-        content = <RefundBooking />;
-        break;
-      case '/ticketCancelRequests':
-        content = <TicketCancelRequests />;
-        break;
-      case '/ticketMarkingSystem':
-        content = <TicketMarkingSystem />;
-        break;
-      case '/customerDetails':
-        content = <CustomerDetails />;
-        break;
-    default:  
+    case '/manageFare':
+      content = <ManageFare />;
+      break;
+    case '/manageFare/manage-fare':
+      content = <ManageFare />;
+      break;
+    case '/manageFare/manage-break-fare':
+      content = <ManageBreakFare />;
+      break;
+    case '/bulkBusManagement':
+      content = <BulkBusManagement />;
+      break;
+    case '/busReport':
+      content = <BusReport />;
+      break;
+    case '/allBookings':
+      content = <AllBookings />;
+      break;
+    case '/allBookings/allBookings':
+      content = <AllBookings />;
+      break;
+    case '/allBookings/pendingBookings':
+      content = <PendingBookings />;
+      break;
+    case '/allBookings/manualCancelBookings':
+      content = <ManualCancelBookings />;
+      break;
+    case '/allBookings/agentBookings':
+      content = <AgentBookings />;
+      break;
+    case '/allBookings/failBookings':
+      content = <FailBookings />;
+      break;
+    case '/allBookings/deletedBookings':
+      content = <DeletedBookings />;
+      break;
+    case '/allBookings/bookingHistory':
+      content = <BookingHistory />;
+      break;
+    case '/scheduleManagement':
+      content = <ScheduleManagement />;
+      break;
+    case '/refundBooking':
+      content = <RefundBooking />;
+      break;
+    case '/ticketCancelRequests':
+      content = <TicketCancelRequests />;
+      break;
+    case '/ticketMarkingSystem':
+      content = <TicketMarkingSystem />;
+      break;
+    case '/bulkSeatTransfer':
+      content = <BulkSeatTransfer />;
+      break;
+    case '/customerDetails':
+      content = <CustomerDetails />;
+      break;
+    default:
       content = <Typography>No page found</Typography>;
   }
 

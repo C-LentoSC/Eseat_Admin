@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
-    Autocomplete, TextField, InputAdornment,
-    Chip, TablePagination
+    Autocomplete, TextField, InputAdornment, FormControlLabel,
+    Switch, TablePagination,
 } from '@mui/material';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
@@ -30,7 +30,8 @@ const ScheduleManagement = () => {
             endTime: "11:00",
             closingDate: "2025-01-09",
             closingTime: "20:00",
-            status: "Active"
+            active: true,
+            status: "Active",
         },
         {
             id: 2,
@@ -43,7 +44,8 @@ const ScheduleManagement = () => {
             endTime: "11:30",
             closingDate: "2025-01-14",
             closingTime: "21:00",
-            status: "Inactive"
+            active: false,
+            status: "Inactive",
         },
         {
             id: 3,
@@ -56,7 +58,8 @@ const ScheduleManagement = () => {
             endTime: "11:30",
             closingDate: "2025-01-14",
             closingTime: "21:00",
-            status: "Active"
+            active: true,
+            status: "Active",
         }
     ]);
     useEffect(() => {
@@ -96,6 +99,17 @@ const ScheduleManagement = () => {
     // const handleDelete = (id) => {
     //     setSchedules(schedules.filter(schedule => schedule.id !== id));
     // };
+
+
+    // Toggle Active/Inactive
+    const handleActiveChange = (id) => {
+        setSchedules((prev) =>
+            prev.map((route) =>
+                route.id === id ? { ...route, active: !route.active } : route
+            )
+        );
+    };
+
 
     // Reusable Autocomplete component
     const AutocompleteField = ({ value, onChange, options, label }) => (
@@ -205,17 +219,27 @@ const ScheduleManagement = () => {
                              .slice(startIndex, startIndex + rowsPerPage)
                              .map((schedule) => (
                                 <TableRow key={schedule.id}>
-                                    <TableCell sx={{ py: 0 }}>{schedule.scheduleNumber}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{schedule.routeNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{schedule.route}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{schedule.travelDate}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{schedule.startTime}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{schedule.endDate}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{schedule.endTime}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{schedule.closingDate}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{schedule.closingTime}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <Typography variant="body2" sx={{ color: schedule.status === 'Active' ? 'green' : 'red' }}>{schedule.status}</Typography>
+                                    <TableCell>{schedule.scheduleNumber}</TableCell>
+                                    <TableCell>{schedule.routeNo}</TableCell>
+                                    <TableCell>{schedule.route}</TableCell>
+                                    <TableCell>{schedule.travelDate}</TableCell>
+                                    <TableCell>{schedule.startTime}</TableCell>
+                                    <TableCell>{schedule.endDate}</TableCell>
+                                    <TableCell>{schedule.endTime}</TableCell>
+                                    <TableCell>{schedule.closingDate}</TableCell>
+                                    <TableCell>{schedule.closingTime}</TableCell>
+                                    <TableCell>
+                                        {/* <Typography variant="body2" sx={{ color: schedule.status === 'Active' ? 'green' : 'red' }}>{schedule.status}</Typography> */}
+
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    checked={schedule.active}
+                                                    onChange={() => handleActiveChange(schedule.id)}
+                                                />
+                                            }
+                                            label={schedule.active ? "Active" : "Inactive"}
+                                        />
                                     </TableCell>
                                     {/* <TableCell>
                                         {schedule.status === 'Duplicate' ? (
