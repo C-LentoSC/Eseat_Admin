@@ -63,7 +63,7 @@ const ScheduleManagement = () => {
         loadAll()
     }, []);
     const loadAll=()=>{
-        api.get('admin/schedule-management/get-all')
+        api.get('admin/schedule-report/get-all-schedules')
             .then(res=>{
                 setSchedules(res.data);
             })
