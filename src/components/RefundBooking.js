@@ -49,8 +49,7 @@ const RefundBooking = () => {
         const bookDateMatch = !selectedBookDate ||
             dayjs(booking.bookDate).format('YYYY-MM-DD') === dayjs(selectedBookDate).format('YYYY-MM-DD');
         const refVCodeMatch = !refVCode ||
-            booking.refNo.toLowerCase().includes(refVCode.toLowerCase()) ||
-            booking.vCode.toLowerCase().includes(refVCode.toLowerCase());
+            booking.refNo.toLowerCase().includes(refVCode.toLowerCase());
         const scheduleNoMatch = !scheduleNo ||
             booking.scheduleNo.toLowerCase().includes(scheduleNo.toLowerCase());
         const mobileNoMatch = !mobileNo ||
@@ -219,7 +218,7 @@ const RefundBooking = () => {
                     <Grid item xs={12} sm={6} md={2.4}>
                         <TextField
                             fullWidth
-                            label="Ref. / V-Code"
+                            label="Ref."
                             value={refVCode}
                             onChange={(e) => setRefVCode(e.target.value)}
                             sx={{
