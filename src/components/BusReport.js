@@ -695,7 +695,7 @@ const BusReport = () => {
                           e.target.value,
                           schedule.tripStatus
                         )}
-                           sx={{ height : 30 }}
+                        sx={{ height : 30 }}
                       >
                         {tripStatuses.map((status) => (
                           <MenuItem key={status} value={status}>

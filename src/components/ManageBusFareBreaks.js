@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -27,9 +27,9 @@ import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ReorderIcon from "@mui/icons-material/Reorder";
-import { setroutval } from "./DashboardLayoutAccount";
-import { Reorder } from "framer-motion";
-import { Item } from "./Parts/ItemPart";
+import {setroutval} from "./DashboardLayoutAccount";
+import {Reorder} from "framer-motion";
+import {Item} from "./Parts/ItemPart";
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
 
@@ -65,12 +65,10 @@ const ManageBusFareBreaks = () => {
             .catch(handleError)
     }
 
-    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
-    const [busPoints, setBusPoints] = useState([
-
-    ]);
+    const [busPoints, setBusPoints] = useState([]);
     const loadAll = () => {
         api.get('admin/routes/fare/all?id=' + RouteID)
             .then(res => {
@@ -85,8 +83,8 @@ const ManageBusFareBreaks = () => {
     const [currentBusPoint, setCurrentBusPoint] = useState(null);
     const [openOrderModal, setOpenOrderModal] = useState(false);
 
-        const [filterBoarding,setFilterBoarding] = useState("");
-        const [filterDropping,setFilterDropping] = useState("");
+    const [filterBoarding, setFilterBoarding] = useState("");
+    const [filterDropping, setFilterDropping] = useState("");
 
     // Add new bus point
     const handleAddBusPoint = () => {
@@ -139,14 +137,14 @@ const ManageBusFareBreaks = () => {
 
     // Handle Input Changes for Edit Modal
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setCurrentBusPoint({ ...currentBusPoint, [name]: value });
+        const {name, value} = e.target;
+        setCurrentBusPoint({...currentBusPoint, [name]: value});
     };
 
 
     // Delete Bus Point
     const handleDeleteBusPoint = (id) => {
-        api.post('admin/routes/fare/delete', { id })
+        api.post('admin/routes/fare/delete', {id})
             .then(res => {
                 loadAll()
                 sendAlert('deleted')
@@ -155,7 +153,7 @@ const ManageBusFareBreaks = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        api.post('admin/routes/fare/toggle-status', { id })
+        api.post('admin/routes/fare/toggle-status', {id})
             .then(res => {
                 loadAll()
             })
@@ -174,7 +172,7 @@ const ManageBusFareBreaks = () => {
         );
         const csvContent = ["Boarding Point , Dropping Point, Fare, Status"].concat(csvData).join("\n");
 
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const blob = new Blob([csvContent], {type: "text/csv;charset=utf-8;"});
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "bus_fare_breaks.csv";
@@ -205,12 +203,15 @@ const ManageBusFareBreaks = () => {
                 })
                 .filter((busPoint) => busPoint !== null);
             // setBusPoints((prev) => [...prev, ...newBusPoints]);
-            api.post('admin/routes/fare/import', { id: RouteID, data: newBusPoints })
+            api.post('admin/routes/fare/import', {id: RouteID, data: newBusPoints})
                 .then(res => {
                     loadAll()
-                    sendAlert('import succsess')
+                    sendAlert('import success')
                 })
-                .catch(handleError)
+                .catch(err => {
+                    handleError(err)
+                    loadAll()
+                })
         };
         reader.readAsText(file);
     };
@@ -232,7 +233,7 @@ const ManageBusFareBreaks = () => {
                 key: index
             }
         }))
-        api.post('admin/routes/fare/change-order', { data: nO })
+        api.post('admin/routes/fare/change-order', {data: nO})
             .then(res => {
                 loadAll()
             })
@@ -272,20 +273,26 @@ const ManageBusFareBreaks = () => {
     return (
         <Container component="main" maxWidth="lg">
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                setOpen={setAlert} /> : <></>}
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
 
-                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginBottom: "20px", justifyContent: "center" }}>
-                    <IconButton onClick={handleBackClick} sx={{ marginRight: "10px", padding: '0' }}>
-                        <ArrowBackIcon />
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                    justifyContent: "center"
+                }}>
+                    <IconButton onClick={handleBackClick} sx={{marginRight: "10px", padding: '0'}}>
+                        <ArrowBackIcon/>
                     </IconButton>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    <Typography variant="h5" sx={{fontWeight: 600}}>
                         Manage Bus Fare Breaks ({details.CityName})
                     </Typography>
                 </Box>
 
                 {/* Form Section */}
-                <Box component="form" sx={{ width: "100%", display: "flex", justifyContent: "center", height: "45px" }}>
+                <Box component="form" sx={{width: "100%", display: "flex", justifyContent: "center", height: "45px"}}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={4}>
                             <Autocomplete
@@ -368,7 +375,7 @@ const ManageBusFareBreaks = () => {
                         </Grid>
                     </Grid>
 
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", ml: 2 }}>
+                    <Box sx={{display: "flex", justifyContent: "flex-end", ml: 2}}>
                         <Button
                             variant="contained"
                             color="primary"
@@ -391,9 +398,17 @@ const ManageBusFareBreaks = () => {
                 </Box>
 
                 {/* Bus Points Table Section */}
-                <Box sx={{ width: "100%", display: "flex", flexDirection: "row", marginTop: "40px", marginBottom: "20px", justifyContent: "space-between", alignItems: "center" }}>
+                <Box sx={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "row",
+                    marginTop: "40px",
+                    marginBottom: "20px",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                }}>
 
-                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+                    <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
 
 
                         <TextField
@@ -432,33 +447,34 @@ const ManageBusFareBreaks = () => {
                         />
                     </Box>
 
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                        <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleExport} sx={{
-                            backgroundColor: "#3f51b5",
-                            color: "#fff",
-                            "&:hover": {
-                                backgroundColor: "#303f9f",
-                            },
-                        }}
+                    <Box sx={{display: "flex", justifyContent: "flex-end", gap: 2}}>
+                        <Button variant="contained" color="primary" startIcon={<DownloadIcon/>} onClick={handleExport}
+                                sx={{
+                                    backgroundColor: "#3f51b5",
+                                    color: "#fff",
+                                    "&:hover": {
+                                        backgroundColor: "#303f9f",
+                                    },
+                                }}
                         >
                             Export
                         </Button>
-                        <Button variant="contained" component="label" startIcon={<UploadIcon />}
-                            sx={{
-                                backgroundColor: "#4caf50",
-                                color: "#fff",
-                                "&:hover": {
-                                    backgroundColor: "#388e3c",
-                                },
-                            }}
+                        <Button variant="contained" component="label" startIcon={<UploadIcon/>}
+                                sx={{
+                                    backgroundColor: "#4caf50",
+                                    color: "#fff",
+                                    "&:hover": {
+                                        backgroundColor: "#388e3c",
+                                    },
+                                }}
                         >
                             Import
-                            <input type="file" accept=".csv" hidden onChange={handleImport} />
+                            <input type="file" accept=".csv" hidden onChange={handleImport}/>
                         </Button>
                         <Button
                             variant="contained"
                             color="secondary"
-                            startIcon={<ReorderIcon />}
+                            startIcon={<ReorderIcon/>}
                             onClick={handleOpenOrderModal}
                             sx={{
                                 backgroundColor: "#3f51b5",
@@ -476,12 +492,12 @@ const ManageBusFareBreaks = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                <TableCell sx={{ py: 1 }}>Boarding Point</TableCell>
-                                <TableCell sx={{ py: 1 }}>Dropping Point</TableCell>
-                                <TableCell sx={{ py: 1 }}>Fare</TableCell>
-                                <TableCell sx={{ py: 1 }}>Status</TableCell>
-                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{py: 1}}>Boarding Point</TableCell>
+                                <TableCell sx={{py: 1}}>Dropping Point</TableCell>
+                                <TableCell sx={{py: 1}}>Fare</TableCell>
+                                <TableCell sx={{py: 1}}>Status</TableCell>
+                                <TableCell sx={{py: 1}} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -489,10 +505,10 @@ const ManageBusFareBreaks = () => {
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((busPoint) => (
                                     <TableRow key={busPoint.key}>
-                                        <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{busPoint.fare}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>
+                                        <TableCell sx={{py: 0}}>{busPoint.direction}</TableCell>
+                                        <TableCell sx={{py: 0}}>{busPoint.routePoint}</TableCell>
+                                        <TableCell sx={{py: 0}}>{busPoint.fare}</TableCell>
+                                        <TableCell sx={{py: 0}}>
                                             <FormControlLabel
                                                 control={
                                                     <Switch
@@ -503,12 +519,13 @@ const ManageBusFareBreaks = () => {
                                                 label={busPoint.active ? "Active" : "Inactive"}
                                             />
                                         </TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
-                                            <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)} sx={{ marginRight: "8px" }}>
-                                                <EditIcon />
+                                        <TableCell sx={{py: 0}} align="right">
+                                            <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)}
+                                                        sx={{marginRight: "8px"}}>
+                                                <EditIcon/>
                                             </IconButton>
                                             <IconButton color="error" onClick={() => handleDeleteBusPoint(busPoint.id)}>
-                                                <DeleteIcon />
+                                                <DeleteIcon/>
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
@@ -548,7 +565,12 @@ const ManageBusFareBreaks = () => {
 
                         <Autocomplete
                             value={currentBusPoint?.direction || ""}
-                            onChange={(e, newValue) => handleInputChange({ target: { name: "direction", value: newValue } })}
+                            onChange={(e, newValue) => handleInputChange({
+                                target: {
+                                    name: "direction",
+                                    value: newValue
+                                }
+                            })}
                             options={b}
                             renderInput={(params) => (
                                 <TextField
@@ -556,14 +578,19 @@ const ManageBusFareBreaks = () => {
                                     label="Boarding Point"
                                     variant="outlined"
                                     required
-                                    sx={{ marginBottom: "16px" }}
+                                    sx={{marginBottom: "16px"}}
                                 />
                             )}
                         />
 
                         <Autocomplete
                             value={currentBusPoint?.routePoint || ""}
-                            onChange={(e, newValue) => handleInputChange({ target: { name: "routePoint", value: newValue } })}
+                            onChange={(e, newValue) => handleInputChange({
+                                target: {
+                                    name: "routePoint",
+                                    value: newValue
+                                }
+                            })}
                             options={d}
                             renderInput={(params) => (
                                 <TextField
@@ -571,7 +598,7 @@ const ManageBusFareBreaks = () => {
                                     label="Dropping Point"
                                     variant="outlined"
                                     required
-                                    sx={{ marginBottom: "16px" }}
+                                    sx={{marginBottom: "16px"}}
                                 />
                             )}
                         />
@@ -593,15 +620,15 @@ const ManageBusFareBreaks = () => {
                                     </InputAdornment>
                                 ),
                             }}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
                         />
 
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSaveBusPoint}
-                                sx={{ marginRight: '8px' }}
+                                sx={{marginRight: '8px'}}
                             >
                                 Save
                             </Button>
@@ -609,7 +636,7 @@ const ManageBusFareBreaks = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleCloseModal}
-                                sx={{ backgroundColor: 'gray' }}
+                                sx={{backgroundColor: 'gray'}}
                             >
                                 Cancel
                             </Button>
@@ -634,11 +661,11 @@ const ManageBusFareBreaks = () => {
                             overflowY: "auto",
                         }}
                     >
-                        <Typography variant="h6" component="h2" sx={{ marginBottom: 2 }}>
+                        <Typography variant="h6" component="h2" sx={{marginBottom: 2}}>
                             Reorder Bus Fare Breaks
                         </Typography>
 
-                        <Box >
+                        <Box>
                             <Grid container spacing={3}>
                                 <Grid item xs={12}>
                                     <Reorder.Group
@@ -648,7 +675,7 @@ const ManageBusFareBreaks = () => {
                                     >
                                         {busPoints
                                             .map((busPoint) => (
-                                                <Item key={busPoint.key} busPoint={busPoint} />
+                                                <Item key={busPoint.key} busPoint={busPoint}/>
                                             ))}
                                     </Reorder.Group>
                                 </Grid>
@@ -656,7 +683,7 @@ const ManageBusFareBreaks = () => {
                             </Grid>
                         </Box>
 
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
+                        <Box sx={{display: "flex", justifyContent: "flex-end", marginTop: "30px"}}>
                             <Button variant="contained" color="primary" onClick={handleSaveOrder}>
                                 Save Order
                             </Button>
@@ -664,7 +691,7 @@ const ManageBusFareBreaks = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleCloseOrderModal}
-                                sx={{ marginLeft: 2, backgroundColor: 'gray' }}
+                                sx={{marginLeft: 2, backgroundColor: 'gray'}}
 
                             >
                                 Cancel
