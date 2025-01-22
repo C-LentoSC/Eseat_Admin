@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
-    TextField, InputAdornment, Button
+    TextField, InputAdornment, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
-import { FileDownload } from '@mui/icons-material';
+import { FileDownload, CheckCircle, HourglassEmpty } from '@mui/icons-material';
 import dayjs from 'dayjs';
 
 const TicketMarkingSystem = () => {
     // Sample initial data
-    const [tickets] = useState([
+    const [tickets, setTickets] = useState([
         {
             id: 1,
             refNo: "TKT001",
             ticketType: "Regular",
-            seatNo: "1A, 2A",
             depot: "Colombo",
             scheduleNo: "SCH001",
             vCode: "V001",
@@ -22,13 +21,16 @@ const TicketMarkingSystem = () => {
             route: "Colombo-Kandy",
             nic: "199912345678",
             bookedBy: "John Doe",
-            bookedDate: "2025-01-01"
+            bookedDate: "2025-01-01",
+            seatNoDetails: [
+                { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false },
+                { seatNo: "2A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false }
+            ],
         },
         {
             id: 2,
             refNo: "TKT002",
             ticketType: "Student",
-            seatNo: "3B",
             depot: "Galle",
             scheduleNo: "SCH002",
             vCode: "V002",
@@ -36,7 +38,10 @@ const TicketMarkingSystem = () => {
             route: "Galle-Matara",
             nic: "200045678912",
             bookedBy: "Jane Smith",
-            bookedDate: "2025-01-02"
+            bookedDate: "2025-01-02",
+            seatNoDetails: [
+                { seatNo: "3B", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false },
+            ],
         }
     ]);
 
@@ -44,14 +49,16 @@ const TicketMarkingSystem = () => {
     const [depot, setDepot] = useState('');
     const [scheduleNo, setScheduleNo] = useState('');
     const [vCode, setVCode] = useState('');
+    const [selectedTicket, setSelectedTicket] = useState(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     // Filter tickets based on criteria
     const filteredTickets = tickets.filter(ticket => {
-        const depotMatch = !depot || 
+        const depotMatch = !depot ||
             ticket.depot.toLowerCase().includes(depot.toLowerCase());
-        const scheduleMatch = !scheduleNo || 
+        const scheduleMatch = !scheduleNo ||
             ticket.scheduleNo.toLowerCase().includes(scheduleNo.toLowerCase());
-        const vCodeMatch = !vCode || 
+        const vCodeMatch = !vCode ||
             ticket.vCode.toLowerCase().includes(vCode.toLowerCase());
 
         return depotMatch && scheduleMatch && vCodeMatch;
@@ -76,7 +83,7 @@ const TicketMarkingSystem = () => {
         const headers = [
             'Ref No',
             'Ticket Type',
-            'Seat No',
+            'Seat Nos',
             'Depot',
             'Schedule No',
             'V-Code',
@@ -90,7 +97,7 @@ const TicketMarkingSystem = () => {
         const rows = filteredTickets.map(ticket => [
             formatCSVField(ticket.refNo),
             formatCSVField(ticket.ticketType),
-            formatCSVField(ticket.seatNo),
+            formatCSVField(ticket.seatNoDetails.map(s => `${s.seatNo} : ${s.confirmed ? 'confirmed' : 'not confirmed'}`).join(', ')),
             formatCSVField(ticket.depot),
             formatCSVField(ticket.scheduleNo),
             formatCSVField(ticket.vCode),
@@ -116,6 +123,36 @@ const TicketMarkingSystem = () => {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+    };
+
+
+    const handleViewSeats = (ticket) => {
+        setSelectedTicket(ticket);
+        setDialogOpen(true);
+    };
+
+    const handleConfirmSeat = (ticket, seatNo) => {
+        const updatedTickets = tickets.map(t =>
+            t.id === ticket.id
+                ? {
+                    ...t,
+                    seatNoDetails: t.seatNoDetails.map(s =>
+                        s.seatNo === seatNo ? { ...s, confirmed: true } : s
+                    ),
+                }
+                : t
+        );
+    
+        setTickets(updatedTickets);
+    
+        // Update selectedTicket to reflect the latest state
+        const updatedTicket = updatedTickets.find(t => t.id === ticket.id);
+        setSelectedTicket(updatedTicket);
+    };
+    
+
+    const allSeatsConfirmed = (ticket) => {
+        return ticket.seatNoDetails.every(s => s.confirmed);
     };
 
     return (
@@ -220,6 +257,7 @@ const TicketMarkingSystem = () => {
                                 <TableCell>NIC</TableCell>
                                 <TableCell>Booked By</TableCell>
                                 <TableCell>Booked Date</TableCell>
+                                <TableCell align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -227,7 +265,7 @@ const TicketMarkingSystem = () => {
                                 <TableRow key={ticket.id}>
                                     <TableCell>{ticket.refNo}</TableCell>
                                     <TableCell>{ticket.ticketType}</TableCell>
-                                    <TableCell>{ticket.seatNo}</TableCell>
+                                    <TableCell>{ticket.seatNoDetails.map(s => s.seatNo).join(', ')}</TableCell>
                                     <TableCell>{ticket.depot}</TableCell>
                                     <TableCell>{ticket.scheduleNo}</TableCell>
                                     <TableCell>{ticket.vCode}</TableCell>
@@ -236,12 +274,56 @@ const TicketMarkingSystem = () => {
                                     <TableCell>{ticket.nic}</TableCell>
                                     <TableCell>{ticket.bookedBy}</TableCell>
                                     <TableCell>{ticket.bookedDate}</TableCell>
+                                    <TableCell align="right">
+                                        {allSeatsConfirmed(ticket) ? (
+                                            <CheckCircle color="success" />
+                                        ) : (
+                                            <IconButton onClick={() => handleViewSeats(ticket)} color="primary">
+                                                <HourglassEmpty />
+                                            </IconButton>
+                                        )}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
             </Box>
+
+            {selectedTicket && (
+                <Box sx={{ display: "flex", width: "100%", justifyContent: "center" }}>
+                    <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} sx={{ width: "100%" }}>
+                        <DialogTitle>Seat Confirmation Details</DialogTitle>
+                        <DialogContent>
+
+                            {selectedTicket.seatNoDetails.map(s => (
+                                <div key={s.seatNo} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                                    <Typography>{s.seatNo}</Typography>
+                                    <Typography>{s.confirmed}</Typography>
+                                    <IconButton
+                                        onClick={() => handleConfirmSeat(selectedTicket, s.seatNo)}
+                                        sx={{ color: s.confirmed ? "success" : "primary" }}
+                                        disabled={s.confirmed}
+                                    >
+                                        {s.confirmed ?
+                                            <CheckCircle color="success" />
+                                            :
+                                            <HourglassEmpty color='primary' />
+                                        }
+
+                                    </IconButton>
+
+                                </div>
+                            ))}
+
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setDialogOpen(false)}>Close</Button>
+                        </DialogActions>
+                    </Dialog>
+                </Box>
+            )}
+
         </Container>
     );
 };

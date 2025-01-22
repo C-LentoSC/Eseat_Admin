@@ -143,7 +143,7 @@ const BulkSeatTransfer = () => {
     // Sample data
     const depots = ["Depot 1", "Depot 2", "Depot 3"];
     const schedules = ["Morning Express", "Evening Express", "Night Express"];
-    const points = ["Colombo", "Kandy", "Galle", "Matara"];
+    const points = ["Colombo - Matara", "Kandy - Colombo", "Galle - Colombo", "Matara - Kandy"];
 
     const [allschedules] = useState([
         {
@@ -401,7 +401,7 @@ const BulkSeatTransfer = () => {
             },
             {
                 refNo: "REF002",
-                seatNo: "B2",
+                seatNo: "B2,C2",
                 modeOfPay: "Cash",
                 nic: "987654321V",
                 name: "Jane Smith",
