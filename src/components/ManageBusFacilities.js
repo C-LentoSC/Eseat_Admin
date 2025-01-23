@@ -52,7 +52,7 @@ const ManageBusFacilities = () => {
         setImg2(null)
         setOpen(false);
         setAddmodel(false);
-         setCurrentFacility(null)
+        setCurrentFacility(null)
         setImg1(null)
         setNewName("")
     };
