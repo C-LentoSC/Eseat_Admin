@@ -16,8 +16,8 @@ const App = () => {
             // Reset the inactivity timer on user activity
             clearTimeout(window.inactivityTimeout);
             window.inactivityTimeout = setTimeout(() => {
-                handleLogout(); // Logout after 15 minutes of inactivity
-            }, 3 * 60 * 1000); // 15 minutes in milliseconds
+                handleLogout(); // Logout after 45 minutes of inactivity
+            }, 45 * 60 * 1000); // 45 minutes in milliseconds
         };
 
         // Add event listeners for activity
