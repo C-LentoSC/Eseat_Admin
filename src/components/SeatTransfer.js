@@ -31,71 +31,175 @@ const SeatTransfer = () => {
             id: 0, name: '', price: ''
         }, droppingPoint: '', newSeatNumber: '', seatCost: '', oldSeatCost: 0, balanceToPay: ''
     });
-    const handleSeatNoChange = (no) => {
+    const handleSeatNoChange = (nos) => {
         if (!selectedSchedule) return;
-        if (transferDetails.boardingPoint === "" || transferDetails.boardingPoint === null||transferDetails.boardingPoint.id===0) {
-            sendAlert("select the fare break first")
+        if (transferDetails.boardingPoint === "" || transferDetails.boardingPoint === null || transferDetails.boardingPoint.id === 0) {
+            sendAlert("select the fare break first");
             return;
         }
-        let updatedDetails = {...transferDetails, newSeatNumber: no};
+
+        let updatedDetails = { ...transferDetails, newSeatNumber: nos }; // Store multiple seat numbers
         const seatDetails = selectedSchedule?.seatDetails ?? {};
         const entry = Object.entries(seatDetails).map(e => e[1]);
-        const filteredSeats = entry.filter(d => d?.seatNumber === no);
-        const selectedSeat = filteredSeats[0];
-        if (!selectedSeat) {
-            updatedDetails = {
-                ...updatedDetails, newSeatId: null, seatCost: '', balanceToPay: ''
-            };
-        } else {
-            if (selectedSeat.status !== "available") {
-                sendAlert('this seat is not available')
-                updatedDetails = {
-                    ...updatedDetails, newSeatId: null, seatCost: '', balanceToPay: ''
-                };
+
+        let selectedSeats = [];
+        let allSeatsAvailable = true;
+        let newIds = []; // To store the seat IDs of the selected seats
+
+        // Split the input seat numbers by comma and process each seat
+        const seatNumbers = nos.split(',');
+
+
+        seatNumbers.forEach((no) => {
+            const filteredSeats = entry.filter(d => d?.seatNumber === no);
+            const selectedSeat = filteredSeats[0];
+
+            if (!selectedSeat) {
+                // Seat not found
+                // selectedSeats.push({ seatNumber: no, seatId: null, seatCost: '', balanceToPay: '' });
             } else {
+                // Seat found, check if it's available
 
-                updatedDetails = {
-                    ...updatedDetails,
-                    newSeatNumber: selectedSeat.seatNumber,
-                    newSeatId: selectedSeat.id,
-                };
+                if (selectedSeat.status !== "available") {
+                    sendAlert(`Seat ${no} is not available`);
+                    allSeatsAvailable = false;
+                } else {
+                    selectedSeats.push({
+                        seatNumber: selectedSeat.seatNumber,
+                        seatId: selectedSeat.id,
+                        seatCost: selectedSeat.cost ?? '',
+                        balanceToPay: selectedSeat.balanceToPay ?? ''
+                    });
+                    newIds.push(selectedSeat.id);
+                }
             }
+        });
+
+        if (!allSeatsAvailable) {
+            updatedDetails = { ...updatedDetails };
+        } else {
+            updatedDetails = {
+                ...updatedDetails,
+                selectedSeats: selectedSeats,
+                newSeatIds: newIds,
+                seatCost: selectedSeats.reduce((total, seat) => total + parseFloat(seat.seatCost || 0), 0), // Sum up seat costs
+                balanceToPay: selectedSeats.reduce((total, seat) => total + parseFloat(seat.balanceToPay || 0), 0) // Sum up balance to pay
+            };
         }
+
         setTransferDetails(updatedDetails);
-        setSelectedSeat(selectedSeat);
+        setSelectedSeat(selectedSeats);
+
     };
+
+
+    // const handleSeatNoChange = (no) => {
+    //     if (!selectedSchedule) return;
+    //     if (transferDetails.boardingPoint === "" || transferDetails.boardingPoint === null||transferDetails.boardingPoint.id===0) {
+    //         sendAlert("select the fare break first")
+    //         return;
+    //     }
+    //     let updatedDetails = {...transferDetails, newSeatNumber: no};
+    //     const seatDetails = selectedSchedule?.seatDetails ?? {};
+    //     const entry = Object.entries(seatDetails).map(e => e[1]);
+    //     const filteredSeats = entry.filter(d => d?.seatNumber === no);
+    //     const selectedSeat = filteredSeats[0];
+    //     if (!selectedSeat) {
+    //         updatedDetails = {
+    //             ...updatedDetails, newSeatId: null, seatCost: '', balanceToPay: ''
+    //         };
+    //     } else {
+    //         if (selectedSeat.status !== "available") {
+    //             sendAlert('this seat is not available')
+    //             updatedDetails = {
+    //                 ...updatedDetails, newSeatId: null, seatCost: '', balanceToPay: ''
+    //             };
+    //         } else {
+    //
+    //             updatedDetails = {
+    //                 ...updatedDetails,
+    //                 newSeatNumber: selectedSeat.seatNumber,
+    //                 newSeatId: selectedSeat.id,
+    //             };
+    //         }
+    //     }
+    //     setTransferDetails(updatedDetails);
+    //     setSelectedSeat(selectedSeat);
+    // };
+    // const calTotal = () => {
+    //     if (!selectedSeat) return null
+    //     if(!transferDetails.boardingPoint)return null;
+    //     const busFare = transferDetails.boardingPoint.price||0;
+    //     if (busFare === 0) return 0
+    //     const ctbCharge = selectedSeat.serviceChargeCTB;
+    //     const hghCharge = selectedSeat.serviceChargeHGH;
+    //     const discountRate = selectedSeat.discount;
+    //     const vatRate = selectedSeat.vat;
+    //     const bankChargeRate = selectedSeat.bankCharges;
+    //     const serviceCharge1 = selectedSeat.serviceCharge01;
+    //     const serviceCharge2 = selectedSeat.serviceCharge02;
+    //
+    //     //01
+    //     const totalBeforeDiscount = busFare + ctbCharge + hghCharge;
+    //
+    //     //02
+    //     const discount = (totalBeforeDiscount * discountRate) / 100;
+    //     const afterDiscountPrice = totalBeforeDiscount - discount;
+    //
+    //     //03
+    //     const vat = (afterDiscountPrice * vatRate) / 100;
+    //     const afterVatPrice = afterDiscountPrice + vat;
+    //
+    //     //04
+    //     const bankCharge = (afterVatPrice * bankChargeRate) / 100;
+    //     const afterBankChargePrice = afterVatPrice + bankCharge;
+    //
+    //     const finalTotal = afterBankChargePrice + serviceCharge1 + serviceCharge2;
+    //     const seatCostTotal = finalTotal.toFixed(2);
+    //     return seatCostTotal
+    // }
     const calTotal = () => {
-        if (!selectedSeat) return null
-        if(!transferDetails.boardingPoint)return null;
-        const busFare = transferDetails.boardingPoint.price||0;
-        if (busFare === 0) return 0
-        const ctbCharge = selectedSeat.serviceChargeCTB;
-        const hghCharge = selectedSeat.serviceChargeHGH;
-        const discountRate = selectedSeat.discount;
-        const vatRate = selectedSeat.vat;
-        const bankChargeRate = selectedSeat.bankCharges;
-        const serviceCharge1 = selectedSeat.serviceCharge01;
-        const serviceCharge2 = selectedSeat.serviceCharge02;
+        if (!selectedSeat || !Array.isArray(selectedSeat) || selectedSeat.length === 0) return null;
+        if (!transferDetails.boardingPoint) return null;
 
-        //01
-        const totalBeforeDiscount = busFare + ctbCharge + hghCharge;
+        const busFare = transferDetails.boardingPoint.price || 0;
+        if (busFare === 0) return 0;
 
-        //02
-        const discount = (totalBeforeDiscount * discountRate) / 100;
-        const afterDiscountPrice = totalBeforeDiscount - discount;
+        let totalCost = 0;
 
-        //03
-        const vat = (afterDiscountPrice * vatRate) / 100;
-        const afterVatPrice = afterDiscountPrice + vat;
+        // Loop through all selected seats and calculate their total cost
+        selectedSeat.forEach((seat) => {
+            const ctbCharge = seat.serviceChargeCTB || 0;
+            const hghCharge = seat.serviceChargeHGH || 0;
+            const discountRate = seat.discount || 0;
+            const vatRate = seat.vat || 0;
+            const bankChargeRate = seat.bankCharges || 0;
+            const serviceCharge1 = seat.serviceCharge01 || 0;
+            const serviceCharge2 = seat.serviceCharge02 || 0;
 
-        //04
-        const bankCharge = (afterVatPrice * bankChargeRate) / 100;
-        const afterBankChargePrice = afterVatPrice + bankCharge;
+            //01 - Calculate total before discount for the current seat
+            const totalBeforeDiscount = busFare + ctbCharge + hghCharge;
 
-        const finalTotal = afterBankChargePrice + serviceCharge1 + serviceCharge2;
-        const seatCostTotal = finalTotal.toFixed(2);
-        return seatCostTotal
-    }
+            //02 - Calculate discount
+            const discount = (totalBeforeDiscount * discountRate) / 100;
+            const afterDiscountPrice = totalBeforeDiscount - discount;
+
+            //03 - Calculate VAT
+            const vat = (afterDiscountPrice * vatRate) / 100;
+            const afterVatPrice = afterDiscountPrice + vat;
+
+            //04 - Calculate bank charges
+            const bankCharge = (afterVatPrice * bankChargeRate) / 100;
+            const afterBankChargePrice = afterVatPrice + bankCharge;
+
+            // Final Total for the current seat
+            const finalTotal = afterBankChargePrice + serviceCharge1 + serviceCharge2;
+            totalCost += finalTotal;  // Accumulate the total cost for all selected seats
+        });
+
+        // Return the total cost for all seats
+        return totalCost.toFixed(2);
+    };
     const toPay = () => {
         if (!calTotal()) return null
         return calTotal() - (transferDetails?.oldSeatCost ?? 0)
@@ -130,7 +234,7 @@ const SeatTransfer = () => {
     }
 
     const handleSearch = () => {
-        // Simulate API call
+
         api.post('admin/seat-transfer/search', searchData)
             .then(res => {
                 if (!res.data) sendAlert('invalid search data')
