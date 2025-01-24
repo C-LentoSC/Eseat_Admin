@@ -253,12 +253,554 @@ const NAVIGATION = {
       icon: <PersonIcon />,
     },
   ],
-  Admin: [],
-  OperationManager: [],
-  OperationStaff: [],
-  CallCenterStaff: [],
-  DeportOperator: [],
-  AccountDepartment: [],
+  Admin: [
+     {
+      segment: 'user-registration',
+      title: 'User Registration',
+      icon: <PersonAddIcon />,
+    },
+    {
+      segment: 'busFacilities',
+      title: 'Bus Facilities',
+      icon: <AddCircleIcon />,
+    },
+    {
+      segment: 'points-management',
+      title: 'Points Management',
+      icon: <LoyaltyIcon />,
+    },
+    {
+      segment: 'route-management',
+      title: 'Route Management',
+      icon: <MapIcon />,
+      children: [
+        {
+          segment: 'all-route',
+          title: 'All Routes',
+          icon: <AllInboxIcon />,
+        },
+        {
+          segment: 'active-route',
+          title: 'Active Routes',
+          icon: <DirectionsRunIcon />,
+        },
+      ],
+    },
+    {
+      segment: 'manage-regions',
+      title: 'Manage Regions',
+      icon: <LocationOnIcon />,
+    },
+    {
+      segment: 'manage_depots',
+      title: 'Manage Depots',
+      icon: <WarehouseIcon />,
+    },
+    {
+      segment: 'busLayoutManagement',
+      title: 'Bus Layout Management',
+      icon: <ViewComfyIcon />,
+    },
+    {
+      segment: 'activeDepot',
+      title: 'Bus Management',
+      icon: <DirectionsBusIcon />,
+    },
+    {
+      segment: 'agentManagement',
+      title: 'Agent Management',
+      icon: <GroupIcon />,
+    },
+    {
+      segment: 'seatTransfer',
+      title: 'Seat Transfer',
+      icon: <AirlineSeatReclineNormalIcon />,
+    },
+    {
+      segment: 'manageFare',
+      title: 'Manage Fare',
+      icon: <PaymentsOutlined />,
+      children: [
+        {
+          segment: 'manage-fare',
+          title: 'Manage Fare',
+          icon: <AttachMoney />,
+        },
+        {
+          segment: 'manage-break-fare',
+          title: 'Manage Break Fare',
+          icon: <RequestQuoteOutlined />,
+        },
+      ],
+    },
+    {
+      segment: 'bulkBusManagement',
+      title: 'Bulk Bus Management',
+      icon: <BusAlert />,
+    },
+    {
+      segment: 'busReport',
+      title: 'Bus Report',
+      icon: <Assignment />,
+    },
+    {
+      segment: 'allBookings',
+      title: 'All Bookings',
+      icon: <HistoryIcon />,
+      children: [
+        {
+          segment: 'allBookings',
+          title: 'All Bookings',
+          icon: <HistoryIcon />,
+        },
+        {
+          segment: 'pendingBookings',
+          title: 'Pending Bookings',
+          icon: <PendingActionsIcon />,
+        },
+        {
+          segment: 'manualCancelBookings',
+          title: 'Manual Cancel Bookings',
+          icon: <CancelScheduleSendIcon />,
+        },
+        {
+          segment: 'agentBookings',
+          title: 'Agent Bookings',
+          icon: <PersonSearchIcon />,
+        },
+        {
+          segment: 'failBookings',
+          title: 'Fail Bookings',
+          icon: <ErrorOutlineIcon />,
+        },
+        {
+          segment: 'deletedBookings',
+          title: 'Deleted Bookings',
+          icon: <DeleteOutlineIcon />,
+        },
+        {
+          segment: 'bookingHistory',
+          title: 'Booking History',
+          icon: <DateRangeIcon />,
+        },
+      ],
+    },
+    {
+      segment: 'scheduleManagement',
+      title: 'Schedule Management',
+      icon: <EventAvailableIcon />,
+    },
+    {
+      segment: 'refundBooking',
+      title: 'Refund Booking',
+      icon: <AttachMoneyIcon />,
+    },
+    {
+      segment: 'ticketCancelRequests',
+      title: 'Ticket Cancel Requests',
+      icon: <CancelOutlinedIcon />,
+    },
+    {
+      segment: 'ticketMarkingSystem',
+      title: 'Ticket Marking System',
+      icon: <ReceiptIcon />,
+    },
+    {
+      segment: 'bulkSeatTransfer',
+      title: 'Bulk Seat Transfer',
+      icon: <SwapHorizIcon />,
+    },
+    {
+      segment: 'customerDetails',
+      title: 'Customer Details',
+      icon: <PersonIcon />,
+    },
+  ],
+  OperationManager: [
+     {
+      segment: 'user-registration',
+      title: 'User Registration',
+      icon: <PersonAddIcon />,
+    },
+    {
+      segment: 'busFacilities',
+      title: 'Bus Facilities',
+      icon: <AddCircleIcon />,
+    },
+    {
+      segment: 'points-management',
+      title: 'Points Management',
+      icon: <LoyaltyIcon />,
+    },
+    {
+      segment: 'route-management',
+      title: 'Route Management',
+      icon: <MapIcon />,
+      children: [
+        {
+          segment: 'all-route',
+          title: 'All Routes',
+          icon: <AllInboxIcon />,
+        },
+        {
+          segment: 'active-route',
+          title: 'Active Routes',
+          icon: <DirectionsRunIcon />,
+        },
+      ],
+    },
+    {
+      segment: 'manage-regions',
+      title: 'Manage Regions',
+      icon: <LocationOnIcon />,
+    },
+    {
+      segment: 'manage_depots',
+      title: 'Manage Depots',
+      icon: <WarehouseIcon />,
+    },
+    {
+      segment: 'busLayoutManagement',
+      title: 'Bus Layout Management',
+      icon: <ViewComfyIcon />,
+    },
+    {
+      segment: 'activeDepot',
+      title: 'Bus Management',
+      icon: <DirectionsBusIcon />,
+    },
+    {
+      segment: 'agentManagement',
+      title: 'Agent Management',
+      icon: <GroupIcon />,
+    },
+    {
+      segment: 'seatTransfer',
+      title: 'Seat Transfer',
+      icon: <AirlineSeatReclineNormalIcon />,
+    },
+    {
+      segment: 'bulkBusManagement',
+      title: 'Bulk Bus Management',
+      icon: <BusAlert />,
+    },
+    {
+      segment: 'busReport',
+      title: 'Bus Report',
+      icon: <Assignment />,
+    },
+    {
+      segment: 'allBookings',
+      title: 'All Bookings',
+      icon: <HistoryIcon />,
+      children: [
+        {
+          segment: 'allBookings',
+          title: 'All Bookings',
+          icon: <HistoryIcon />,
+        },
+        {
+          segment: 'pendingBookings',
+          title: 'Pending Bookings',
+          icon: <PendingActionsIcon />,
+        },
+        {
+          segment: 'manualCancelBookings',
+          title: 'Manual Cancel Bookings',
+          icon: <CancelScheduleSendIcon />,
+        },
+        {
+          segment: 'agentBookings',
+          title: 'Agent Bookings',
+          icon: <PersonSearchIcon />,
+        },
+        {
+          segment: 'failBookings',
+          title: 'Fail Bookings',
+          icon: <ErrorOutlineIcon />,
+        },
+        {
+          segment: 'deletedBookings',
+          title: 'Deleted Bookings',
+          icon: <DeleteOutlineIcon />,
+        },
+        {
+          segment: 'bookingHistory',
+          title: 'Booking History',
+          icon: <DateRangeIcon />,
+        },
+      ],
+    },
+    {
+      segment: 'scheduleManagement',
+      title: 'Schedule Management',
+      icon: <EventAvailableIcon />,
+    },
+    {
+      segment: 'refundBooking',
+      title: 'Refund Booking',
+      icon: <AttachMoneyIcon />,
+    },
+    {
+      segment: 'ticketCancelRequests',
+      title: 'Ticket Cancel Requests',
+      icon: <CancelOutlinedIcon />,
+    },
+    {
+      segment: 'bulkSeatTransfer',
+      title: 'Bulk Seat Transfer',
+      icon: <SwapHorizIcon />,
+    },
+    {
+      segment: 'customerDetails',
+      title: 'Customer Details',
+      icon: <PersonIcon />,
+    },
+  ],
+  OperationStaff: [
+     {
+      segment: 'user-registration',
+      title: 'User Registration',
+      icon: <PersonAddIcon />,
+    },
+    {
+      segment: 'busFacilities',
+      title: 'Bus Facilities',
+      icon: <AddCircleIcon />,
+    },
+    {
+      segment: 'points-management',
+      title: 'Points Management',
+      icon: <LoyaltyIcon />,
+    },
+    {
+      segment: 'route-management',
+      title: 'Route Management',
+      icon: <MapIcon />,
+      children: [
+        {
+          segment: 'all-route',
+          title: 'All Routes',
+          icon: <AllInboxIcon />,
+        },
+        {
+          segment: 'active-route',
+          title: 'Active Routes',
+          icon: <DirectionsRunIcon />,
+        },
+      ],
+    },
+    {
+      segment: 'busLayoutManagement',
+      title: 'Bus Layout Management',
+      icon: <ViewComfyIcon />,
+    },
+    {
+      segment: 'activeDepot',
+      title: 'Bus Management',
+      icon: <DirectionsBusIcon />,
+    },
+    {
+      segment: 'seatTransfer',
+      title: 'Seat Transfer',
+      icon: <AirlineSeatReclineNormalIcon />,
+    },
+    {
+      segment: 'bulkBusManagement',
+      title: 'Bulk Bus Management',
+      icon: <BusAlert />,
+    },
+    {
+      segment: 'busReport',
+      title: 'Bus Report',
+      icon: <Assignment />,
+    },
+    {
+      segment: 'allBookings',
+      title: 'All Bookings',
+      icon: <HistoryIcon />,
+      children: [
+        {
+          segment: 'allBookings',
+          title: 'All Bookings',
+          icon: <HistoryIcon />,
+        },
+        {
+          segment: 'pendingBookings',
+          title: 'Pending Bookings',
+          icon: <PendingActionsIcon />,
+        },
+        {
+          segment: 'manualCancelBookings',
+          title: 'Manual Cancel Bookings',
+          icon: <CancelScheduleSendIcon />,
+        },
+        {
+          segment: 'agentBookings',
+          title: 'Agent Bookings',
+          icon: <PersonSearchIcon />,
+        },
+        {
+          segment: 'failBookings',
+          title: 'Fail Bookings',
+          icon: <ErrorOutlineIcon />,
+        },
+        {
+          segment: 'deletedBookings',
+          title: 'Deleted Bookings',
+          icon: <DeleteOutlineIcon />,
+        },
+        {
+          segment: 'bookingHistory',
+          title: 'Booking History',
+          icon: <DateRangeIcon />,
+        },
+      ],
+    },
+    {
+      segment: 'scheduleManagement',
+      title: 'Schedule Management',
+      icon: <EventAvailableIcon />,
+    },
+    {
+      segment: 'refundBooking',
+      title: 'Refund Booking',
+      icon: <AttachMoneyIcon />,
+    },
+    {
+      segment: 'ticketCancelRequests',
+      title: 'Ticket Cancel Requests',
+      icon: <CancelOutlinedIcon />,
+    },
+    {
+      segment: 'bulkSeatTransfer',
+      title: 'Bulk Seat Transfer',
+      icon: <SwapHorizIcon />,
+    },
+    {
+      segment: 'customerDetails',
+      title: 'Customer Details',
+      icon: <PersonIcon />,
+    },
+  ],
+  CallCenterStaff: [
+     {
+      segment: 'user-registration',
+      title: 'User Registration',
+      icon: <PersonAddIcon />,
+    },
+    {
+      segment: 'points-management',
+      title: 'Points Management',
+      icon: <LoyaltyIcon />,
+    },
+    {
+      segment: 'busLayoutManagement',
+      title: 'Bus Layout Management',
+      icon: <ViewComfyIcon />,
+    },
+    {
+      segment: 'activeDepot',
+      title: 'Bus Management',
+      icon: <DirectionsBusIcon />,
+    },
+    {
+      segment: 'seatTransfer',
+      title: 'Seat Transfer',
+      icon: <AirlineSeatReclineNormalIcon />,
+    },
+    {
+      segment: 'bulkBusManagement',
+      title: 'Bulk Bus Management',
+      icon: <BusAlert />,
+    },
+    {
+      segment: 'busReport',
+      title: 'Bus Report',
+      icon: <Assignment />,
+    },
+    {
+      segment: 'allBookings',
+      title: 'All Bookings',
+      icon: <HistoryIcon />,
+      children: [
+        {
+          segment: 'allBookings',
+          title: 'All Bookings',
+          icon: <HistoryIcon />,
+        },
+        {
+          segment: 'pendingBookings',
+          title: 'Pending Bookings',
+          icon: <PendingActionsIcon />,
+        },
+        {
+          segment: 'manualCancelBookings',
+          title: 'Manual Cancel Bookings',
+          icon: <CancelScheduleSendIcon />,
+        },
+        {
+          segment: 'agentBookings',
+          title: 'Agent Bookings',
+          icon: <PersonSearchIcon />,
+        },
+        {
+          segment: 'failBookings',
+          title: 'Fail Bookings',
+          icon: <ErrorOutlineIcon />,
+        },
+        {
+          segment: 'deletedBookings',
+          title: 'Deleted Bookings',
+          icon: <DeleteOutlineIcon />,
+        },
+        {
+          segment: 'bookingHistory',
+          title: 'Booking History',
+          icon: <DateRangeIcon />,
+        },
+      ],
+    },
+    {
+      segment: 'scheduleManagement',
+      title: 'Schedule Management',
+      icon: <EventAvailableIcon />,
+    },
+    {
+      segment: 'refundBooking',
+      title: 'Refund Booking',
+      icon: <AttachMoneyIcon />,
+    },
+    {
+      segment: 'customerDetails',
+      title: 'Customer Details',
+      icon: <PersonIcon />,
+    },
+  ],
+  DeportOperator: [
+    {
+      segment: 'busReport',
+      title: 'Bus Report',
+      icon: <Assignment />,
+    },
+    {
+      segment: 'ticketMarkingSystem',
+      title: 'Ticket Marking System',
+      icon: <ReceiptIcon />,
+    },
+  ],
+  AccountDepartment: [
+    {
+      segment: 'refundBooking',
+      title: 'Refund Booking',
+      icon: <AttachMoneyIcon />,
+    },
+    {
+      segment: 'bulkSeatTransfer',
+      title: 'Bulk Seat Transfer',
+      icon: <SwapHorizIcon />,
+    },
+  ],
 };
 
 const demoTheme = createTheme({
