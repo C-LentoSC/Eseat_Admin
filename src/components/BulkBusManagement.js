@@ -133,7 +133,7 @@ const BulkBusManagement = () => {
                 </Typography>
 
                 {/* Filters */}
-                <Grid container spacing={2} sx={{mb: 3}}>
+                <Grid container spacing={2} sx={{mb: 0}}>
                     <Grid item xs={12} sm={6} md={3}>
                         <Autocomplete
                             value={selectedDepot}
@@ -245,12 +245,12 @@ const BulkBusManagement = () => {
                 </Grid>
 
                 {/* Bulk Actions */}
-                <Paper sx={{p: 2}}>
+                <Paper sx={{p: 1}}>
                     <Stack spacing={2}>
-                        <Typography variant="subtitle1" sx={{fontWeight: 500}}>
-                            Bulk Status Update for Filtered Buses
-                        </Typography>
-                        <Grid container spacing={2}>
+                        // <Typography variant="subtitle1" sx={{fontWeight: 500}}>
+                        //     Bulk Status Update for Filtered Buses
+                        // </Typography>
+                        <Grid container spacing={0}>
                             <Grid item xs={12} sm={4}>
                                 <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                                     <FormControlLabel
