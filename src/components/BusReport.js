@@ -34,8 +34,16 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const BusReport = () => {
 
+      // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+    
   const [schedules, setSchedules] = useState([]);
   const loadAll=()=>{
     api.get('admin/schedule-report/get-all')
@@ -547,7 +555,10 @@ const BusReport = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container component="main" maxWidth="lg">
-        {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+            
+        {/* <LoadingOverlay show={loading} /> */}
+        
+         {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                               setOpen={setAlert}/> : <></>}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>

@@ -33,7 +33,14 @@ import { Item } from "./Parts/ItemPart";
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const ManageBusPoints = () => {
+
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
 
     const RouteID = sessionStorage.getItem('currentValueID');
     const [details, setDetails] = useState({
@@ -268,7 +275,10 @@ const ManageBusPoints = () => {
 
     return (
         <Container component="main" maxWidth="lg">
-            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+           
+            {/* <LoadingOverlay show={loading} /> */}
+            
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 

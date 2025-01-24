@@ -7,7 +7,15 @@ import {
 import { FileDownload } from '@mui/icons-material';
 import dayjs from 'dayjs';
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const CustomerDetails = () => {
+
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+
     // Sample initial data
     const [customers] = useState([
         {
@@ -103,6 +111,9 @@ const CustomerDetails = () => {
 
     return (
         <Container component="main" maxWidth="lg">
+           
+            {/* <LoadingOverlay show={loading} /> */}
+            
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Customer Details

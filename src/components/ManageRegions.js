@@ -27,7 +27,15 @@ import api from "../model/API";
 // import UploadIcon from "@mui/icons-material/Upload";
 // import DownloadIcon from "@mui/icons-material/Download";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const ManageRegions = () => {
+    
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+
     const [regions, setRegions] = useState([]);//
     const [alert, setAlert] = useState(null)
     const [addmodel, setAddmodel] = useState(false);
@@ -258,7 +266,10 @@ const ManageRegions = () => {
 
     return (
         <Container component="main" maxWidth="lg">
-            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+            
+             {/* <LoadingOverlay show={loading} /> */}
+             
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
