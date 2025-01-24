@@ -29,7 +29,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import LoadingOverlay from './Parts/LoadingOverlay';
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const UserRegistrationPage = () => {
 

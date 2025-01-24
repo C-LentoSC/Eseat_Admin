@@ -503,8 +503,8 @@ const ManageBusPoints = () => {
                                     >
                                         {busPoints
                                             .filter((point) => point.direction === "Boarding")
-                                            .map((busPoint) => (
-                                                <Item key={busPoint.key} busPoint={busPoint} />
+                                            .map((busPoint, index) => (
+                                                <Item key={busPoint.key} busPoint={busPoint} index={index + 1}/>
                                             ))}
                                     </Reorder.Group>
                                 </Grid>
@@ -518,8 +518,8 @@ const ManageBusPoints = () => {
                                     >
                                         {busPoints
                                             .filter((point) => point.direction === "Dropping")
-                                            .map((busPoint) => (
-                                                <Item key={busPoint.key} busPoint={busPoint} />
+                                            .map((busPoint, index) => (
+                                                <Item key={busPoint.key} busPoint={busPoint} index={index + 1} />
                                             ))}
                                     </Reorder.Group>
                                 </Grid>

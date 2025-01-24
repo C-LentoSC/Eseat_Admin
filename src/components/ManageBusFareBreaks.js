@@ -524,8 +524,8 @@ const ManageBusFareBreaks = () => {
                                         onReorder={handleReorderBoarding}
                                     >
                                         {busPoints
-                                            .map((busPoint) => (
-                                                <Item key={busPoint.key} busPoint={busPoint} />
+                                            .map((busPoint, index) => (
+                                                <Item key={busPoint.key} busPoint={busPoint} index={index + 1} />
                                             ))}
                                     </Reorder.Group>
                                 </Grid>
