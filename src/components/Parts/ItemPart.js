@@ -15,7 +15,7 @@ export const Item = ({ busPoint, index }) => {
       style={{ boxShadow, y, marginTop: "10px", display: "flex", alignItems: "center" }}
     >
       <div style={{ backgroundColor: "#f0f0f0", padding: "5px", borderRadius: "80px", cursor: "pointer", width: "30px", height: "30px", display: "flex", justifyContent: "center", alignItems: "center" }}>{index}</div>
-      <div style={{ backgroundColor: "#f0f0f0", padding: "5px", borderRadius: "8px", cursor: "pointer" }}>
+      <div style={{ backgroundColor: "#f0f0f0", padding: "5px", borderRadius: "8px", cursor: "pointer", width:"100%" }}>
         <span style={{ color: "black" }}>
           {busPoint.direction} - {busPoint.routePoint} (
           {busPoint.active ? "Active" : "Inactive"})
