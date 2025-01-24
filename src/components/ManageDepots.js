@@ -221,10 +221,10 @@ const ManageDepots = () => {
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
                 {/* <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
-                    Manage Deports
+                    Manage Depots
                 </Typography> */}
                 <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
-                    Manage Deports
+                    Manage Depots
                 </Typography>
 
 
@@ -247,7 +247,7 @@ const ManageDepots = () => {
                     >
 
                         <Typography variant="h6" gutterBottom>
-                            Add Deport
+                            Add Depot
                         </Typography>
 
                         <Grid container spacing={3}>
@@ -277,7 +277,7 @@ const ManageDepots = () => {
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="Deport Name"
+                                    label="Depot Name"
                                     name="depotName"
                                     value={formData.depotName}
                                     onChange={handleInputChange}
@@ -429,7 +429,7 @@ const ManageDepots = () => {
                             }}
                         />
                         <TextField
-                            label="Deport Name"
+                            label="Depot Name"
                             value={filterDepotName}
                             onChange={(e) => setFilterDepotName(e.target.value)}
                             InputProps={{
@@ -495,14 +495,14 @@ const ManageDepots = () => {
                             },
                         }}
                     >
-                        Add Deport
+                        Add Depot
                     </Button>
                 </Box>
 
                 {/* Table Section */}
                 {/* <Box sx={{ width: "100%", mt: 5 }}> */}
                 {/* <Typography variant="h6" sx={{ mb: 2 }}>
-                        All Deports
+                        All Depots
                     </Typography> */}
 
                 <TableContainer component={Paper}>
@@ -510,7 +510,7 @@ const ManageDepots = () => {
                         <TableHead>
                             <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                                 <TableCell sx={{ py: 1 }}>Region</TableCell>
-                                <TableCell sx={{ py: 1 }}>Deport Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>Depot Name</TableCell>
                                 <TableCell sx={{ py: 1 }}>DS Name</TableCell>
                                 <TableCell sx={{ py: 1 }}>Mobile</TableCell>
                                 <TableCell sx={{ py: 1 }}>Email</TableCell>
@@ -588,7 +588,7 @@ const ManageDepots = () => {
                         border: "2px solid gray",
                     }}>
                         <Typography variant="h6" sx={{ mb: 2 }}>
-                            Edit Deport
+                            Edit Depot
                         </Typography>
 
                         <Grid container spacing={3}>
@@ -618,7 +618,7 @@ const ManageDepots = () => {
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="Deport Name"
+                                    label="Depot Name"
                                     name="depotName"
                                     value={currentDepot?.depotName || ""}
                                     onChange={handleEditChange}
