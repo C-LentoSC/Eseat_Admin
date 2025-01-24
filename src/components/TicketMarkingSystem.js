@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
-    TextField, InputAdornment, Button, TablePagination
+    TextField, InputAdornment, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
-import { FileDownload } from '@mui/icons-material';
+import { FileDownload, CheckCircle, HourglassEmpty } from '@mui/icons-material';
 import dayjs from 'dayjs';
 
 const TicketMarkingSystem = () => {
     // Sample initial data
-    const [tickets] = useState([
+    const [tickets, setTickets] = useState([
         {
             id: 1,
             refNo: "TKT001",
             ticketType: "Regular",
-            seatNo: "1A, 2A",
             depot: "Colombo",
             scheduleNo: "SCH001",
             vCode: "V001",
@@ -22,13 +21,16 @@ const TicketMarkingSystem = () => {
             route: "Colombo-Kandy",
             nic: "199912345678",
             bookedBy: "John Doe",
-            bookedDate: "2025-01-01"
+            bookedDate: "2025-01-01",
+            seatNoDetails: [
+                { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false },
+                { seatNo: "2A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false }
+            ],
         },
         {
             id: 2,
             refNo: "TKT002",
             ticketType: "Student",
-            seatNo: "3B",
             depot: "Galle",
             scheduleNo: "SCH002",
             vCode: "V002",
@@ -36,7 +38,10 @@ const TicketMarkingSystem = () => {
             route: "Galle-Matara",
             nic: "200045678912",
             bookedBy: "Jane Smith",
-            bookedDate: "2025-01-02"
+            bookedDate: "2025-01-02",
+            seatNoDetails: [
+                { seatNo: "3B", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false },
+            ],
         }
     ]);
 
@@ -44,6 +49,8 @@ const TicketMarkingSystem = () => {
     const [depot, setDepot] = useState('');
     const [scheduleNo, setScheduleNo] = useState('');
     const [vCode, setVCode] = useState('');
+    const [selectedTicket, setSelectedTicket] = useState(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     // Filter tickets based on criteria
     const filteredTickets = tickets.filter(ticket => {
@@ -76,7 +83,7 @@ const TicketMarkingSystem = () => {
         const headers = [
             'Ref No',
             'Ticket Type',
-            'Seat No',
+            'Seat Nos',
             'Depot',
             'Schedule No',
             'V-Code',
@@ -90,7 +97,7 @@ const TicketMarkingSystem = () => {
         const rows = filteredTickets.map(ticket => [
             formatCSVField(ticket.refNo),
             formatCSVField(ticket.ticketType),
-            formatCSVField(ticket.seatNo),
+            formatCSVField(ticket.seatNoDetails.map(s => `${s.seatNo} : ${s.confirmed ? 'confirmed' : 'not confirmed'}`).join(', ')),
             formatCSVField(ticket.depot),
             formatCSVField(ticket.scheduleNo),
             formatCSVField(ticket.vCode),
@@ -119,18 +126,34 @@ const TicketMarkingSystem = () => {
     };
 
 
-    //Pagination
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+    const handleViewSeats = (ticket) => {
+        setSelectedTicket(ticket);
+        setDialogOpen(true);
     };
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+
+    const handleConfirmSeat = (ticket, seatNo) => {
+        const updatedTickets = tickets.map(t =>
+            t.id === ticket.id
+                ? {
+                    ...t,
+                    seatNoDetails: t.seatNoDetails.map(s =>
+                        s.seatNo === seatNo ? { ...s, confirmed: true } : s
+                    ),
+                }
+                : t
+        );
+    
+        setTickets(updatedTickets);
+    
+        // Update selectedTicket to reflect the latest state
+        const updatedTicket = updatedTickets.find(t => t.id === ticket.id);
+        setSelectedTicket(updatedTicket);
     };
-    const startIndex = page * rowsPerPage;
-    //End Pagination
+    
+
+    const allSeatsConfirmed = (ticket) => {
+        return ticket.seatNoDetails.every(s => s.confirmed);
+    };
 
     return (
         <Container component="main" maxWidth="lg">
@@ -222,51 +245,85 @@ const TicketMarkingSystem = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                <TableCell sx={{ py: 1 }}>Ref No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Ticket Type</TableCell>
-                                <TableCell sx={{ py: 1 }}>Seat No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Depot</TableCell>
-                                <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
-                                <TableCell sx={{ py: 1 }}>V-Code</TableCell>
-                                <TableCell sx={{ py: 1 }}>Mode of Pay</TableCell>
-                                <TableCell sx={{ py: 1 }}>Route</TableCell>
-                                <TableCell sx={{ py: 1 }}>NIC</TableCell>
-                                <TableCell sx={{ py: 1 }}>Booked By</TableCell>
-                                <TableCell sx={{ py: 1 }}>Booked Date</TableCell>
+                            <TableRow>
+                                <TableCell>Ref No</TableCell>
+                                <TableCell>Ticket Type</TableCell>
+                                <TableCell>Seat No</TableCell>
+                                <TableCell>Depot</TableCell>
+                                <TableCell>Schedule No</TableCell>
+                                <TableCell>V-Code</TableCell>
+                                <TableCell>Mode of Pay</TableCell>
+                                <TableCell>Route</TableCell>
+                                <TableCell>NIC</TableCell>
+                                <TableCell>Booked By</TableCell>
+                                <TableCell>Booked Date</TableCell>
+                                <TableCell align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredTickets
-                                .slice(startIndex, startIndex + rowsPerPage)
-                                .map((ticket) => (
-                                    <TableRow key={ticket.id}>
-                                        <TableCell sx={{ py: 0 }}>{ticket.refNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.ticketType}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.seatNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.depot}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.scheduleNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.vCode}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.modeOfPay}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.route}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.nic}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.bookedBy}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.bookedDate}</TableCell>
-                                    </TableRow>
-                                ))}
+                            {filteredTickets.map((ticket) => (
+                                <TableRow key={ticket.id}>
+                                    <TableCell>{ticket.refNo}</TableCell>
+                                    <TableCell>{ticket.ticketType}</TableCell>
+                                    <TableCell>{ticket.seatNoDetails.map(s => s.seatNo).join(', ')}</TableCell>
+                                    <TableCell>{ticket.depot}</TableCell>
+                                    <TableCell>{ticket.scheduleNo}</TableCell>
+                                    <TableCell>{ticket.vCode}</TableCell>
+                                    <TableCell>{ticket.modeOfPay}</TableCell>
+                                    <TableCell>{ticket.route}</TableCell>
+                                    <TableCell>{ticket.nic}</TableCell>
+                                    <TableCell>{ticket.bookedBy}</TableCell>
+                                    <TableCell>{ticket.bookedDate}</TableCell>
+                                    <TableCell align="right">
+                                        {allSeatsConfirmed(ticket) ? (
+                                            <CheckCircle color="success" />
+                                        ) : (
+                                            <IconButton onClick={() => handleViewSeats(ticket)} color="primary">
+                                                <HourglassEmpty />
+                                            </IconButton>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
-                    <TablePagination
-                        component="div"
-                        count={filteredTickets.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                    />
                 </TableContainer>
             </Box>
+
+            {selectedTicket && (
+                <Box sx={{ display: "flex", width: "100%", justifyContent: "center" }}>
+                    <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} sx={{ width: "100%" }}>
+                        <DialogTitle>Seat Confirmation Details</DialogTitle>
+                        <DialogContent>
+
+                            {selectedTicket.seatNoDetails.map(s => (
+                                <div key={s.seatNo} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                                    <Typography>{s.seatNo}</Typography>
+                                    <Typography>{s.confirmed}</Typography>
+                                    <IconButton
+                                        onClick={() => handleConfirmSeat(selectedTicket, s.seatNo)}
+                                        sx={{ color: s.confirmed ? "success" : "primary" }}
+                                        disabled={s.confirmed}
+                                    >
+                                        {s.confirmed ?
+                                            <CheckCircle color="success" />
+                                            :
+                                            <HourglassEmpty color='primary' />
+                                        }
+
+                                    </IconButton>
+
+                                </div>
+                            ))}
+
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setDialogOpen(false)}>Close</Button>
+                        </DialogActions>
+                    </Dialog>
+                </Box>
+            )}
+
         </Container>
     );
 };
