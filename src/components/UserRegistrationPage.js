@@ -29,7 +29,18 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import LoadingOverlay from './Parts/LoadingOverlay';
+
 const UserRegistrationPage = () => {
+
+  // const [loading, setLoading] = useState(false);
+
+  // const handleShowLoading = () => {
+  //   setLoading(true);
+  //   // Simulate an operation (e.g., API call)
+  //   setTimeout(() => setLoading(false), 3000); // Auto-close after 3 seconds
+  // };
+
   const [users, setUsers] = useState([
     { id: 1, name: 'John Doe', email: 'john@example.com', phone: '1234567890', username: 'johndoe', role: 'Admin' },
     { id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '0987654321', username: 'janesmith', role: 'User' },
@@ -62,6 +73,9 @@ const UserRegistrationPage = () => {
 
   return (
     <Container component="main" maxWidth="lg" sx={{ py: 0 }}>
+
+      {/* <LoadingOverlay show={loading} /> */}
+
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         {/* Title Section */}
         <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
@@ -251,7 +265,7 @@ const UserRegistrationPage = () => {
               border: '2px solid gray',
               boxShadow: 24,
               p: 4,
-              borderRadius:'10px',
+              borderRadius: '10px',
             }}
           >
             <Typography variant="h6" gutterBottom>
@@ -328,7 +342,7 @@ const UserRegistrationPage = () => {
                 variant="contained"
                 color="secondary"
                 onClick={handleClose}
-                sx={{backgroundColor: 'gray'}}
+                sx={{ backgroundColor: 'gray' }}
               >
                 Cancel
               </Button>
