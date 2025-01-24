@@ -80,15 +80,15 @@ const RouteManagement = () => {
                 .then(() => {
                     sendAlert("new route added")
                     setAddmodel(false)
-
+                    loadAllRoutes()
+                    setStartPoint("");
+                    setEndPoint("");
+                    setRouteNo("");
+                    setDescription("");
+                    setBusFare("");
                 })
                 .catch(handleError)
-            loadAllRoutes()
-            setStartPoint("");
-            setEndPoint("");
-            setRouteNo("");
-            setDescription("");
-            setBusFare("");
+
         }
     };
 
