@@ -23,7 +23,13 @@ import { setroutval } from "./DashboardLayoutAccount";
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const ActiveRouteManagement = () => {
+
+        // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
 
     const [routes, setRoutes] = useState([]);
     const [alert, setAlert] = useState(null)
@@ -101,7 +107,10 @@ const ActiveRouteManagement = () => {
     return (
         <Container component="main" maxWidth="lg">
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                
+                {/* <LoadingOverlay show={loading} /> */}
+                
+                 {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                     setOpen={setAlert} /> : <></>}
                 {/* Table Section */}
 

@@ -22,7 +22,12 @@ import { setroutval } from "./DashboardLayoutAccount";
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const ActiveDepot = () => {
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
 
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
@@ -94,6 +99,7 @@ const ActiveDepot = () => {
     return (
         <Container component="main" maxWidth="lg">
 
+            {/* <LoadingOverlay show={loading} /> */}
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert} setOpen={setAlert} /> : <></>}
 
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>

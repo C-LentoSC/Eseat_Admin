@@ -28,10 +28,15 @@ import CustomAlert from "./Parts/CustomAlert";
 
 // import ChairIcon from "@mui/icons-material/Chair";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const BusLayoutManagement = () => {
 
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
 
+    
     // Sample data
     const [layouts, setLayouts] = useState([]);
     const loadLayOuts = () => {
@@ -725,7 +730,10 @@ const BusLayoutManagement = () => {
     //End Pagination
     return (
         <Container component="main" maxWidth="lg">
-            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+            
+             {/* <LoadingOverlay show={loading} /> */}
+             
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                                                         setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 

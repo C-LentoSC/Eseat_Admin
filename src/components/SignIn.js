@@ -10,8 +10,15 @@ import favicon from "../resources/favicon.ico";
 
 import CustomAlert from './Parts/CustomAlert';
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const SignInPage = ({ onSignIn }) => {
+    
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+
     const [username,setUsername]=useState("")
     const [password,setPassword]=useState("")
     const [alert,setAlert]=useState(null)
@@ -23,7 +30,10 @@ const SignInPage = ({ onSignIn }) => {
 
     return (
         <Container component="main" maxWidth="xs" sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "90vh" }}>
-            {alert?<CustomAlert severity={alert.severity} message={alert.message} open={alert} setOpen={setAlert} />:<></>}
+           
+            {/* <LoadingOverlay show={loading} /> */}
+            
+             {alert?<CustomAlert severity={alert.severity} message={alert.message} open={alert} setOpen={setAlert} />:<></>}
             <Box
                 sx={{
                     marginTop: 8,

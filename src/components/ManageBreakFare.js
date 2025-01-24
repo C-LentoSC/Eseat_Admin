@@ -25,9 +25,14 @@ import SaveIcon from '@mui/icons-material/Save';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
 
-
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ManageBreakFare = () => {
+
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
 
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
@@ -143,7 +148,10 @@ const ManageBreakFare = () => {
         //End Pagination
     return (
         <Container maxWidth="lg">
-            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+         
+          {/* <LoadingOverlay show={loading} /> */}
+          
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                   setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>

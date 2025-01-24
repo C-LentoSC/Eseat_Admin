@@ -83,7 +83,6 @@ import CustomAlert from './Parts/CustomAlert';
 import {useEffect} from "react";
 import api from "../model/API";
 
-
 const NAVIGATION = {
   SuperAdmin: [
     // {

@@ -13,7 +13,14 @@ import dayjs from 'dayjs';
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const ManualCancelBookings = () => {
+
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
 
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
@@ -226,7 +233,10 @@ const ManualCancelBookings = () => {
 
     return (
         <Container component="main" maxWidth="lg">
-            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+          
+           {/* <LoadingOverlay show={loading} /> */}
+           
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                   setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
