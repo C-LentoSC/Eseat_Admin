@@ -247,9 +247,7 @@ const BulkBusManagement = () => {
                 {/* Bulk Actions */}
                 <Paper sx={{p: 1}}>
                     <Stack spacing={2}>
-                        // <Typography variant="subtitle1" sx={{fontWeight: 500}}>
-                        //     Bulk Status Update for Filtered Buses
-                        // </Typography>
+                        
                         <Grid container spacing={0}>
                             <Grid item xs={12} sm={4}>
                                 <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
