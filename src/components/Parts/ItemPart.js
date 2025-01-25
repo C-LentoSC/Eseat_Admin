@@ -10,8 +10,8 @@ export const Item = ({ busPoint, index }) => {
 
   return (
     <Reorder.Item
-      value={busPoint} 
-      id={busPoint.key} 
+      value={busPoint}
+      id={busPoint.key}
       style={{ boxShadow, y, marginTop: "10px", display: "flex", alignItems: "center" }}
     >
       <div style={{ backgroundColor: "#f0f0f0", padding: "5px", borderRadius: "80px", cursor: "pointer", width: "30px", height: "30px", display: "flex", justifyContent: "center", alignItems: "center" }}>{index}</div>
