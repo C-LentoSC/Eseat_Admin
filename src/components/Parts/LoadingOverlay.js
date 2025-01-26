@@ -57,5 +57,5 @@ LoadingOverlay.propTypes = {
     /**
      * The path to the loading GIF file.
      */
-    gifPath: PropTypes.string.isRequired,
+    gifPath: PropTypes.string,
 };

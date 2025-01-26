@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
@@ -6,12 +6,14 @@ import {
 } from '@mui/material';
 import { FileDownload, CheckCircle, HourglassEmpty } from '@mui/icons-material';
 import dayjs from 'dayjs';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
-// import LoadingOverlay from './Parts/LoadingOverlay';
+import LoadingOverlay from './Parts/LoadingOverlay';
 
 const TicketMarkingSystem = () => {
-    
-    // const [loading, setLoading] = useState(false);
+    const [loadingList,setLoadingList] = useState([]);
+    const loading = loadingList.length!==0;
     // setLoading(true);
     // setLoading(false);
 
@@ -52,13 +54,39 @@ const TicketMarkingSystem = () => {
             ],
         }
     ]);
-
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const startLoading = (id) => setLoadingList(prevState => [...prevState,id])
+    const endLoading=(id)=>setLoadingList(prevState => prevState.filter(i=>i!==id))
     // States for filters
     const [depot, setDepot] = useState('');
     const [scheduleNo, setScheduleNo] = useState('');
     const [vCode, setVCode] = useState('');
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const loadAll=()=>{
+        const id=generateUniqueId()
+        startLoading(id)
+        api.get('admin/ticket-marking/get-all')
+            .then(res=>{
+                endLoading(id)
+                setTickets(res.data)
+                if(selectedTicket){
+                    setSelectedTicket(p=>res.data.filter(i=>i.id===p.id)[0])
+                }
+            })
+            .catch(err=>{
+                endLoading(id)
+                handleError(err)
+            })
+    }
+    useEffect(() => {
+        loadAll()
+    }, []);
+    function generateUniqueId() {
+        return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
 
     // Filter tickets based on criteria
     const filteredTickets = tickets.filter(ticket => {
@@ -140,22 +168,22 @@ const TicketMarkingSystem = () => {
     };
 
     const handleConfirmSeat = (ticket, seatNo) => {
-        const updatedTickets = tickets.map(t =>
-            t.id === ticket.id
-                ? {
-                    ...t,
-                    seatNoDetails: t.seatNoDetails.map(s =>
-                        s.seatNo === seatNo ? { ...s, confirmed: true } : s
-                    ),
-                }
-                : t
-        );
+
+        const id = generateUniqueId();
+        startLoading(id)
+        api.post('admin/ticket-marking/confirm', {...ticket, seatNo: seatNo})
+            .then(res=>{
+                endLoading(id)
+                sendAlert("seat marked")
+                loadAll()
+            })
+            .catch(err=>{
+                endLoading(id)
+                handleError(err)
+            })
     
-        setTickets(updatedTickets);
-    
-        // Update selectedTicket to reflect the latest state
-        const updatedTicket = updatedTickets.find(t => t.id === ticket.id);
-        setSelectedTicket(updatedTicket);
+
+        // setSelectedTicket();
     };
     
 
@@ -166,8 +194,9 @@ const TicketMarkingSystem = () => {
     return (
         <Container component="main" maxWidth="lg">
            
-            {/* <LoadingOverlay show={loading} /> */}
-            
+             <LoadingOverlay show={loading} />
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Ticket Marking System
