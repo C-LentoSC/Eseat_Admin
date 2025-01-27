@@ -279,9 +279,9 @@ const ManageBusFareBreaks = () => {
     //End Pagination
     return (
         <Container component="main" maxWidth="lg">
-           
+
             {/* <LoadingOverlay show={loading} /> */}
-            
+
              {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                   setOpen={setAlert}/> : <></>}
             <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>

@@ -15,7 +15,7 @@ const BulkBusManagement = () => {
         // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
-    
+
     // Sample initial data
     const [buses, setBuses] = useState([]);
     const loadAllBus = () => {
@@ -119,12 +119,12 @@ const BulkBusManagement = () => {
     };
     const startIndex = page * rowsPerPage;
     //End Pagination
-    
+
     return (
         <Container component="main" maxWidth="lg">
-            
+
              {/* <LoadingOverlay show={loading} /> */}
-             
+
              {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                   setOpen={setAlert}/> : <></>}
             <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
@@ -247,7 +247,7 @@ const BulkBusManagement = () => {
                 {/* Bulk Actions */}
                 <Paper sx={{p: 1}}>
                     <Stack spacing={2}>
-                        
+
                         <Grid container spacing={0}>
                             <Grid item xs={12} sm={4}>
                                 <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>

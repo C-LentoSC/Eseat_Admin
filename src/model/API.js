@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
+
 // Create Axios instance
 const api = axios.create({
     // baseURL: 'https://mintberryco.com/api/',
@@ -32,5 +33,6 @@ api.interceptors.request.use(async (config) => {
     // }
     return config;
 });
+
 
 export default api;
