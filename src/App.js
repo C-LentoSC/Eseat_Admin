@@ -13,10 +13,6 @@ const App = () => {
         localStorage.getItem("isAuthenticated") === "true"
     );
 
-
-
-
-
     useEffect(() => {
         const handleActivity = () => {
             // Reset the inactivity timer on user activity
