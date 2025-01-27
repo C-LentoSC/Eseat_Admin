@@ -4,8 +4,8 @@ import {jwtDecode} from "jwt-decode";
 // Create Axios instance
 const api = axios.create({
     // baseURL: 'https://mintberryco.com/api/',
-    baseURL: 'http://127.0.0.1:8000/api/',
-     // baseURL: 'https://modernliving.lk/api/',
+    // baseURL: 'http://127.0.0.1:8000/api/',
+     baseURL: 'https://modernliving.lk/api/',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
