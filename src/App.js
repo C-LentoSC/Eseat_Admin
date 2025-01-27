@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {BrowserRouter as Router, Route, Routes, Navigate} from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import SignInPage from "./components/SignIn";
@@ -64,45 +64,57 @@ const App = () => {
         localStorage.removeItem("token");
     };
 
-    const [loadingList, setLoadingList] = useState([]);
+    const storedLoadingList = JSON.parse(localStorage.getItem("loadingList")) || [];
+    const hasInterceptorsRef = useRef(false);
+    const [loadingList, setLoadingList] = useState(storedLoadingList);
     const loading = loadingList.length !== 0;
 
     function generateUniqueId() {
         return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     }
 
-    const startLoading = (id) => setLoadingList((prevState) => [...prevState, id]);
-    const endLoading = (id) => setLoadingList((prevState) => prevState.filter((i) => i !== id));
+    const startLoading = (id) => {
+        const updatedList = [...loadingList, id];
+        setLoadingList(updatedList);
+        localStorage.setItem("loadingList", JSON.stringify(updatedList));
+    };
 
+    const endLoading = (id) => {
+        const updatedList = loadingList.filter((i) => i !== id);
+        setLoadingList(updatedList);
+        localStorage.setItem("loadingList", JSON.stringify(updatedList));
+    };
+
+    // Set up interceptors only once on component mount
     useEffect(() => {
-        const requestInterceptor = api.interceptors.request.use((config) => {
-            const requestId = generateUniqueId()
-            config.headers["X-Request-ID"] = requestId
-            startLoading(requestId)
-            config.metadata = { requestId }
-            return config
+        if (hasInterceptorsRef.current) return;
+        api.interceptors.request.use((config) => {
+            const requestId = generateUniqueId();
+            config.headers["X-Request-ID"] = requestId;
+            startLoading(requestId);
+            config.metadata = { requestId };
+            return config;
         });
-        const responseInterceptor = api.interceptors.response.use(
+
+         api.interceptors.response.use(
             (response) => {
-                const requestId = response.config.metadata?.requestId
+                const requestId = response.config.metadata?.requestId;
                 if (requestId) {
-                    endLoading(requestId)
+                    endLoading(requestId);
                 }
-                return response
+                return response;
             },
             (error) => {
-                const requestId = error.config?.metadata?.requestId
+                const requestId = error.config?.metadata?.requestId;
                 if (requestId) {
-                    endLoading(requestId)
+                    endLoading(requestId);
                 }
-                return Promise.reject(error)
+                return Promise.reject(error);
             }
-        )
-        return () => {
-            api.interceptors.request.eject(requestInterceptor)
-            api.interceptors.response.eject(responseInterceptor)
-        };
-    }, [])
+        );
+        hasInterceptorsRef.current = true;
+
+    }, []);
     return (
         <>
             <CssBaseline/>

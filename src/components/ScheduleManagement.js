@@ -25,50 +25,7 @@ const ScheduleManagement = () => {
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Sample initial data
-    const [schedules,setSchedules] = useState([
-        {
-            id: 1,
-            scheduleNumber: "SCH001",
-            routeNo: "R001",
-            route: "Colombo-Kandy",
-            travelDate: "2025-01-10",
-            startTime: "08:00",
-            endDate: "2025-01-10",
-            endTime: "11:00",
-            closingDate: "2025-01-09",
-            closingTime: "20:00",
-            active: true,
-            status: "Active",
-        },
-        {
-            id: 2,
-            scheduleNumber: "SCH002",
-            routeNo: "R002",
-            route: "Galle-Matara",
-            travelDate: "2025-01-15",
-            startTime: "09:30",
-            endDate: "2025-01-15",
-            endTime: "11:30",
-            closingDate: "2025-01-14",
-            closingTime: "21:00",
-            active: false,
-            status: "Inactive",
-        },
-        {
-            id: 3,
-            scheduleNumber: "SCH002",
-            routeNo: "R002",
-            route: "Galle-Matara",
-            travelDate: "2025-01-15",
-            startTime: "09:30",
-            endDate: "2025-01-15",
-            endTime: "11:30",
-            closingDate: "2025-01-14",
-            closingTime: "21:00",
-            active: true,
-            status: "Active",
-        }
-    ]);
+    const [schedules,setSchedules] = useState([ ]);
     useEffect(() => {
         loadAll()
     }, []);

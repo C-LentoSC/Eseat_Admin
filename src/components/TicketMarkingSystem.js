@@ -19,41 +19,7 @@ const TicketMarkingSystem = () => {
 
 
     // Sample initial data
-    const [tickets, setTickets] = useState([
-        {
-            id: 1,
-            refNo: "TKT001",
-            ticketType: "Regular",
-            depot: "Colombo",
-            scheduleNo: "SCH001",
-            vCode: "V001",
-            modeOfPay: "Cash",
-            route: "Colombo-Kandy",
-            nic: "199912345678",
-            bookedBy: "John Doe",
-            bookedDate: "2025-01-01",
-            seatNoDetails: [
-                { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false },
-                { seatNo: "2A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false }
-            ],
-        },
-        {
-            id: 2,
-            refNo: "TKT002",
-            ticketType: "Student",
-            depot: "Galle",
-            scheduleNo: "SCH002",
-            vCode: "V002",
-            modeOfPay: "Card",
-            route: "Galle-Matara",
-            nic: "200045678912",
-            bookedBy: "Jane Smith",
-            bookedDate: "2025-01-02",
-            seatNoDetails: [
-                { seatNo: "3B", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false },
-            ],
-        }
-    ]);
+    const [tickets, setTickets] = useState([]);
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
