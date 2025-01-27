@@ -60,8 +60,8 @@ const TicketMarkingSystem = () => {
             ticket.depot.toLowerCase().includes(depot.toLowerCase());
         const scheduleMatch = !scheduleNo ||
             ticket.scheduleNo.toLowerCase().includes(scheduleNo.toLowerCase());
-        const refNoMatch = !refNo ||
-            ticket.refNo.toLowerCase().includes(refNo.toLowerCase());
+        const refNoMatch = !vCode ||
+            ticket.refNo.toLowerCase().includes(vCode.toLowerCase());
 
         return depotMatch && scheduleMatch && refNoMatch;
     });
