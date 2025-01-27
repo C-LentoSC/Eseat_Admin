@@ -60,10 +60,10 @@ const TicketMarkingSystem = () => {
             ticket.depot.toLowerCase().includes(depot.toLowerCase());
         const scheduleMatch = !scheduleNo ||
             ticket.scheduleNo.toLowerCase().includes(scheduleNo.toLowerCase());
-        const vCodeMatch = !vCode ||
-            ticket.vCode.toLowerCase().includes(vCode.toLowerCase());
+        const refNoMatch = !refNo ||
+            ticket.refNo.toLowerCase().includes(refNo.toLowerCase());
 
-        return depotMatch && scheduleMatch && vCodeMatch;
+        return depotMatch && scheduleMatch && refNoMatch;
     });
 
     // Export to CSV
@@ -211,7 +211,7 @@ const TicketMarkingSystem = () => {
                     <Grid item xs={12} sm={6} md={4}>
                         <TextField
                             fullWidth
-                            label="V-Code"
+                            label="Ref No"
                             value={vCode}
                             onChange={(e) => setVCode(e.target.value)}
                             sx={{
