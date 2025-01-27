@@ -37,7 +37,7 @@ const BulkSeatTransfer = () => {
     // setLoading(true);
     // setLoading(false);
     const [loadingList, setLoadingList] = useState([]);
-    const loading = loadingList.length !== 0;
+    const loading = false;
 
     function generateUniqueId() {
         return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
