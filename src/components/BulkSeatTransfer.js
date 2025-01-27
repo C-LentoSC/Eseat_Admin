@@ -609,7 +609,7 @@ const BulkSeatTransfer = () => {
         });
     };
 
-    const filteredList = allschedules.filter(schedule => dayjs(schedule.date).isSame(dayjs(filterData.date), 'day') && schedule.depot === filterData.depot);
+    const filteredList = allschedules.filter(schedule => dayjs(schedule.date).isSame(dayjs(filterData.date), 'day') && schedule.depot === filterData.depot && schedule.forTransfer);
 
     return (<LocalizationProvider dateAdapter={AdapterDayjs}>
 

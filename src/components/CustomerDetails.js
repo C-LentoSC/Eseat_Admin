@@ -29,26 +29,7 @@ const CustomerDetails = () => {
 
 
     // Sample initial data
-    const [customers, setCustomers] = useState([
-        {
-            id: "CUS001",
-            name: "John Doe",
-            mobile: "0771234567",
-            nic: "199912345678"
-        },
-        {
-            id: "CUS002",
-            name: "Jane Smith",
-            mobile: "0777654321",
-            nic: "200045678912"
-        },
-        {
-            id: "CUS003",
-            name: "Mike Johnson",
-            mobile: "0763456789",
-            nic: "199856789123"
-        }
-    ]);
+    const [customers, setCustomers] = useState([ ]);
     const loadAllCustomers = () => {
         const id = generateUniqueId()
         startLoading(id)
