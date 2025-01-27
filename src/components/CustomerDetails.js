@@ -15,7 +15,7 @@ const CustomerDetails = () => {
 
 
     const [loadingList, setLoadingList] = useState([]);
-    const loading = false;
+    const loading = loadingList.length !== 0;
 
     function generateUniqueId() {
         return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

@@ -5,17 +5,11 @@ import SignInPage from "./components/SignIn";
 import OtpEntryPage from "./components/OtpEntryPage";
 import DashboardLayoutAccount from "./components/DashboardLayoutAccount";
 import api from "./model/API";
-import LoadingOverlay from "./components/Parts/LoadingOverlay";
-
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(
         localStorage.getItem("isAuthenticated") === "true"
     );
-
-
-
-
 
     useEffect(() => {
         const handleActivity = () => {
@@ -64,50 +58,10 @@ const App = () => {
         localStorage.removeItem("token");
     };
 
-    const [loadingList, setLoadingList] = useState([]);
-    const loading = loadingList.length !== 0;
-
-    function generateUniqueId() {
-        return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    }
-
-    const startLoading = (id) => setLoadingList((prevState) => [...prevState, id]);
-    const endLoading = (id) => setLoadingList((prevState) => prevState.filter((i) => i !== id));
-
-    useEffect(() => {
-        const requestInterceptor = api.interceptors.request.use((config) => {
-            const requestId = generateUniqueId()
-            config.headers["X-Request-ID"] = requestId
-            startLoading(requestId)
-            config.metadata = { requestId }
-            return config
-        });
-        const responseInterceptor = api.interceptors.response.use(
-            (response) => {
-                const requestId = response.config.metadata?.requestId
-                if (requestId) {
-                    endLoading(requestId)
-                }
-                return response
-            },
-            (error) => {
-                const requestId = error.config?.metadata?.requestId
-                if (requestId) {
-                    endLoading(requestId)
-                }
-                return Promise.reject(error)
-            }
-        )
-        return () => {
-            api.interceptors.request.eject(requestInterceptor)
-            api.interceptors.response.eject(responseInterceptor)
-        };
-    }, [])
     return (
         <>
             <CssBaseline/>
             <Router>
-                <LoadingOverlay show={loading}/>
                 <Routes>
                     {/* Sign-In Page Route */}
                     <Route
@@ -148,6 +102,5 @@ const App = () => {
         </>
     );
 };
-
 
 export default App;

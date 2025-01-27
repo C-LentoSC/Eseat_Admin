@@ -13,7 +13,7 @@ import LoadingOverlay from './Parts/LoadingOverlay';
 
 const TicketMarkingSystem = () => {
     const [loadingList,setLoadingList] = useState([]);
-    const loading = false;
+    const loading = loadingList.length!==0;
     // setLoading(true);
     // setLoading(false);
 
