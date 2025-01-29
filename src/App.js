@@ -9,9 +9,7 @@ import LoadingOverlay from "./components/Parts/LoadingOverlay";
 
 
 const App = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(
-        localStorage.getItem("isAuthenticated") === "true"
-    );
+    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated") === "true");
 
     useEffect(() => {
         const handleActivity = () => {
@@ -59,10 +57,11 @@ const App = () => {
         localStorage.removeItem("isAuthenticated");
         localStorage.removeItem("token");
     };
-
-    const storedLoadingList = JSON.parse(localStorage.getItem("loadingList")) || [];
+    const initialLoadingList = () => JSON.parse(localStorage.getItem("loadingList")) || [];
+    const [loadingList, setLoadingList] = useState(initialLoadingList);
+    // const storedLoadingList = JSON.parse(localStorage.getItem("loadingList")) || [];
     const hasInterceptorsRef = useRef(false);
-    const [loadingList, setLoadingList] = useState(storedLoadingList);
+    // const [loadingList, setLoadingList] = useState(storedLoadingList);
     const loading = loadingList.length !== 0;
 
     function generateUniqueId() {
@@ -83,36 +82,32 @@ const App = () => {
 
     // Set up interceptors only once on component mount
     useEffect(() => {
-        if (hasInterceptorsRef.current) return;
+        // if (hasInterceptorsRef.current) return;
         api.interceptors.request.use((config) => {
             const requestId = generateUniqueId();
             config.headers["X-Request-ID"] = requestId;
             startLoading(requestId);
-            config.metadata = { requestId };
+            config.metadata = {requestId};
             return config;
         });
 
-         api.interceptors.response.use(
-            (response) => {
-                const requestId = response.config.metadata?.requestId;
-                if (requestId) {
-                    endLoading(requestId);
-                }
-                return response;
-            },
-            (error) => {
-                const requestId = error.config?.metadata?.requestId;
-                if (requestId) {
-                    endLoading(requestId);
-                }
-                return Promise.reject(error);
+        api.interceptors.response.use((response) => {
+            const requestId = response.config.metadata?.requestId;
+            if (requestId) {
+                endLoading(requestId);
             }
-        );
+            return response;
+        }, (error) => {
+            const requestId = error.config?.metadata?.requestId;
+            if (requestId) {
+                endLoading(requestId);
+            }
+            return Promise.reject(error);
+        });
         hasInterceptorsRef.current = true;
 
     }, []);
-    return (
-        <>
+    return (<>
             <CssBaseline/>
             <Router>
                 <LoadingOverlay show={loading}/>
@@ -120,41 +115,28 @@ const App = () => {
                     {/* Sign-In Page Route */}
                     <Route
                         path="/signin"
-                        element={
-                            isAuthenticated ? (
-                                <Navigate to="/dashboard" replace/>
-                            ) : (
-                                <SignInPage onSignIn={handleSignIn}/>
-                            )
-                        }
+                        element={isAuthenticated ? (<Navigate to="/dashboard" replace/>) : (
+                            <SignInPage onSignIn={handleSignIn}/>)}
                     />
 
                     {/* OtpEntryPage Route */}
                     <Route
                         path="/otpEntryPage"
-                        element={
-                            <OtpEntryPage/>
-                        }
+                        element={<OtpEntryPage/>}
                     />
 
                     {/* Dashboard Route */}
                     <Route
                         path="/dashboard"
-                        element={
-                            isAuthenticated ? (
-                                <DashboardLayoutAccount onLogout={handleLogout}/>
-                            ) : (
-                                <Navigate to="/signin" replace/>
-                            )
-                        }
+                        element={isAuthenticated ? (<DashboardLayoutAccount onLogout={handleLogout}/>) : (
+                            <Navigate to="/signin" replace/>)}
                     />
 
                     {/* Redirect to Sign-In by default */}
                     <Route path="*" element={<Navigate to="/signin" replace/>}/>
                 </Routes>
             </Router>
-        </>
-    );
+        </>);
 };
 
 

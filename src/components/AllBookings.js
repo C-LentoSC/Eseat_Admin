@@ -11,7 +11,7 @@ import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
 import CustomAlert from "./Parts/CustomAlert";
-import api from "../model/API";
+import  {api2 as api} from "../model/API";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -23,7 +23,7 @@ const AllBookings = () => {
 
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const handleError = (err) => setAlert({ message: err?.response?.data?.message||"", severity: "error" })
 
 
     // Sample initial data

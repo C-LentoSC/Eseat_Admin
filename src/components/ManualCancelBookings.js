@@ -11,8 +11,7 @@ import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
 import CustomAlert from "./Parts/CustomAlert";
-import api from "../model/API";
-
+import {api2 as api} from "../model/API";
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ManualCancelBookings = () => {
