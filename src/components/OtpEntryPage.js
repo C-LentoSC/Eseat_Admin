@@ -9,7 +9,15 @@ import Container from "@mui/material/Container";
 
 import favicon from "../resources/favicon.ico";  // Import your favicon image
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const OtpEntryPage = ({ onSubmitOtp }) => {
+
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+
     const [otp, setOtp] = useState("");
 
     const handleChange = (event) => {
@@ -27,7 +35,10 @@ const OtpEntryPage = ({ onSubmitOtp }) => {
 
     return (
         <Container component="main" maxWidth="xs" sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "90vh" }}>
-            <Box
+           
+            {/* <LoadingOverlay show={loading} /> */}
+            
+             <Box
                 sx={{
                     marginTop: 8,
                     display: "flex",

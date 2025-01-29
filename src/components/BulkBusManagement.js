@@ -1,37 +1,38 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Stack,
     FormControlLabel, Switch, Autocomplete, TextField,
-    Button, Grid, InputAdornment
+    Button, Grid, InputAdornment, TablePagination
 } from '@mui/material';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
+
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const BulkBusManagement = () => {
+
+        // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
     // Sample initial data
-    const [buses, setBuses] = useState([
-        {
-            id: 1,
-            depot: "Colombo",
-            region: "Western",
-            route: "Colombo-Kandy",
-            busType: "Luxury",
-            scheduleNumber: "SCH001",
-            onlineBookingStatus: true,
-            agentBookingStatus: true,
-            mainBusStatus: true
-        },
-        {
-            id: 2,
-            depot: "Galle",
-            region: "Southern",
-            route: "Galle-Matara",
-            busType: "Semi-Luxury",
-            scheduleNumber: "SCH002",
-            onlineBookingStatus: false,
-            agentBookingStatus: true,
-            mainBusStatus: true
-        }
-    ]);
+    const [buses, setBuses] = useState([]);
+    const loadAllBus = () => {
+        api.get('admin/bulk-bus/get-all')
+            .then(res => {
+                setBuses(res.data)
+
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadAllBus()
+    }, []);
+    const [alert, setAlert] = useState(null)
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+
 
     // Filter states
     const [selectedDepot, setSelectedDepot] = useState(null);
@@ -61,51 +62,78 @@ const BulkBusManagement = () => {
 
     // Handle bulk status updates
     const handleBulkStatusUpdate = (statusType) => {
-        setBuses(prev => prev.map(bus => {
-            if (filteredBuses.find(fb => fb.id === bus.id)) {
-                switch (statusType) {
-                    case 'online':
-                        return { ...bus, onlineBookingStatus: bulkOnlineStatus };
-                    case 'agent':
-                        return { ...bus, agentBookingStatus: bulkAgentStatus };
-                    case 'main':
-                        return { ...bus, mainBusStatus: bulkMainBusStatus };
-                    default:
-                        return bus;
-                }
-            }
-            return bus;
-        }));
+        let obg = {statusType,filteredBuses}
+
+        switch (statusType) {
+            case 'online':
+                obg = {...obg, status: bulkOnlineStatus}
+                break
+            case 'agent':
+                obg = {...obg, status: bulkAgentStatus}
+                break
+            case 'main':
+                obg = {...obg, status: bulkMainBusStatus}
+                break
+            default:
+                break
+        }
+        api.post('admin/bulk-bus/change-status', obg)
+            .then(res => {
+                loadAllBus()
+            })
+            .catch(handleError)
     };
 
     // Handle individual status updates
     const handleStatusChange = (id, statusType) => {
-        setBuses(prev => prev.map(bus => {
-            if (bus.id === id) {
-                switch (statusType) {
-                    case 'online':
-                        return { ...bus, onlineBookingStatus: !bus.onlineBookingStatus };
-                    case 'agent':
-                        return { ...bus, agentBookingStatus: !bus.agentBookingStatus };
-                    case 'main':
-                        return { ...bus, mainBusStatus: !bus.mainBusStatus };
-                    default:
-                        return bus;
-                }
-            }
-            return bus;
-        }));
+        let obg = {id, statusType}
+        switch (statusType) {
+            case 'online':
+                obg = {...obg, status: bulkOnlineStatus}
+                break
+            case 'agent':
+                obg = {...obg, status: bulkAgentStatus}
+                break
+            case 'main':
+                obg = {...obg, status: bulkMainBusStatus}
+                break
+            default:
+                break
+        }
+        api.post('admin/bulk-bus/change-status', obg)
+            .then(res => {
+                loadAllBus()
+            })
+            .catch(handleError)
     };
+
+        //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
 
     return (
         <Container component="main" maxWidth="lg">
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600, mb:3 }}>
+
+             {/* <LoadingOverlay show={loading} /> */}
+
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
+                <Typography variant="h5" sx={{fontWeight: 600, mb: 3}}>
                     Bulk Manage of Buses
                 </Typography>
 
                 {/* Filters */}
-                <Grid container spacing={2} sx={{mb:0}}>
+                <Grid container spacing={2} sx={{mb: 0}}>
                     <Grid item xs={12} sm={6} md={3}>
                         <Autocomplete
                             value={selectedDepot}
@@ -217,14 +245,12 @@ const BulkBusManagement = () => {
                 </Grid>
 
                 {/* Bulk Actions */}
-                <Paper sx={{ p: 1}}>
+                <Paper sx={{p: 1}}>
                     <Stack spacing={2}>
-                        {/* <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                            Bulk Status Update for Filtered Buses
-                        </Typography> */}
+
                         <Grid container spacing={0}>
                             <Grid item xs={12} sm={4}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                                     <FormControlLabel
                                         control={
                                             <Switch
@@ -247,14 +273,14 @@ const BulkBusManagement = () => {
                                                 backgroundColor: "#303f9f",
                                             },
                                         }}
-                                        >
-                                    
+                                    >
+
                                         Apply
                                     </Button>
                                 </Box>
                             </Grid>
                             <Grid item xs={12} sm={4}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                                     <FormControlLabel
                                         control={
                                             <Switch
@@ -283,7 +309,7 @@ const BulkBusManagement = () => {
                                 </Box>
                             </Grid>
                             <Grid item xs={12} sm={4}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
                                     <FormControlLabel
                                         control={
                                             <Switch
@@ -319,26 +345,28 @@ const BulkBusManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Depot</TableCell>
-                                <TableCell>Region</TableCell>
-                                <TableCell>Route</TableCell>
-                                <TableCell>Bus Type</TableCell>
-                                <TableCell>Schedule Number</TableCell>
-                                <TableCell>Online Booking</TableCell>
-                                <TableCell>Agent Booking</TableCell>
-                                <TableCell>Bus Status</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{ py: 1 }}>Depot</TableCell>
+                                <TableCell sx={{ py: 1 }}>Region</TableCell>
+                                <TableCell sx={{ py: 1 }}>Route</TableCell>
+                                <TableCell sx={{ py: 1 }}>Bus Type</TableCell>
+                                <TableCell sx={{ py: 1 }}>Schedule Number</TableCell>
+                                <TableCell sx={{ py: 1 }}>Online Booking</TableCell>
+                                <TableCell sx={{ py: 1 }}>Agent Booking</TableCell>
+                                <TableCell sx={{ py: 1 }}>Bus Status</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredBuses.map((bus) => (
+                            {filteredBuses
+                              .slice(startIndex, startIndex + rowsPerPage)
+                    .map((bus) => (
                                 <TableRow key={bus.id}>
-                                    <TableCell>{bus.depot}</TableCell>
-                                    <TableCell>{bus.region}</TableCell>
-                                    <TableCell>{bus.route}</TableCell>
-                                    <TableCell>{bus.busType}</TableCell>
-                                    <TableCell>{bus.scheduleNumber}</TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ py: 0 }}>{bus.depot}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{bus.region}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{bus.route}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{bus.busType}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{bus.scheduleNumber}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -349,7 +377,7 @@ const BulkBusManagement = () => {
                                             label={bus.onlineBookingStatus ? "Active" : "Inactive"}
                                         />
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ py: 0 }}>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -360,7 +388,7 @@ const BulkBusManagement = () => {
                                             label={bus.agentBookingStatus ? "Active" : "Inactive"}
                                         />
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ py: 0 }}>
                                         <FormControlLabel
                                             control={
                                                 <Switch
@@ -375,6 +403,15 @@ const BulkBusManagement = () => {
                             ))}
                         </TableBody>
                     </Table>
+                                 <TablePagination
+                        component="div"
+                        count={filteredBuses.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
             </Box>
         </Container>

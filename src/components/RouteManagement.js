@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -18,34 +18,27 @@ import {
     InputAdornment,
     FormControlLabel,
     Switch,
+    TablePagination
 } from "@mui/material";
 import Autocomplete from '@mui/material/Autocomplete';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
+
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const RouteManagement = () => {
-    const [routes, setRoutes] = useState([
-        {
-            id: 1,
-            startPoint: "City A",
-            endPoint: "City B",
-            routeNo: "101",
-            description: "Main route",
-            busFare: 50,
-            active: true,
-        },
-        {
-            id: 2,
-            startPoint: "City B",
-            endPoint: "City C",
-            routeNo: "102",
-            description: "Express route",
-            busFare: 60,
-            active: false,
-        },
-    ]);
+    
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+
+    const [routes, setRoutes] = useState([]);
+    const [addmodel, setAddmodel] = useState(false);
 
     const [startPoint, setStartPoint] = useState("");
     const [endPoint, setEndPoint] = useState("");
@@ -54,25 +47,56 @@ const RouteManagement = () => {
     const [busFare, setBusFare] = useState("");
     const [open, setOpen] = useState(false);
     const [currentRoute, setCurrentRoute] = useState(null);
+    const [allPoints, setAllPoints] = useState([])
+    const [alert, setAlert] = useState(null)
+
+    const [fillRouteNo, setFillRouteNo] = useState("");
+    const [fillStartPoint, setFillStartPoint] = useState("");
+    const [fillEndPoint, setFillEndPoint] = useState("");
+
+    useEffect(() => {
+        loadAllPoints()
+        loadAllRoutes()
+    }, [])
+    const loadAllRoutes = () => {
+        api.get('admin/routes/load-all')
+            .then(res => setRoutes(res.data))
+            .catch(handleError)
+    }
+    const loadAllPoints = () => {
+        api.get("admin/points/get-all")
+            .then(res => setAllPoints(res.data.map(o => o.name)))
+            .catch(handleError)
+
+    }
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Add new route
     const handleAddRoute = () => {
-        if (startPoint && endPoint && routeNo && description && busFare) {
+        if (startPoint && endPoint && routeNo && busFare) {
             const newRoute = {
                 id: Date.now(),
-                startPoint,
-                endPoint,
+                starting_point: startPoint,
+                end_point: endPoint,
                 routeNo,
                 description,
                 busFare: parseFloat(busFare),
                 active: true,
             };
-            setRoutes((prev) => [...prev, newRoute]);
-            setStartPoint("");
-            setEndPoint("");
-            setRouteNo("");
-            setDescription("");
-            setBusFare("");
+            api.post("admin/routes/add", newRoute)
+                .then(() => {
+                    sendAlert("new route added")
+                    setAddmodel(false)
+                    loadAllRoutes()
+                    setStartPoint("");
+                    setEndPoint("");
+                    setRouteNo("");
+                    setDescription("");
+                    setBusFare("");
+                })
+                .catch(handleError)
+
         }
     };
 
@@ -86,16 +110,19 @@ const RouteManagement = () => {
     const handleClose = () => {
         setCurrentRoute(null);
         setOpen(false);
+        setAddmodel(false);
     };
 
     // Save Edited Route
     const handleSave = () => {
-        setRoutes((prev) =>
-            prev.map((route) =>
-                route.id === currentRoute.id ? { ...currentRoute } : route
-            )
-        );
-        handleClose();
+        api.post('admin/routes/edit', currentRoute)
+            .then(res => {
+                loadAllRoutes()
+                sendAlert("updated")
+                handleClose()
+            })
+            .catch(handleError)
+
     };
 
     // Handle Input Changes
@@ -106,16 +133,21 @@ const RouteManagement = () => {
 
     // Delete Route
     const handleDelete = (id) => {
-        setRoutes((prev) => prev.filter((route) => route.id !== id));
+        api.post('admin/routes/delete', { id })
+            .then(res => {
+                loadAllRoutes()
+                sendAlert("deleted")
+            })
+            .catch(handleError)
     };
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        setRoutes((prev) =>
-            prev.map((route) =>
-                route.id === id ? { ...route, active: !route.active } : route
-            )
-        );
+        api.post("admin/routes/toggle-status", { id })
+            .then(res => {
+                loadAllRoutes()
+            })
+            .catch(handleError)
     };
 
     // Export to CSV
@@ -128,9 +160,10 @@ const RouteManagement = () => {
                 route.description,
                 route.busFare,
                 route.active ? "Active" : "Inactive",
+                route.id
             ].join(",")
         );
-        const csvContent = ["Route No,Start Point,End Point,Description,Bus Fare,Status"]
+        const csvContent = ["Route No,Start Point,End Point,Description,Bus Fare,Status,Id"]
             .concat(csvData)
             .join("\n");
 
@@ -151,11 +184,11 @@ const RouteManagement = () => {
             const csvRows = event.target.result.split("\n").slice(1);
             const newRoutes = csvRows
                 .map((row) => {
-                    const [routeNo, startPoint, endPoint, description, busFare, status] =
+                    const [routeNo, startPoint, endPoint, description, busFare, status, id] =
                         row.split(",");
-                    if (routeNo && startPoint && endPoint && description && busFare) {
+                    if (routeNo && startPoint && endPoint && busFare && id) {
                         return {
-                            id: Date.now() + Math.random(),
+                            id,
                             routeNo,
                             startPoint,
                             endPoint,
@@ -167,150 +200,196 @@ const RouteManagement = () => {
                     return null;
                 })
                 .filter((route) => route !== null);
-            setRoutes((prev) => [...prev, ...newRoutes]);
+            // setRoutes((prev) => [...prev, ...newRoutes]);
+            // console.log(newRoutes)
+            api.post('admin/routes/import', { data: newRoutes })
+                .then(res => {
+                    loadAllRoutes()
+                    sendAlert('success')
+                })
+                .catch(handleError)
         };
         reader.readAsText(file);
     };
 
+    const filteredRoute = routes.filter(route => {
+        const idMatch = !fillRouteNo || route.routeNo.toString().includes(fillRouteNo);
+        const startMatch = !fillStartPoint || route.startPoint.toLowerCase().includes(fillStartPoint.toLowerCase());
+        const endMatch = !fillEndPoint || route.endPoint.toLowerCase().includes(fillEndPoint.toLowerCase());
+        return idMatch && startMatch && endMatch;
+    });
+
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
     return (
-        <Container component="main" maxWidth="lg" >
+        <Container component="main" maxWidth="lg">
+           
+            {/* <LoadingOverlay show={loading} /> */}
+            
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
-                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
                     Route Management
                 </Typography>
 
-                {/* Form Section */}
-                <Box component="form" sx={{ width: "100%" }}>
-                    <Grid container spacing={3}>
+                <Modal open={addmodel} onClose={handleClose}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: "90%",
+                            maxWidth: 600,
+                            bgcolor: 'background.paper',
+                            border: '2px solid gray',
+                            boxShadow: 24,
+                            p: 4,
+                            borderRadius: '10px',
+                        }}
+                    >
 
-                        <Grid item xs={12} sm={6}>
-
-                            <Autocomplete
-                                value={startPoint}
-                                onChange={(event, newValue) => setStartPoint(newValue)}
-                                options={["City A", "City B", "City C"]}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Start Point"
-                                        variant="outlined"
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    {/* <AccountCircleIcon /> */}
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                )}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <Autocomplete
-                                value={endPoint}
-                                onChange={(event, newValue) => setEndPoint(newValue)}
-                                options={["City A", "City B", "City C"]}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="End Point"
-                                        variant="outlined"
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    {/* <AccountCircleIcon /> */}
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                )}
-                            />
-                        </Grid>
-
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Route No"
-                                variant="outlined"
-                                required
-                                value={routeNo}
-                                onChange={(e) => setRouteNo(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            {/* <AccountCircleIcon /> */}
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Bus Fare"
-                                variant="outlined"
-                                required
-                                type="number"
-                                value={busFare}
-                                onChange={(e) => setBusFare(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">LKR</InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                fullWidth
-                                label="Description"
-                                variant="outlined"
-                                required
-                                multiline
-                                rows={4}
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            {/* <AccountCircleIcon /> */}
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                    </Grid>
-
-
-
-
-
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleAddRoute}
-                            sx={{
-                                padding: "12px 24px",
-                                fontWeight: "bold",
-                                borderRadius: "4px",
-                                backgroundColor: "#3f51b5",
-                                color: "#fff",
-                                "&:hover": {
-                                    backgroundColor: "#303f9f",
-                                },
-                            }}
-                        >
+                        <Typography variant="h6" gutterBottom>
                             Add Route
-                        </Button>
+                        </Typography>
+
+                        <Grid container spacing={3}>
+
+                            <Grid item xs={12} sm={6}>
+
+                                <Autocomplete
+                                    value={startPoint}
+                                    onChange={(event, newValue) => setStartPoint(newValue)}
+                                    options={allPoints}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Start Point"
+                                            variant="outlined"
+                                            InputProps={{
+                                                ...params.InputProps,
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        {/* <AccountCircleIcon /> */}
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <Autocomplete
+                                    value={endPoint}
+                                    onChange={(event, newValue) => setEndPoint(newValue)}
+                                    options={allPoints}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="End Point"
+                                            variant="outlined"
+                                            InputProps={{
+                                                ...params.InputProps,
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        {/* <AccountCircleIcon /> */}
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Route No"
+                                    variant="outlined"
+                                    required
+                                    value={routeNo}
+                                    onChange={(e) => setRouteNo(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                {/* <AccountCircleIcon /> */}
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Bus Fare"
+                                    variant="outlined"
+                                    required
+                                    type="number"
+                                    value={busFare}
+                                    onChange={(e) => setBusFare(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">LKR</InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Description"
+                                    variant="outlined"
+                                    multiline
+                                    rows={4}
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                {/* <AccountCircleIcon /> */}
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleAddRoute}
+                                sx={{ marginRight: '8px' }}
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={handleClose}
+                                sx={{ backgroundColor: 'gray' }}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
                     </Box>
-                </Box>
+                </Modal>
 
 
                 <Box
@@ -318,15 +397,66 @@ const RouteManagement = () => {
                         width: "100%",
                         display: "flex",
                         flexDirection: "row",
-                        marginTop: "50px",
+                        marginTop: "20px",
                         marginBottom: "20px",
                         justifyContent: "space-between",
                         alignItems: "center",
                     }}
                 >
-                    <Typography variant="h6" sx={{}}>
-                        All Routes
-                    </Typography>
+
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+                        <TextField
+                            label="Route No"
+                            value={fillRouteNo}
+                            onChange={(e) => setFillRouteNo(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="Start Point"
+                            value={fillStartPoint}
+                            onChange={(e) => setFillStartPoint(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                        <TextField
+                            label="End Point"
+                            value={fillEndPoint}
+                            onChange={(e) => setFillEndPoint(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 200,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                    </Box>
 
                     <Box sx={{
                         display: "flex",
@@ -342,9 +472,9 @@ const RouteManagement = () => {
                                 backgroundColor: "#3f51b5",
                                 color: "#fff",
                                 "&:hover": {
-                                  backgroundColor: "#303f9f",
+                                    backgroundColor: "#303f9f",
                                 },
-                              }}
+                            }}
                         >
                             Export
                         </Button>
@@ -363,6 +493,20 @@ const RouteManagement = () => {
                             Import
                             <input type="file" accept=".csv" hidden onChange={handleImport} />
                         </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setAddmodel(true)}
+                            sx={{
+                                backgroundColor: "#3f51b5",
+                                color: "#fff",
+                                "&:hover": {
+                                    backgroundColor: "#303f9f",
+                                },
+                            }}
+                        >
+                            Add Route
+                        </Button>
                     </Box>
                 </Box>
 
@@ -370,54 +514,65 @@ const RouteManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Route No</TableCell>
-                                <TableCell>Start Point</TableCell>
-                                <TableCell>End Point</TableCell>
-                                <TableCell>Description</TableCell>
-                                <TableCell>Bus Fare</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Route No</TableCell>
+                                <TableCell sx={{ py: 1 }}>Start Point</TableCell>
+                                <TableCell sx={{ py: 1 }}>End Point</TableCell>
+                                <TableCell sx={{ py: 1 }}>Description</TableCell>
+                                <TableCell sx={{ py: 1 }}>Bus Fare</TableCell>
+                                <TableCell sx={{ py: 1 }}>Status</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {routes.map((route) => (
-                                <TableRow key={route.id}>
-                                    <TableCell>{route.routeNo}</TableCell>
-                                    <TableCell>{route.startPoint}</TableCell>
-                                    <TableCell>{route.endPoint}</TableCell>
-                                    <TableCell>{route.description}</TableCell>
-                                    <TableCell>LKR {route.busFare}</TableCell>
-                                    <TableCell>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={route.active}
-                                                    onChange={() => handleActiveChange(route.id)}
-                                                />
-                                            }
-                                            label={route.active ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleOpen(route)}
-                                            sx={{ marginRight: "8px" }}
-                                        >
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDelete(route.id)}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {filteredRoute
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((route) => (
+                                    <TableRow key={route.id}>
+                                        <TableCell sx={{ py: 0 }}>{route.routeNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{route.startPoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{route.endPoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{route.description}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>LKR {route.busFare}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={route.active}
+                                                        onChange={() => handleActiveChange(route.id)}
+                                                    />
+                                                }
+                                                label={route.active ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleOpen(route)}
+                                                sx={{ marginRight: "8px" }}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleDelete(route.id)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        component="div"
+                        count={filteredRoute.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Edit Modal */}
@@ -451,8 +606,13 @@ const RouteManagement = () => {
 
                         <Autocomplete
                             value={currentRoute?.startPoint || ""}
-                            onChange={(e, newValue) => handleInputChange({ target: { name: "startPoint", value: newValue } })}
-                            options={["City A", "City B", "City C"]}
+                            onChange={(e, newValue) => handleInputChange({
+                                target: {
+                                    name: "startPoint",
+                                    value: newValue
+                                }
+                            })}
+                            options={allPoints}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -475,7 +635,7 @@ const RouteManagement = () => {
                         <Autocomplete
                             value={currentRoute?.endPoint || ""}
                             onChange={(e, newValue) => handleInputChange({ target: { name: "endPoint", value: newValue } })}
-                            options={["City A", "City B", "City C"]}
+                            options={allPoints}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}

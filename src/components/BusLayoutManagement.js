@@ -17,113 +17,38 @@ import {
     InputAdornment,
     IconButton,
     Autocomplete,
+    TablePagination
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Draggable from 'react-draggable';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
 // import ChairIcon from "@mui/icons-material/Chair";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const BusLayoutManagement = () => {
 
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
 
+    
     // Sample data
-    const [layouts, setLayouts] = useState([
-        {
-            id: 1,
-            layoutName: "2x2 Luxury Layout",
-            busType: "Luxury Buses",
-            seatsCount: 40,
-            description: "Standard luxury bus layout with 2x2 configuration",
-            seatDetails: {
-                "seat-0-0": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                },
-                "seat-0-1": {
-                    seatNumber: "A2",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                },
-                "seat-1-0": {
-                    seatNumber: "B1",
-                    serviceChargeCTB: "120",
-                    serviceChargeHGH: "170",
-                    serviceChargeOther: "60",
-                    corporateTax: "30",
-                    vat: "18",
-                    discount: "15",
-                    otherCharges: "35",
-                    agentCommission: "80",
-                    bankCharges: "25"
-                }
-            }
-        },
-        {
-            id: 2,
-            layoutName: "3x2 Normal Layout",
-            busType: "Normal Buses",
-            seatsCount: 50,
-            description: "Standard normal bus layout with 3x2 configuration",
-            seatDetails: {
-                "seat-0-0": {
-                    seatNumber: "A1",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                },
-                "seat-0-1": {
-                    seatNumber: "A2",
-                    serviceChargeCTB: "100",
-                    serviceChargeHGH: "150",
-                    serviceChargeOther: "50",
-                    corporateTax: "25",
-                    vat: "15",
-                    discount: "10",
-                    otherCharges: "30",
-                    agentCommission: "75",
-                    bankCharges: "20"
-                },
-                "seat-1-0": {
-                    seatNumber: "B1",
-                    serviceChargeCTB: "120",
-                    serviceChargeHGH: "170",
-                    serviceChargeOther: "60",
-                    corporateTax: "30",
-                    vat: "18",
-                    discount: "15",
-                    otherCharges: "35",
-                    agentCommission: "80",
-                    bankCharges: "25"
-                }
-            }
-        },
-
-    ]);
-
+    const [layouts, setLayouts] = useState([]);
+    const loadLayOuts = () => {
+        api.get('admin/seat-layout/get-all')
+            .then(res => {
+                setLayouts(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadLayOuts()
+    }, [])
     // States
     const [selectedBusType, setSelectedBusType] = useState(null);
     const [open, setOpen] = useState(false);
@@ -138,6 +63,10 @@ const BusLayoutManagement = () => {
         seatDetails: {}
     });
     const [currentStep, setCurrentStep] = useState(1);
+    const [alert, setAlert] = useState(null)
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+
 
 
     const initialSeatDetails = {
@@ -203,15 +132,45 @@ const BusLayoutManagement = () => {
     const handleSeatClick = (seatId) => {
         if (currentStep === 1) {
             // Step 1: Only select/deselect seats
-            setNewLayout(prev => {
-                const updatedDetails = { ...prev.seatDetails };
-                if (updatedDetails[seatId]) {
-                    delete updatedDetails[seatId];
-                } else {
-                    updatedDetails[seatId] = { seatNumber: "" };
+
+            if(newLayout.seatDetails[seatId] && newLayout.seatDetails[seatId].hasRelations !== undefined){
+                if(newLayout.seatDetails[seatId].hasRelations === false){
+                    setNewLayout(prev => {
+                        const updatedDetails = { ...prev.seatDetails };
+                        if (updatedDetails[seatId]) {
+                            delete updatedDetails[seatId];
+                        } else {
+                            updatedDetails[seatId] = { seatNumber: "" };
+                        }
+                        return { ...prev, seatDetails: updatedDetails };
+                    });
+                }else{
+                    setAlert({message: "The selection cannot be removed. This seat is used", severity: "error"})
                 }
-                return { ...prev, seatDetails: updatedDetails };
-            });
+            }else{
+                setNewLayout(prev => {
+                    const updatedDetails = { ...prev.seatDetails };
+                    if (updatedDetails[seatId]) {
+                        delete updatedDetails[seatId];
+                    } else {
+                        updatedDetails[seatId] = { seatNumber: "" };
+                    }
+                    return { ...prev, seatDetails: updatedDetails };
+                });
+            }
+            // if(newLayout.seatDetails[seatId].hasRelations === false){
+            //     setNewLayout(prev => {
+            //         const updatedDetails = { ...prev.seatDetails };
+            //         if (updatedDetails[seatId]) {
+            //             delete updatedDetails[seatId];
+            //         } else {
+            //             updatedDetails[seatId] = { seatNumber: "" };
+            //         }
+            //         return { ...prev, seatDetails: updatedDetails };
+            //     });
+            // }else{
+            //     setAlert({message: "The selection cannot be removed. This seat is used", severity: "error"})
+            // }
         } else if (currentStep === 2) {
             // Step 2: Open seat details modal
             setSelectedSeat(seatId);
@@ -244,32 +203,55 @@ const BusLayoutManagement = () => {
     };
 
     const handleSaveLayout = () => {
-        if (newLayout.layoutName === '' || newLayout.busType === '' || newLayout.description === '') {
-            console.log("Please fill in all required fields.");
+        if (newLayout.layoutName === '' || newLayout.busType === '' ) {
+            sendAlert("Please fill in all required fields.");
         } else {
             if (isEditMode) {
-                setLayouts(prev =>
-                    prev.map(layout =>
-                        layout.id === currentLayout.id ? { ...newLayout, id: layout.id } : layout
-                    )
-                );
+                // setLayouts(prev =>
+                //     prev.map(layout =>
+                //         layout.id === currentLayout.id ? { ...newLayout, id: layout.id } : layout
+                //     )
+                // );
+                api.post('admin/seat-layout/edit', newLayout)
+                    .then(res => {
+                        loadLayOuts()
+                        sendAlert('layout is updated')
+                        setCreateModalOpen(false);
+                        setIsEditMode(false);
+                        setNewLayout({
+                            layoutName: "",
+                            busType: "",
+                            seatsCount: 0,
+                            description: "",
+                            seatDetails: {}
+                        });
+                        setCurrentStep(1);
+                    })
+                    .catch(handleError)
             } else {
                 const layoutToSave = {
                     ...newLayout,
                     id: layouts.length + 1,
                 };
-                setLayouts(prev => [...prev, layoutToSave]);
+                // setLayouts(prev => [...prev, layoutToSave]);
+                api.post('admin/seat-layout/add-new', layoutToSave)
+                    .then(res => {
+                        loadLayOuts()
+                        sendAlert('a new layout is added')
+                        setCreateModalOpen(false);
+                        setIsEditMode(false);
+                        setNewLayout({
+                            layoutName: "",
+                            busType: "",
+                            seatsCount: 0,
+                            description: "",
+                            seatDetails: {}
+                        });
+                        setCurrentStep(1);
+                    })
+                    .catch(handleError)
             }
-            setCreateModalOpen(false);
-            setIsEditMode(false);
-            setNewLayout({
-                layoutName: "",
-                busType: "",
-                seatsCount: 0,
-                description: "",
-                seatDetails: {}
-            });
-            setCurrentStep(1);
+
         }
     };
 
@@ -726,13 +708,35 @@ const BusLayoutManagement = () => {
     };
 
     const handleDelete = (id) => {
-        setLayouts(prev => prev.filter(layout => layout.id !== id));
+        api.post('admin/seat-layout/delete', {id})
+            .then(res => {
+                loadLayOuts()
+                sendAlert('deleted')
+            })
+            .catch(handleError)
     };
 
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
     return (
         <Container component="main" maxWidth="lg">
+            
+             {/* <LoadingOverlay show={loading} /> */}
+             
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                                                        setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                {/* Title Section */}
+
                 <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
                     Layout Management for Bus Seat Structures
                 </Typography>
@@ -796,22 +800,24 @@ const BusLayoutManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Layout Name</TableCell>
-                                <TableCell>Bus Type</TableCell>
-                                <TableCell align="center">Seats Count</TableCell>
-                                <TableCell>Description</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{ py: 1 }}>Layout Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>Bus Type</TableCell>
+                                <TableCell sx={{ py: 1 }} align="center">Seats Count</TableCell>
+                                <TableCell sx={{ py: 1 }}>Description</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredLayouts.map((layout) => (
+                            {filteredLayouts
+                              .slice(startIndex, startIndex + rowsPerPage)
+                    .map((layout) => (
                                 <TableRow key={layout.id}>
-                                    <TableCell>{layout.layoutName}</TableCell>
-                                    <TableCell>{layout.busType}</TableCell>
-                                    <TableCell align="center">{layout.seatsCount}</TableCell>
-                                    <TableCell>{layout.description}</TableCell>
-                                    <TableCell align="right">
+                                    <TableCell sx={{ py: 0 }}>{layout.layoutName}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{layout.busType}</TableCell>
+                                    <TableCell sx={{ py: 0 }} align="center">{layout.seatsCount}</TableCell>
+                                    <TableCell sx={{ py: 0 }}>{layout.description}</TableCell>
+                                    <TableCell sx={{ py: 0 }} align="right">
                                         <IconButton
                                             color="info"
                                             onClick={() => handleView(layout)}
@@ -837,6 +843,15 @@ const BusLayoutManagement = () => {
                             ))}
                         </TableBody>
                     </Table>
+                                <TablePagination
+                        component="div"
+                        count={filteredLayouts.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Create/Edit Layout Modal */}
@@ -1017,7 +1032,6 @@ const BusLayoutManagement = () => {
                                                     }}
                                                 />
                                             </Grid>
-
                                             <Grid item xs={12} sm={6}>
                                                 <TextField
                                                     fullWidth
@@ -1026,7 +1040,7 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.serviceCharge01}
                                                     onChange={handleInputChange}
-                                                    InputProps={{
+                                                     InputProps={{
                                                         startAdornment: (
                                                             <InputAdornment position="start">
                                                                 <InputAdornment position="start">LKR</InputAdornment>
@@ -1044,7 +1058,7 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.serviceCharge02}
                                                     onChange={handleInputChange}
-                                                    InputProps={{
+                                                     InputProps={{
                                                         startAdornment: (
                                                             <InputAdornment position="start">
                                                                 <InputAdornment position="start">LKR</InputAdornment>

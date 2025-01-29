@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -18,6 +18,7 @@ import {
     InputAdornment,
     FormControlLabel,
     Switch,
+    TablePagination
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -29,88 +30,85 @@ import ReorderIcon from "@mui/icons-material/Reorder";
 import { setroutval } from "./DashboardLayoutAccount";
 import { Reorder } from "framer-motion";
 import { Item } from "./Parts/ItemPart";
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
+
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ManageBusPoints = () => {
 
-    //   const RoutID = sessionStorage.getItem('currentValueID');
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
 
-    const details =
-    {
-        routID: 1,
-        CityName: "Colombo-Ampara",
-    };
 
-    const [busPoints, setBusPoints] = useState([
-        {
-            key: "1",
-            id: 1,
-            direction: "Boarding",
-            routePoint: "City A",
-            active: true,
-        },
-        {
-            key: "2",
-            id: 2,
-            direction: "Dropping",
-            routePoint: "City B",
-            active: false,
-        },
-        {
-            key: "3",
-            id: 3,
-            direction: "Boarding",
-            routePoint: "City B",
-            active: true,
-        },
-        {
-            key: "4",
-            id: 4,
-            direction: "Dropping",
-            routePoint: "City C",
-            active: false,
-        },
-        {
-            key: "5",
-            id: 5,
-            direction: "Boarding",
-            routePoint: "City C",
-            active: true,
-        },
-        {
-            key: "6",
-            id: 6,
-            direction: "Boarding",
-            routePoint: "City A",
-            active: true,
-        },
-        {
-            key: "7",
-            id: 7,
-            direction: "Dropping",
-            routePoint: "City A",
-            active: false,
-        },
-    ]);
+    const RouteID = sessionStorage.getItem('currentValueID');
+    const [details, setDetails] = useState({
+        routID: RouteID,
+        CityName: "",
+    })
 
+    const [allPoints, setAllPoints] = useState([])
+    const [alert, setAlert] = useState(null)
+
+    useEffect(() => {
+        loadAllPoints()
+        getInfo()
+        allPointGet()
+    }, [])
+    const allPointGet = () => {
+        api.get('admin/routes/points/get-all?id=' + RouteID)
+            .then(res => {
+                setBusPoints(res.data)
+            })
+            .catch(handleError)
+    }
+    const getInfo = () => {
+        api.get('admin/routes/points/info?id=' + RouteID)
+            .then(res => {
+                setDetails(res.data)
+            })
+            .catch(handleError)
+    }
+    const loadAllPoints = () => {
+        api.get("admin/points/get-all")
+            .then(res => setAllPoints(res.data.map(o => o.name)))
+            .catch(handleError)
+
+    }
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+
+
+    const [busPoints, setBusPoints] = useState([]);
+    const [timePoint, setTimePoint] = useState("");
     const [direction, setDirection] = useState("");
     const [routePoint, setRoutePoint] = useState("");
     const [open, setOpen] = useState(false);
     const [currentBusPoint, setCurrentBusPoint] = useState(null);
     const [openOrderModal, setOpenOrderModal] = useState(false);
 
+    const [filterDirection,setFilterDirection] = useState("");
+    const [filterRoute,setFilterRoute] = useState("");
+
     // Add new bus point
     const handleAddBusPoint = () => {
         if (direction && routePoint) {
             const newBusPoint = {
-                key: Date.now(),
-                id: Date.now(),
                 direction,
                 routePoint,
-                active: true,
+                route: RouteID,
+                timePoint
             };
-            setBusPoints((prev) => [...prev, newBusPoint]);
-            setDirection("");
-            setRoutePoint("");
+            api.post("admin/routes/points/add", newBusPoint)
+                .then(res => {
+                    allPointGet()
+                    sendAlert('new point added')
+                    setDirection("");
+                    setRoutePoint("");
+                    setTimePoint("")
+                })
+                .catch(handleError)
         }
     };
 
@@ -128,12 +126,15 @@ const ManageBusPoints = () => {
 
     // Save Edited Bus Point
     const handleSaveBusPoint = () => {
-        setBusPoints((prev) =>
-            prev.map((busPoint) =>
-                busPoint.id === currentBusPoint.id ? { ...currentBusPoint } : busPoint
-            )
-        );
-        handleCloseModal();
+        api.post('admin/routes/points/edit', currentBusPoint)
+            .then(res => {
+                sendAlert("updated")
+                allPointGet()
+                handleCloseModal();
+                setTimePoint(null)
+            })
+            .catch(handleError)
+
     };
 
     // Handle Input Changes for Edit Modal
@@ -144,16 +145,21 @@ const ManageBusPoints = () => {
 
     // Delete Bus Point
     const handleDeleteBusPoint = (id) => {
-        setBusPoints((prev) => prev.filter((busPoint) => busPoint.id !== id));
+        api.post('admin/routes/points/delete', { id })
+            .then(res => {
+                sendAlert("deleted")
+                allPointGet()
+            })
+            .catch(handleError)
     };
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        setBusPoints((prev) =>
-            prev.map((busPoint) =>
-                busPoint.id === id ? { ...busPoint, active: !busPoint.active } : busPoint
-            )
-        );
+        api.post('admin/routes/points/toggle-status', { id })
+            .then(res => {
+                allPointGet()
+            })
+            .catch(handleError)
     };
 
     // Export to CSV
@@ -196,7 +202,12 @@ const ManageBusPoints = () => {
                     return null;
                 })
                 .filter((busPoint) => busPoint !== null);
-            setBusPoints((prev) => [...prev, ...newBusPoints]);
+            api.post('admin/routes/points/import', { route: RouteID, data: newBusPoints })
+                .then(res => {
+                    allPointGet()
+                    sendAlert('import success')
+                })
+                .catch(handleError)
         };
         reader.readAsText(file);
     };
@@ -212,6 +223,17 @@ const ManageBusPoints = () => {
 
     // Save the reordered bus points
     const handleSaveOrder = () => {
+        const newOrder = busPoints.map((p, i) => {
+            return {
+                id: p.id,
+                order: i
+            }
+        })
+        api.post('admin/routes/points/change-order', { data: newOrder })
+            .then(res => {
+                allPointGet()
+            })
+            .catch(handleError)
         setOpenOrderModal(false);
     };
 
@@ -231,11 +253,42 @@ const ManageBusPoints = () => {
         setBusPoints([...boardingItems, ...newOrder]);
     };
 
+
+    const filteredOption = busPoints.filter(option => {
+        const nameMatch = !filterDirection || option.direction.toLowerCase().includes(filterDirection.toLowerCase());
+        const nameMatch2 = !filterRoute || option.routePoint.toLowerCase().includes(filterRoute.toLowerCase());
+        return nameMatch && nameMatch2;
+    });
+
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
+
+            {/* <LoadingOverlay show={loading} /> */}
+
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 
-                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginBottom: "20px", justifyContent: "center" }}>
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                    justifyContent: "center"
+                }}>
                     <IconButton onClick={handleBackClick} sx={{ marginRight: "10px", padding: '0' }}>
                         <ArrowBackIcon />
                     </IconButton>
@@ -245,9 +298,9 @@ const ManageBusPoints = () => {
                 </Box>
 
                 {/* Form Section */}
-                <Box component="form" sx={{ width: "100%" }}>
+                <Box component="form" sx={{ width: "100%", display: "flex", justifyContent: "center", height: "45px" }}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={4}>
                             <Autocomplete
                                 value={direction}
                                 onChange={(event, newValue) => setDirection(newValue)}
@@ -265,16 +318,21 @@ const ManageBusPoints = () => {
                                                 </InputAdornment>
                                             ),
                                         }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                height: '45px',
+                                            }
+                                        }}
                                     />
                                 )}
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={4}>
                             <Autocomplete
                                 value={routePoint}
                                 onChange={(event, newValue) => setRoutePoint(newValue)}
-                                options={["City A", "City B", "City C"]}
+                                options={allPoints}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -288,18 +346,42 @@ const ManageBusPoints = () => {
                                                 </InputAdornment>
                                             ),
                                         }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                height: '45px',
+                                            }
+                                        }}
                                     />
                                 )}
                             />
                         </Grid>
+
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                type="time"
+                                label="Time"
+                                value={timePoint}
+                                onChange={(e) => setTimePoint(e.target.value)}
+                                InputLabelProps={{ shrink: true }}
+                                sx={{
+                                    width: "100%",
+                                    '& .MuiOutlinedInput-root': {
+                                        height: '45px',
+                                    }
+                                }}
+                            />
+
+                        </Grid>
+
                     </Grid>
 
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", ml: 2 }}>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={handleAddBusPoint}
                             sx={{
+                                width: "160px",
                                 padding: "12px 24px",
                                 fontWeight: "bold",
                                 borderRadius: "4px",
@@ -316,17 +398,72 @@ const ManageBusPoints = () => {
                 </Box>
 
                 {/* Bus Points Table Section */}
-                <Box sx={{ width: "100%", display: "flex", flexDirection: "row", marginTop: "50px", marginBottom: "20px", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="h6">All Bus Points</Typography>
+                <Box sx={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "row",
+                    marginTop: "40px",
+                    marginBottom: "20px",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                }}>
+
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+
+                        <Autocomplete
+                            value={filterDirection}
+                            onChange={(event, newValue) => setFilterDirection(newValue)}
+                            options={["Boarding", "Dropping"]}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Direction"
+                                    variant="outlined"
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                {/* <AccountCircleIcon /> */}
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    sx={{
+                                        width: 250,
+                                        '& .MuiOutlinedInput-root': {
+                                            height: '40px',
+                                        }
+                                    }}
+                                />
+                            )}
+                        />
+                        <TextField
+                            label="Route"
+                            value={filterRoute}
+                            onChange={(e) => setFilterRoute(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{
+                                width: 250,
+                                '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />
+                    </Box>
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                        <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleExport} sx={{
-                            backgroundColor: "#3f51b5",
-                            color: "#fff",
-                            "&:hover": {
-                                backgroundColor: "#303f9f",
-                            },
-                        }}
+                        <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleExport}
+                            sx={{
+                                backgroundColor: "#3f51b5",
+                                color: "#fff",
+                                "&:hover": {
+                                    backgroundColor: "#303f9f",
+                                },
+                            }}
                         >
                             Export
                         </Button>
@@ -363,41 +500,55 @@ const ManageBusPoints = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Direction</TableCell>
-                                <TableCell>Route Point</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Direction</TableCell>
+                                <TableCell sx={{ py: 1 }}>Route Point</TableCell>
+                                <TableCell sx={{ py: 1 }}>Time</TableCell>
+                                <TableCell sx={{ py: 1 }}>Status</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {busPoints.map((busPoint) => (
-                                <TableRow key={busPoint.key}>
-                                    <TableCell>{busPoint.direction}</TableCell>
-                                    <TableCell>{busPoint.routePoint}</TableCell>
-                                    <TableCell>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={busPoint.active}
-                                                    onChange={() => handleActiveChange(busPoint.id)}
-                                                />
-                                            }
-                                            label={busPoint.active ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)} sx={{ marginRight: "8px" }}>
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton color="error" onClick={() => handleDeleteBusPoint(busPoint.id)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {filteredOption
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((busPoint) => (
+                                    <TableRow key={busPoint.key}>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.timePoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={busPoint.active}
+                                                        onChange={() => handleActiveChange(busPoint.id)}
+                                                    />
+                                                }
+                                                label={busPoint.active ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton color="primary" onClick={() => handleOpenEdit(busPoint)}
+                                                sx={{ marginRight: "8px" }}>
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton color="error" onClick={() => handleDeleteBusPoint(busPoint.id)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        component="div"
+                        count={filteredOption.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Edit Modal */}
@@ -422,7 +573,12 @@ const ManageBusPoints = () => {
 
                         <Autocomplete
                             value={currentBusPoint?.direction || ""}
-                            onChange={(e, newValue) => handleInputChange({ target: { name: "direction", value: newValue } })}
+                            onChange={(e, newValue) => handleInputChange({
+                                target: {
+                                    name: "direction",
+                                    value: newValue
+                                }
+                            })}
                             options={["Boarding", "Dropping"]}
                             renderInput={(params) => (
                                 <TextField
@@ -437,8 +593,13 @@ const ManageBusPoints = () => {
 
                         <Autocomplete
                             value={currentBusPoint?.routePoint || ""}
-                            onChange={(e, newValue) => handleInputChange({ target: { name: "routePoint", value: newValue } })}
-                            options={["City A", "City B", "City C"]}
+                            onChange={(e, newValue) => handleInputChange({
+                                target: {
+                                    name: "routePoint",
+                                    value: newValue
+                                }
+                            })}
+                            options={allPoints}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -448,6 +609,20 @@ const ManageBusPoints = () => {
                                     sx={{ marginBottom: "16px" }}
                                 />
                             )}
+                        />
+
+                        <TextField
+                            type="time"
+                            label="Time"
+                            value={currentBusPoint?.timePoint || ""}
+                            onChange={(e) => handleInputChange({ target: { name: "timePoint", value: e.target.value } })}
+                            InputLabelProps={{ shrink: true }}
+                            sx={{
+                                width: '100%',
+                                marginBottom: "16px",
+                                '& .MuiOutlinedInput-root': {
+                                }
+                            }}
                         />
 
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -492,7 +667,7 @@ const ManageBusPoints = () => {
                             Reorder Boarding and Dropping Points
                         </Typography>
 
-                        <Box >
+                        <Box>
                             <Grid container spacing={3}>
                                 <Grid item xs={12} sm={6}>
                                     <Typography variant="h6">Boarding List</Typography>
@@ -504,7 +679,7 @@ const ManageBusPoints = () => {
                                         {busPoints
                                             .filter((point) => point.direction === "Boarding")
                                             .map((busPoint, index) => (
-                                                <Item key={busPoint.key} busPoint={busPoint} index={index + 1}/>
+                                                <Item key={busPoint.key} busPoint={busPoint} index={index + 1} />
                                             ))}
                                     </Reorder.Group>
                                 </Grid>
@@ -544,7 +719,7 @@ const ManageBusPoints = () => {
                 </Modal>
 
             </Box>
-        </Container>
+        </Container >
     );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
     Box,
     Button,
@@ -14,31 +14,47 @@ import {
     TableHead,
     TableBody,
     TableRow,
-    TableCell
+    TableCell,
+    TablePagination
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
-// import CustomAlert from "./Parts/CustomAlert";
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ManageBreakFare = () => {
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // const [selectedBusType, setSelectedBusType] = useState(null);
         const fileInputRef = useRef();
     const [percentage, setPercentage] = useState('');
 
     const [breaks, setBreaks] = useState([
-        { id: 1, name: 'Colombo - Avissawella', oldFare: 300, newFare: 300 },
-        { id: 2, name: 'Colombo - Kadawatha', oldFare: 250, newFare: 250 },
-        { id: 3, name: 'Colombo - Gampaha', oldFare: 400, newFare: 400 },
+
     ]);
+    const loadAll=()=>{
+        api.get('admin/bulk-fare/get-all-brake')
+            .then(res=>{
+                setBreaks(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadAll();
+    },[])
 
     // const busTypes = ["Express", "Semi-Express", "Normal"];
 
@@ -109,10 +125,34 @@ const ManageBreakFare = () => {
     };
 
 
-    const handleSave = () => { };
+    const handleSave = () => {
+        api.post('admin/bulk-fare/save-brake', {breaks})
+            .then(res=>{
+                sendAlert('fare brake saved');
+                loadAll()
+            })
+            .catch(handleError)
+    };
 
+        //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
     return (
         <Container maxWidth="lg">
+         
+          {/* <LoadingOverlay show={loading} /> */}
+          
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
@@ -258,18 +298,20 @@ const ManageBreakFare = () => {
                     <TableContainer>
                         <Table>
                             <TableHead>
-                                <TableRow>
-                                    <TableCell>Break Route</TableCell>
-                                    <TableCell align="right">Current Fare</TableCell>
-                                    <TableCell align="center">=</TableCell>
-                                    <TableCell align="right">New Fare</TableCell>
+                                <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                    <TableCell sx={{ py: 1 }}>Break Route</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="right">Current Fare</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="center">=</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="right">New Fare</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {breaks.map((breakRoute) => (
+                                {breaks
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((breakRoute) => (
                                     <TableRow key={breakRoute.id}>
-                                        <TableCell>{breakRoute.name}</TableCell>
-                                        <TableCell align="right">
+                                        <TableCell sx={{ py: 0 }}>{breakRoute.name}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
                                             <TextField
                                                 disabled
                                                 value={`LKR ${breakRoute.oldFare}`}
@@ -277,8 +319,8 @@ const ManageBreakFare = () => {
                                                 sx={{ width: 150 }}
                                             />
                                         </TableCell>
-                                        <TableCell align="center">=</TableCell>
-                                        <TableCell align="right">
+                                        <TableCell sx={{ py: 0 }} align="center">=</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
                                             <TextField
                                                 value={breakRoute.newFare}
                                                 onChange={(e) => handleBreakFareChange(breakRoute.id, e.target.value)}
@@ -293,6 +335,15 @@ const ManageBreakFare = () => {
                                 ))}
                             </TableBody>
                         </Table>
+                          <TablePagination
+                                                component="div"
+                                                count={breaks.length}
+                                                page={page}
+                                                onPageChange={handleChangePage}
+                                                rowsPerPage={rowsPerPage}
+                                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                                rowsPerPageOptions={[10, 25, 50, 100]}
+                                            />
                     </TableContainer>
                 </Paper>
             </Box>

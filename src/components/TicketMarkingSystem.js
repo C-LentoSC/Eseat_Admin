@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
@@ -6,51 +6,53 @@ import {
 } from '@mui/material';
 import { FileDownload, CheckCircle, HourglassEmpty } from '@mui/icons-material';
 import dayjs from 'dayjs';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
+
+import LoadingOverlay from './Parts/LoadingOverlay';
 
 const TicketMarkingSystem = () => {
-    // Sample initial data
-    const [tickets, setTickets] = useState([
-        {
-            id: 1,
-            refNo: "TKT001",
-            ticketType: "Regular",
-            depot: "Colombo",
-            scheduleNo: "SCH001",
-            vCode: "V001",
-            modeOfPay: "Cash",
-            route: "Colombo-Kandy",
-            nic: "199912345678",
-            bookedBy: "John Doe",
-            bookedDate: "2025-01-01",
-            seatNoDetails: [
-                { seatNo: "1A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false },
-                { seatNo: "2A", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false }
-            ],
-        },
-        {
-            id: 2,
-            refNo: "TKT002",
-            ticketType: "Student",
-            depot: "Galle",
-            scheduleNo: "SCH002",
-            vCode: "V002",
-            modeOfPay: "Card",
-            route: "Galle-Matara",
-            nic: "200045678912",
-            bookedBy: "Jane Smith",
-            bookedDate: "2025-01-02",
-            seatNoDetails: [
-                { seatNo: "3B", seatCost: 1000, serviceCharge: 100, vat: 150, discount: 50, otherCharges: 0, confirmed: false },
-            ],
-        }
-    ]);
+    const [loadingList,setLoadingList] = useState([]);
+    const loading = false;
+    // setLoading(true);
+    // setLoading(false);
 
+
+    // Sample initial data
+    const [tickets, setTickets] = useState([]);
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const startLoading = (id) => setLoadingList(prevState => [...prevState,id])
+    const endLoading=(id)=>setLoadingList(prevState => prevState.filter(i=>i!==id))
     // States for filters
     const [depot, setDepot] = useState('');
     const [scheduleNo, setScheduleNo] = useState('');
     const [vCode, setVCode] = useState('');
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const loadAll=()=>{
+        const id=generateUniqueId()
+        startLoading(id)
+        api.get('admin/ticket-marking/get-all')
+            .then(res=>{
+                endLoading(id)
+                setTickets(res.data)
+                if(selectedTicket){
+                    setSelectedTicket(p=>res.data.filter(i=>i.id===p.id)[0])
+                }
+            })
+            .catch(err=>{
+                endLoading(id)
+                handleError(err)
+            })
+    }
+    useEffect(() => {
+        loadAll()
+    }, []);
+    function generateUniqueId() {
+        return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
 
     // Filter tickets based on criteria
     const filteredTickets = tickets.filter(ticket => {
@@ -58,10 +60,10 @@ const TicketMarkingSystem = () => {
             ticket.depot.toLowerCase().includes(depot.toLowerCase());
         const scheduleMatch = !scheduleNo ||
             ticket.scheduleNo.toLowerCase().includes(scheduleNo.toLowerCase());
-        const vCodeMatch = !vCode ||
-            ticket.vCode.toLowerCase().includes(vCode.toLowerCase());
+        const refNoMatch = !vCode ||
+            ticket.refNo.toLowerCase().includes(vCode.toLowerCase());
 
-        return depotMatch && scheduleMatch && vCodeMatch;
+        return depotMatch && scheduleMatch && refNoMatch;
     });
 
     // Export to CSV
@@ -132,22 +134,22 @@ const TicketMarkingSystem = () => {
     };
 
     const handleConfirmSeat = (ticket, seatNo) => {
-        const updatedTickets = tickets.map(t =>
-            t.id === ticket.id
-                ? {
-                    ...t,
-                    seatNoDetails: t.seatNoDetails.map(s =>
-                        s.seatNo === seatNo ? { ...s, confirmed: true } : s
-                    ),
-                }
-                : t
-        );
+
+        const id = generateUniqueId();
+        startLoading(id)
+        api.post('admin/ticket-marking/confirm', {...ticket, seatNo: seatNo})
+            .then(res=>{
+                endLoading(id)
+                sendAlert("seat marked")
+                loadAll()
+            })
+            .catch(err=>{
+                endLoading(id)
+                handleError(err)
+            })
     
-        setTickets(updatedTickets);
-    
-        // Update selectedTicket to reflect the latest state
-        const updatedTicket = updatedTickets.find(t => t.id === ticket.id);
-        setSelectedTicket(updatedTicket);
+
+        // setSelectedTicket();
     };
     
 
@@ -157,7 +159,11 @@ const TicketMarkingSystem = () => {
 
     return (
         <Container component="main" maxWidth="lg">
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+           
+             <LoadingOverlay show={loading} />
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
+             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Ticket Marking System
                 </Typography>
@@ -205,7 +211,7 @@ const TicketMarkingSystem = () => {
                     <Grid item xs={12} sm={6} md={4}>
                         <TextField
                             fullWidth
-                            label="V-Code"
+                            label="Ref No"
                             value={vCode}
                             onChange={(e) => setVCode(e.target.value)}
                             sx={{

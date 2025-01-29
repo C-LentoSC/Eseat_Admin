@@ -1,65 +1,41 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
     Autocomplete, TextField, InputAdornment, FormControlLabel,
-    Switch,
+    Switch, TablePagination,
 } from '@mui/material';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 // import DeleteIcon from '@mui/icons-material/Delete';
 
 // import CustomAlert from "./Parts/CustomAlert";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const ScheduleManagement = () => {
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+
+     const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Sample initial data
-    const [schedules, setSchedules] = useState([
-        {
-            id: 1,
-            scheduleNumber: "SCH001",
-            routeNo: "R001",
-            route: "Colombo-Kandy",
-            travelDate: "2025-01-10",
-            startTime: "08:00",
-            endDate: "2025-01-10",
-            endTime: "11:00",
-            closingDate: "2025-01-09",
-            closingTime: "20:00",
-            active: true,
-            status: "Active",
-        },
-        {
-            id: 2,
-            scheduleNumber: "SCH002",
-            routeNo: "R002",
-            route: "Galle-Matara",
-            travelDate: "2025-01-15",
-            startTime: "09:30",
-            endDate: "2025-01-15",
-            endTime: "11:30",
-            closingDate: "2025-01-14",
-            closingTime: "21:00",
-            active: false,
-            status: "Inactive",
-        },
-        {
-            id: 3,
-            scheduleNumber: "SCH002",
-            routeNo: "R002",
-            route: "Galle-Matara",
-            travelDate: "2025-01-15",
-            startTime: "09:30",
-            endDate: "2025-01-15",
-            endTime: "11:30",
-            closingDate: "2025-01-14",
-            closingTime: "21:00",
-            active: true,
-            status: "Active",
-        }
-    ]);
+    const [schedules,setSchedules] = useState([ ]);
+    useEffect(() => {
+        loadAll()
+    }, []);
+    const loadAll=()=>{
+        api.get('admin/schedule-report/get-all-schedules')
+            .then(res=>{
+                setSchedules(res.data);
+            })
+            .catch(handleError)
+    }
 
     // Filter states
     const [selectedScheduleNo, setSelectedScheduleNo] = useState(null);
@@ -91,11 +67,11 @@ const ScheduleManagement = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        setSchedules((prev) =>
-            prev.map((route) =>
-                route.id === id ? { ...route, active: !route.active } : route
-            )
-        );
+        api.post("admin/schedule-report/toggle-status", {id})
+            .then(res=>{
+                loadAll()
+            })
+            .catch(handleError)
     };
 
 
@@ -126,8 +102,26 @@ const ScheduleManagement = () => {
         />
     );
 
+        //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
+          
+           {/* <LoadingOverlay show={loading} /> */}
+           
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Schedule Management
@@ -173,22 +167,24 @@ const ScheduleManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Schedule Number</TableCell>
-                                <TableCell>Route No</TableCell>
-                                <TableCell>Route</TableCell>
-                                <TableCell>Travel Date</TableCell>
-                                <TableCell>Start Time</TableCell>
-                                <TableCell>End Date</TableCell>
-                                <TableCell>End Time</TableCell>
-                                <TableCell>Closing Date</TableCell>
-                                <TableCell>Closing Time</TableCell>
-                                <TableCell>Status</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Schedule Number</TableCell>
+                                <TableCell sx={{ py: 1 }}>Route No</TableCell>
+                                <TableCell sx={{ py: 1 }}>Route</TableCell>
+                                <TableCell sx={{ py: 1 }}>Travel Date</TableCell>
+                                <TableCell sx={{ py: 1 }}>Start Time</TableCell>
+                                <TableCell sx={{ py: 1 }}>End Date</TableCell>
+                                <TableCell sx={{ py: 1 }}>End Time</TableCell>
+                                <TableCell sx={{ py: 1 }}>Closing Date</TableCell>
+                                <TableCell sx={{ py: 1 }}>Closing Time</TableCell>
+                                <TableCell sx={{ py: 1 }}>Status</TableCell>
                                 {/* <TableCell>Actions</TableCell> */}
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredSchedules.map((schedule) => (
+                            {filteredSchedules
+                             .slice(startIndex, startIndex + rowsPerPage)
+                             .map((schedule) => (
                                 <TableRow key={schedule.id}>
                                     <TableCell>{schedule.scheduleNumber}</TableCell>
                                     <TableCell>{schedule.routeNo}</TableCell>
@@ -227,6 +223,15 @@ const ScheduleManagement = () => {
                             ))}
                         </TableBody>
                     </Table>
+                     <TablePagination
+                                            component="div"
+                                            count={filteredSchedules.length}
+                                            page={page}
+                                            onPageChange={handleChangePage}
+                                            rowsPerPage={rowsPerPage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                            rowsPerPageOptions={[10, 25, 50, 100]}
+                                        />
                 </TableContainer>
             </Box>
         </Container>

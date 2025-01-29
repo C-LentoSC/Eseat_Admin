@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Container,
@@ -19,45 +19,46 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { setroutval } from "./DashboardLayoutAccount";
-// import CustomAlert from "./Parts/CustomAlert";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
+
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ActiveDepot = () => {
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Sample data
-    const [depots] = useState([
-        { id: "DEP001", name: "Central Depot", region: "Western", activeBusCount: 25 },
-        { id: "DEP002", name: "Northern Hub", region: "Northern", activeBusCount: 18 },
-        { id: "DEP003", name: "Eastern Terminal", region: "Eastern", activeBusCount: 30 },
-        { id: "DEP004", name: "Southern Station", region: "Southern", activeBusCount: 22 },
-        { id: "DEP005", name: "Western Point", region: "Western", activeBusCount: 15 },
-        { id: "DEP006", name: "Northern Center", region: "Northern", activeBusCount: 28 },
-        { id: "DEP007", name: "Eastern Hub", region: "Eastern", activeBusCount: 20 },
-        { id: "DEP008", name: "Southern Depot", region: "Southern", activeBusCount: 33 },
-        { id: "DEP009", name: "Western Terminal", region: "Western", activeBusCount: 27 },
-        { id: "DEP010", name: "Northern Point", region: "Northern", activeBusCount: 19 },
-        { id: "DEP011", name: "Eastern Station", region: "Eastern", activeBusCount: 24 },
-        { id: "DEP012", name: "Southern Center", region: "Southern", activeBusCount: 31 },
-        { id: "DEP013", name: "Western Hub", region: "Western", activeBusCount: 16 },
-        { id: "DEP014", name: "Northern Station", region: "Northern", activeBusCount: 29 },
-        { id: "DEP015", name: "Eastern Point", region: "Eastern", activeBusCount: 21 },
-        { id: "DEP016", name: "Southern Hub", region: "Southern", activeBusCount: 26 },
-        { id: "DEP017", name: "Western Station", region: "Western", activeBusCount: 23 },
-        { id: "DEP018", name: "Northern Terminal", region: "Northern", activeBusCount: 17 },
-        { id: "DEP019", name: "Eastern Center", region: "Eastern", activeBusCount: 32 },
-        { id: "DEP020", name: "Southern Point", region: "Southern", activeBusCount: 28 },
-        { id: "DEP021", name: "Southern Point", region: "Southern", activeBusCount: 28 },
-    ]);
-
+    const [depots, setDepots] = useState([]);
+    const loadAllDepots = () => {
+        api.get('admin/bus/all-depot')
+            .then(res => {
+                setDepots(res.data)
+            })
+            .catch(handleError)
+    }
+    const loadAllRegions = () => {
+        api.get('admin/bus/all-regions')
+            .then(res => {
+                setRegions(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadAllDepots()
+        loadAllRegions()
+    }, []);
     // States for filters
     const [selectedRegion, setSelectedRegion] = useState(null);
     const [selectedDepot, setSelectedDepot] = useState(null);
 
     // Sample regions and depots
-    const regions = ["Western", "Northern", "Eastern", "Southern"];
+    const [regions, setRegions] = useState([]);
     const depotNames = depots.map(depot => depot.name);
 
     // Filter handlers
@@ -98,7 +99,8 @@ const ActiveDepot = () => {
     return (
         <Container component="main" maxWidth="lg">
 
-            {/* {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert} setOpen={setAlert} /> : <></>} */}
+            {/* <LoadingOverlay show={loading} /> */}
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert} setOpen={setAlert} /> : <></>}
 
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
@@ -164,7 +166,7 @@ const ActiveDepot = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}} >
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }} >
                                 <TableCell sx={{ py: 1 }}>Depot ID</TableCell>
                                 <TableCell sx={{ py: 1 }}>Depot Name</TableCell>
                                 <TableCell sx={{ py: 1 }}>Region</TableCell>

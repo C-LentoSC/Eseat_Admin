@@ -1,54 +1,29 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
     TextField, InputAdornment, Button, IconButton,
     Dialog, DialogTitle, DialogContent, DialogActions,
-    Modal,Autocomplete
+    Modal, Autocomplete, TablePagination
 } from '@mui/material';
-import { NoteAdd, CheckCircle, FileDownload } from '@mui/icons-material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import {NoteAdd, CheckCircle, FileDownload} from '@mui/icons-material';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {LocalizationProvider, DatePicker} from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
+
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const RefundBooking = () => {
+    
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+
     // Sample initial data
-    const [bookings] = useState([
-        {
-            id: 1,
-            refNo: "REF001",
-            vCode: "V001",
-            bookDate: "2025-01-01",
-            travelDate: "2025-01-10",
-            scheduleNo: "SCH001",
-            depot: "Colombo",
-            route: "Colombo-Kandy",
-            seatNo: "1A, 2A",
-            name: "John Doe",
-            mobileNo: "0771234567",
-            netAmount: 2500,
-            bankDetails:"Peaple's Bank, Colombo",
-            refunded: false,
-            note: ""
-        },
-        {
-            id: 2,
-            refNo: "REF002",
-            vCode: "V002",
-            bookDate: "2025-01-02",
-            travelDate: "2025-01-15",
-            scheduleNo: "SCH002",
-            depot: "Galle",
-            route: "Galle-Matara",
-            seatNo: "3B",
-            name: "Jane Smith",
-            mobileNo: "0777654321",
-            netAmount: 1800,
-            bankDetails:"Peaple's Bank, Colombo",
-            refunded: false,
-            note: ""
-        }
-    ]);
+    const [bookings, setBookings] = useState([ ]);
 
     // States
     const [selectedBookDate, setSelectedBookDate] = useState(null);
@@ -62,20 +37,32 @@ const RefundBooking = () => {
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [bookingToRefund, setBookingToRefund] = useState(null);
 
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+
     const refundStatuses = ['All', 'Refunded', 'Not Refunded'];
+    const loadAll = () => {
+        api.get('admin/refund-booking/get-all')
+            .then(res => {
+                setBookings(res.data);
+            }).catch(handleError);
+    }
+    useEffect(() => {
+        loadAll()
+    }, []);
 
     // Filter bookings based on criteria
-   const filteredBookings = bookings.filter(booking => {
-        const bookDateMatch = !selectedBookDate || 
+    const filteredBookings = bookings.filter(booking => {
+        const bookDateMatch = !selectedBookDate ||
             dayjs(booking.bookDate).format('YYYY-MM-DD') === dayjs(selectedBookDate).format('YYYY-MM-DD');
-        const refVCodeMatch = !refVCode || 
-            booking.refNo.toLowerCase().includes(refVCode.toLowerCase()) ||
-            booking.vCode.toLowerCase().includes(refVCode.toLowerCase());
-        const scheduleNoMatch = !scheduleNo || 
+        const refVCodeMatch = !refVCode ||
+            booking.refNo.toLowerCase().includes(refVCode.toLowerCase());
+        const scheduleNoMatch = !scheduleNo ||
             booking.scheduleNo.toLowerCase().includes(scheduleNo.toLowerCase());
-        const mobileNoMatch = !mobileNo || 
+        const mobileNoMatch = !mobileNo ||
             booking.mobileNo.includes(mobileNo);
-        const refundStatusMatch = selectedRefundStatus === 'All' || 
+        const refundStatusMatch = selectedRefundStatus === 'All' ||
             (selectedRefundStatus === 'Refunded' && booking.refunded) ||
             (selectedRefundStatus === 'Not Refunded' && !booking.refunded);
 
@@ -92,6 +79,11 @@ const RefundBooking = () => {
     const handleNoteSave = () => {
         if (selectedBooking) {
             selectedBooking.note = note;
+            api.post('admin/refund-booking/set-note', selectedBooking)
+                .then(() => {
+                    loadAll()
+                    sendAlert("note updated")
+                }).catch(handleError)
         }
         setNoteModalOpen(false);
     };
@@ -103,9 +95,14 @@ const RefundBooking = () => {
     };
 
     const handleRefundConfirm = () => {
-        if (bookingToRefund) {
-            bookingToRefund.refunded = true;
-        }
+        api.post('admin/refund-booking/mark-as-refunded', bookingToRefund)
+            .then(() => {
+                loadAll()
+                sendAlert("mark as refunded")
+            }).catch(handleError)
+        // if (bookingToRefund) {
+        //     bookingToRefund.refunded = true;
+        // }
         setConfirmDialogOpen(false);
     };
 
@@ -165,7 +162,7 @@ const RefundBooking = () => {
         ].join('\n');
 
         const BOM = '\uFEFF';
-        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([BOM + csvContent], {type: 'text/csv;charset=utf-8;'});
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.setAttribute('href', url);
@@ -176,10 +173,28 @@ const RefundBooking = () => {
         URL.revokeObjectURL(url);
     };
 
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+           
+            {/* <LoadingOverlay show={loading} /> */}
+            
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
+                <Typography variant="h5" sx={{fontWeight: 600, mb: 3}}>
                     Refund Booking
                 </Typography>
 
@@ -214,7 +229,7 @@ const RefundBooking = () => {
                     <Grid item xs={12} sm={6} md={2.4}>
                         <TextField
                             fullWidth
-                            label="Ref. / V-Code"
+                            label="Ref."
                             value={refVCode}
                             onChange={(e) => setRefVCode(e.target.value)}
                             sx={{
@@ -305,7 +320,7 @@ const RefundBooking = () => {
                 }}>
                     <Button
                         variant="contained"
-                        startIcon={<FileDownload />}
+                        startIcon={<FileDownload/>}
                         onClick={handleExport}
                         disabled={filteredBookings.length === 0}
                     >
@@ -317,56 +332,67 @@ const RefundBooking = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Ref.</TableCell>
-                                <TableCell>V-Code</TableCell>
-                                <TableCell>Book Date</TableCell>
-                                <TableCell>Travel Date</TableCell>
-                                <TableCell>Schedule No</TableCell>
-                                <TableCell>Depot</TableCell>
-                                <TableCell>Route</TableCell>
-                                <TableCell>Seats No</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Mobile No</TableCell>
-                                <TableCell>Net Amount</TableCell>
-                                <TableCell>Bank Details</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{py: 1}}>Ref.</TableCell>
+                                <TableCell sx={{py: 1}}>V-Code</TableCell>
+                                <TableCell sx={{py: 1}}>Book Date</TableCell>
+                                <TableCell sx={{py: 1}}>Travel Date</TableCell>
+                                <TableCell sx={{py: 1}}>Schedule No</TableCell>
+                                <TableCell sx={{py: 1}}>Depot</TableCell>
+                                <TableCell sx={{py: 1}}>Route</TableCell>
+                                <TableCell sx={{py: 1}}>Seats No</TableCell>
+                                <TableCell sx={{py: 1}}>Name</TableCell>
+                                <TableCell sx={{py: 1}}>Mobile No</TableCell>
+                                <TableCell sx={{py: 1}}>Net Amount</TableCell>
+                                <TableCell sx={{py: 1}}>Bank Details</TableCell>
+                                <TableCell sx={{py: 1}} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredBookings.map((booking) => (
-                                <TableRow key={booking.id}>
-                                    <TableCell>{booking.refNo}</TableCell>
-                                    <TableCell>{booking.vCode}</TableCell>
-                                    <TableCell>{booking.bookDate}</TableCell>
-                                    <TableCell>{booking.travelDate}</TableCell>
-                                    <TableCell>{booking.scheduleNo}</TableCell>
-                                    <TableCell>{booking.depot}</TableCell>
-                                    <TableCell>{booking.route}</TableCell>
-                                    <TableCell>{booking.seatNo}</TableCell>
-                                    <TableCell>{booking.name}</TableCell>
-                                    <TableCell>{booking.mobileNo}</TableCell>
-                                    <TableCell>{booking.netAmount}</TableCell>
-                                    <TableCell>{booking.bankDetails}</TableCell>
-                                    <TableCell align="right">
-                                        <IconButton
-                                            onClick={() => handleNoteClick(booking)}
-                                            color="primary"
-                                        >
-                                            <NoteAdd />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => handleRefundClick(booking)}
-                                            color="success"
-                                            disabled={booking.refunded}
-                                        >
-                                            <CheckCircle />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {filteredBookings
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((booking) => (
+                                    <TableRow key={booking.id}>
+                                        <TableCell sx={{py: 0}}>{booking.refNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.vCode}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.bookDate}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.travelDate}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.scheduleNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.depot}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.route}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.seatNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.name}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.mobileNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.netAmount}</TableCell>
+                                        <TableCell sx={{py: 0}}>{booking.bankDetails}</TableCell>
+                                        <TableCell sx={{py: 0}} align="right">
+                                            <IconButton
+                                                onClick={() => handleNoteClick(booking)}
+                                                color="primary"
+                                            >
+                                                <NoteAdd/>
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => handleRefundClick(booking)}
+                                                color="success"
+                                                disabled={booking.refunded}
+                                            >
+                                                <CheckCircle/>
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        component="div"
+                        count={filteredBookings.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
                 {/* Note Modal */}
@@ -386,7 +412,7 @@ const RefundBooking = () => {
                         borderRadius: "10px",
                         border: "2px solid gray",
                     }}>
-                        <Typography variant="h6" sx={{ mb: 2 }}>
+                        <Typography variant="h6" sx={{mb: 2}}>
                             Add Note
                         </Typography>
                         <TextField
@@ -395,9 +421,9 @@ const RefundBooking = () => {
                             rows={4}
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
-                            sx={{ mb: 2 }}
+                            sx={{mb: 2}}
                         />
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>
                             <Button
                                 variant="contained"
                                 onClick={handleNoteSave}
@@ -407,7 +433,7 @@ const RefundBooking = () => {
                             <Button
                                 variant="contained"
                                 onClick={() => setNoteModalOpen(false)}
-                                sx={{ backgroundColor: 'gray' }}
+                                sx={{backgroundColor: 'gray'}}
                             >
                                 Cancel
                             </Button>

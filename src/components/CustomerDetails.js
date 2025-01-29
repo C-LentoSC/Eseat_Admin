@@ -1,34 +1,51 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
-    TextField, InputAdornment, Button
+    TextField, InputAdornment, Button, TablePagination
 } from '@mui/material';
-import { FileDownload } from '@mui/icons-material';
+import {FileDownload} from '@mui/icons-material';
 import dayjs from 'dayjs';
 
+import LoadingOverlay from './Parts/LoadingOverlay';
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
+
 const CustomerDetails = () => {
+
+
+    const [loadingList, setLoadingList] = useState([]);
+    const loading = false;
+
+    function generateUniqueId() {
+        return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
+
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const startLoading = (id) => setLoadingList(prevState => [...prevState, id])
+    const endLoading = (id) => setLoadingList(prevState => prevState.filter(i => i !== id))
+
+
     // Sample initial data
-    const [customers] = useState([
-        {
-            id: "CUS001",
-            name: "John Doe",
-            mobile: "0771234567",
-            nic: "199912345678"
-        },
-        {
-            id: "CUS002",
-            name: "Jane Smith",
-            mobile: "0777654321",
-            nic: "200045678912"
-        },
-        {
-            id: "CUS003",
-            name: "Mike Johnson",
-            mobile: "0763456789",
-            nic: "199856789123"
-        }
-    ]);
+    const [customers, setCustomers] = useState([ ]);
+    const loadAllCustomers = () => {
+        const id = generateUniqueId()
+        startLoading(id)
+        api.get('admin/customer/get-all')
+            .then((response) => {
+                endLoading(id)
+                setCustomers(response.data)
+                console.log(response.data)
+            }).catch(err => {
+            handleError(err)
+            endLoading(id)
+        })
+    }
+    useEffect(() => {
+        loadAllCustomers()
+    }, []);
 
     // States for filters
     const [customerId, setCustomerId] = useState('');
@@ -38,13 +55,13 @@ const CustomerDetails = () => {
 
     // Filter customers based on criteria
     const filteredCustomers = customers.filter(customer => {
-        const idMatch = !customerId || 
+        const idMatch = !customerId ||
             customer.id.toLowerCase().includes(customerId.toLowerCase());
-        const nameMatch = !customerName || 
+        const nameMatch = !customerName ||
             customer.name.toLowerCase().includes(customerName.toLowerCase());
-        const mobileMatch = !customerMobile || 
+        const mobileMatch = !customerMobile ||
             customer.mobile.includes(customerMobile);
-        const nicMatch = !customerNic || 
+        const nicMatch = !customerNic ||
             customer.nic.includes(customerNic);
 
         return idMatch && nameMatch && mobileMatch && nicMatch;
@@ -76,7 +93,7 @@ const CustomerDetails = () => {
         ].join('\n');
 
         const BOM = '\uFEFF';
-        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([BOM + csvContent], {type: 'text/csv;charset=utf-8;'});
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.setAttribute('href', url);
@@ -87,10 +104,29 @@ const CustomerDetails = () => {
         URL.revokeObjectURL(url);
     };
 
+
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+
+            {/* <LoadingOverlay show={loading} /> */}
+            <LoadingOverlay show={loading}/>
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
+                <Typography variant="h5" sx={{fontWeight: 600, mb: 3}}>
                     Customer Details
                 </Typography>
 
@@ -184,7 +220,7 @@ const CustomerDetails = () => {
                 }}>
                     <Button
                         variant="contained"
-                        startIcon={<FileDownload />}
+                        startIcon={<FileDownload/>}
                         onClick={handleExport}
                         disabled={filteredCustomers.length === 0}
                     >
@@ -196,24 +232,35 @@ const CustomerDetails = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Mobile</TableCell>
-                                <TableCell>NIC</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{py: 1}}>ID</TableCell>
+                                <TableCell sx={{py: 1}}>Name</TableCell>
+                                <TableCell sx={{py: 1}}>Mobile</TableCell>
+                                <TableCell sx={{py: 1}} align="right">NIC</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredCustomers.map((customer) => (
-                                <TableRow key={customer.id}>
-                                    <TableCell>{customer.id}</TableCell>
-                                    <TableCell>{customer.name}</TableCell>
-                                    <TableCell>{customer.mobile}</TableCell>
-                                    <TableCell>{customer.nic}</TableCell>
-                                </TableRow>
-                            ))}
+                            {filteredCustomers
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((customer) => (
+                                    <TableRow key={customer.id}>
+                                        <TableCell sx={{py: 0}}>{customer.id}</TableCell>
+                                        <TableCell sx={{py: 0}}>{customer.name}</TableCell>
+                                        <TableCell sx={{py: 0}}>{customer.mobile}</TableCell>
+                                        <TableCell sx={{py: 0}} align="right">{customer.nic}</TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        component="div"
+                        count={filteredCustomers.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
             </Box>
         </Container>

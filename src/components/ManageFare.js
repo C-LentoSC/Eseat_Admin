@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
     Box,
     Button,
@@ -14,33 +14,48 @@ import {
     TableHead,
     TableBody,
     TableRow,
-    TableCell
+    TableCell,
+    TablePagination
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
 
 // import CustomAlert from "./Parts/CustomAlert";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const ManageFare = () => {
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+
+
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
     // const [selectedBusType, setSelectedBusType] = useState(null);
     const fileInputRef = useRef();
     const [percentage, setPercentage] = useState('');
 
-    const [routes, setRoutes] = useState([
-        { id: 1, name: 'Colombo - Kandy', oldFare: 500, newFare: 500 },
-        { id: 2, name: 'Colombo - Galle', oldFare: 450, newFare: 450 },
-        { id: 3, name: 'Colombo - Jaffna', oldFare: 1200, newFare: 1200 },
-    ]);
-
+    const [routes, setRoutes] = useState([]);
+    const loadAll=()=>{
+        api.get('admin/bulk-fare/get-all')
+            .then(res=>{
+                setRoutes(res.data)
+            })
+            .catch(handleError)
+    }
+    useEffect(() => {
+        loadAll()
+    }, []);
     // const busTypes = ["Luxury", "Semi-Luxury", "Normal"];
 
     const updateAllFares = (isIncrease) => {
@@ -109,10 +124,35 @@ const ManageFare = () => {
     };
 
 
-    const handleSave = () => { };
+    const handleSave = () => {
+        api.post('admin/bulk-fare/save', {routes})
+            .then(()=> {
+                loadAll()
+                sendAlert('fare saved successfully')
+            })
+            .catch(handleError)
+    };
+
+    //Pagination
+        const [page, setPage] = useState(0);
+        const [rowsPerPage, setRowsPerPage] = useState(10);
+        const handleChangePage = (event, newPage) => {
+            setPage(newPage);
+        };
+        const handleChangeRowsPerPage = (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        };
+        const startIndex = page * rowsPerPage;
+        //End Pagination
 
     return (
         <Container maxWidth="lg">
+           
+            {/* <LoadingOverlay show={loading} /> */}
+            
+             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                                  setOpen={setAlert}/> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
@@ -260,18 +300,20 @@ const ManageFare = () => {
                     <TableContainer>
                         <Table>
                             <TableHead>
-                                <TableRow>
-                                    <TableCell>Route</TableCell>
-                                    <TableCell align="right">Current Fare</TableCell>
-                                    <TableCell align="center">=</TableCell>
-                                    <TableCell align="right">New Fare</TableCell>
+                                <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                    <TableCell sx={{ py: 1 }}>Route</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="right">Current Fare</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="center">=</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="right">New Fare</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {routes.map((route) => (
+                                {routes
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((route) => (
                                     <TableRow key={route.id}>
-                                        <TableCell>{route.name}</TableCell>
-                                        <TableCell align="right">
+                                        <TableCell sx={{ py: 0 }}>{route.name}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
                                             <TextField
                                                 disabled
                                                 value={`LKR ${route.oldFare}`}
@@ -279,8 +321,8 @@ const ManageFare = () => {
                                                 sx={{ width: 150 }}
                                             />
                                         </TableCell>
-                                        <TableCell align="center">=</TableCell>
-                                        <TableCell align="right">
+                                        <TableCell sx={{ py: 0 }} align="center">=</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
                                             <TextField
                                                 value={route.newFare}
                                                 onChange={(e) => handleFareChange(route.id, e.target.value)}
@@ -295,6 +337,15 @@ const ManageFare = () => {
                                 ))}
                             </TableBody>
                         </Table>
+                         <TablePagination
+                                                component="div"
+                                                count={routes.length}
+                                                page={page}
+                                                onPageChange={handleChangePage}
+                                                rowsPerPage={rowsPerPage}
+                                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                                rowsPerPageOptions={[10, 25, 50, 100]}
+                                            />
                     </TableContainer>
                 </Paper>
             </Box>

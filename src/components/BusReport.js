@@ -22,7 +22,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  TablePagination
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -31,316 +32,37 @@ import dayjs from 'dayjs';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import api from "../model/API";
+import CustomAlert from "./Parts/CustomAlert";
+
+// import LoadingOverlay from './Parts/LoadingOverlay';
 
 const BusReport = () => {
 
-  const [schedules, setSchedules] = useState([
-    {
-      id: 1,
-      scheduleNo: "KC002-5600MC",
-      startTime: "08:00",
-      startDate: "2025-01-04",
-      startPoint: "Colombo",
-      endPoint: "Kandy",
-      routeNo: "R001",
-      busType: "Luxury",
-      busCode: "BC001",
-      depot: "Central",
-      travelNo: "T123",
-      busNo: "NA-1234",
-      conductorNo: "C789",
-      manualClosedAt: "2024-01-03 17:00",
-      closedBy: "John Doe",
-      tripStatus: "No Action",
-      status: "closed",
-      seatDetails: {
-        "seat-0-0": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "blocked"
-        }, "seat-0-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }, "seat-5-0": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "blocked"
-        }, "seat-5-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "blocked"
-        }, "seat-4-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "hold"
-        }, "seat-3-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "hold"
-        }, "seat-2-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }, "seat-1-12": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }, "seat-0-13": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }, "seat-0-1": {
-          seatNumber: "A1",
-          serviceChargeCTB: "100",
-          serviceChargeHGH: "150",
-          serviceChargeOther: "50",
-          corporateTax: "25",
-          vat: "15",
-          discount: "10",
-          otherCharges: "30",
-          agentCommission: "75",
-          bankCharges: "20",
-          status: "available"
-        }
-      },
-      bookings: [
-        {
-          refNo: "346408407807049",
-          seatNo: "1",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12",
-          seatStatus: 'transfer',
-        },
-        {
-          refNo: "346402643030861",
-          seatNo: "2",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-19 16:15",
-          seatStatus: 'direct',
-        },
-        {
-          refNo: "346408407807049",
-          seatNo: "3",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12",
-          seatStatus: 'transfer',
-        },
-        {
-          refNo: "346402643030861",
-          seatNo: "4",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-19 16:15",
-          seatStatus: 'direct',
-        },
-        {
-          refNo: "346408407807049",
-          seatNo: "5",
-          vCode: "-",
-          modeOfPay: "Full Ticket",
-          route: "Colombo - Nuwaraeliya",
-          nic: "-",
-          bookedBy: "CBS-Praneeth",
-          bookedDate: "2024-11-20 00:12",
-          seatStatus: 'direct',
-        },
+      // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
 
-      ],
-      summary: [
-        {
-          bookedBy: "CBS-Praneeth",
-          modeOfPay: "Full Ticket",
-          route: "Colombo-Nuwaraeliya",
-          busFare: "603.00",
-          noOfSeate: "6",
-          totalBusFare: "3,618.00",
-        },
-        {
-          bookedBy: "Online",
-          modeOfPay: "Credit / Debit Card",
-          route: "Colombo-Talawakelle",
-          busFare: "603.00",
-          noOfSeate: "2",
-          totalBusFare: "1,206.00",
-        },
-        {
-          bookedBy: "Online",
-          modeOfPay: "Credit / Debit Card",
-          route: "Colombo-Hatton",
-          busFare: "603.00",
-          noOfSeate: "1",
-          totalBusFare: "603.00",
-        },
-        {
-          bookedBy: "Total",
-          modeOfPay: "",
-          route: "",
-          busFare: "",
-          noOfSeate: "9",
-          totalBusFare: "5,427.00",
-        },
-        //2nd table
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Full Ticket",
-          noOfSeate: "",
-          totalBusFare: "6",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Credit / Debit Card",
-          noOfSeate: "",
-          totalBusFare: "3",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Cash Pay",
-          noOfSeate: "",
-          totalBusFare: "3,618.00",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Transfer Pay",
-          noOfSeate: "",
-          totalBusFare: "0.00",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Online Pay",
-          noOfSeate: "",
-          totalBusFare: "1,809.00",
-        },
-        {
-          bookedBy: "",
-          modeOfPay: "",
-          route: "",
-          busFare: "Net Total",
-          noOfSeate: "",
-          totalBusFare: "5,427.00",
-        },
-      ],
-    },
-    {
-      id: 2,
-      scheduleNo: "LK002-5600CC",
-      startTime: "08:00",
-      startDate: "2025-01-04",
-      startPoint: "Colombo",
-      endPoint: "Kandy",
-      routeNo: "R001",
-      busType: "Luxury",
-      busCode: "BC001",
-      depot: "Central",
-      travelNo: "T123",
-      busNo: "NA-1234",
-      conductorNo: "C789",
-      manualClosedAt: "2024-01-03 17:00",
-      closedBy: "John Doe",
-      tripStatus: "No Action",
-      status: "opened",
-      seatDetails: {},
-      bookings: [],
-      summary: [],
-    },
-  ]);
+    
+  const [schedules, setSchedules] = useState([]);
+  const loadAll=()=>{
+    api.get('admin/schedule-report/get-all')
+        .then(res=>{
+          setSchedules(res.data);
+          if(!isModalOpen)return
+          let s=(res.data.filter(s=>s.id===selectedBus.id)[0])
+          if(s){
+            setSelectedBus(s)
+          }
+        })
+        .catch(handleError)
+  }
+  useEffect(() => {
+    loadAll()
+  }, []);
+  const [alert, setAlert] = useState(null);
+  const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+  const handleError = (err) => setAlert({ message: err?.response?.data?.message??"error", severity: "error" })
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -362,8 +84,8 @@ const BusReport = () => {
   });
 
 
-  const depots = ["Central", "Northern", "Eastern"];
-  const routes = ["R001", "R002", "R003"];
+  const [depots,setDepots] = useState([]);
+  const [routes,setRoutes] = useState([]);
   const tripStatuses = ["No Action", "Trip Cancel", "Break Down", "Other", "Layout Change"];
 
   // Filter schedules based on selected filters
@@ -382,7 +104,19 @@ const BusReport = () => {
       setBusNumber(selectedBus.busNo || "");
     }
   }, [selectedBus]);
-
+  const loadInf=()=>{
+    api('admin/schedule-report/get-all-route')
+        .then(res=>{
+          setRoutes(res.data)
+        }).catch(handleError)
+    api('admin/schedule-report/get-all-depots')
+        .then(res=>{
+          setDepots(res.data)
+        }).catch(handleError)
+  }
+  useEffect(()=>{
+    loadInf()
+  },[])
 
   const handleTransfer = (schedule) => {
     setSelectedTransferBus(schedule);
@@ -417,34 +151,45 @@ const BusReport = () => {
         <TableContainer component={Paper}>
           <Table size="small">
             <TableHead>
-              <TableRow>
-                <TableCell>Ref No</TableCell>
-                <TableCell>Seat No</TableCell>
-                <TableCell>V-Code</TableCell>
-                <TableCell>Mode Of Pay</TableCell>
-                <TableCell>Route</TableCell>
-                <TableCell>NIC</TableCell>
-                <TableCell>Book By</TableCell>
-                <TableCell>Book Date</TableCell>
+              <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                <TableCell sx={{ py: 1 }}>Ref No</TableCell>
+                <TableCell sx={{ py: 1 }}>Seat No</TableCell>
+                <TableCell sx={{ py: 1 }}>V-Code</TableCell>
+                <TableCell sx={{ py: 1 }}>Mode Of Pay</TableCell>
+                <TableCell sx={{ py: 1 }}>Route</TableCell>
+                <TableCell sx={{ py: 1 }}>NIC</TableCell>
+                <TableCell sx={{ py: 1 }}>Book By</TableCell>
+                <TableCell sx={{ py: 1 }}>Book Date</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {selectedTransferBus?.bookings.map((row, index) => (
-                row.seatStatus === 'transfer' ? (
+              {selectedTransferBus?.bookings
+            .slice(startIndex, startIndex + rowsPerPage)
+          .map((row, index) => (
+                (row.seatStatus === 'transfer'&&row.isActive===true) ? (
                   <TableRow key={index}>
-                    <TableCell>{row.refNo}</TableCell>
-                    <TableCell>{row.seatNo}</TableCell>
-                    <TableCell>{row.vCode}</TableCell>
-                    <TableCell>{row.modeOfPay}</TableCell>
-                    <TableCell>{row.route}</TableCell>
-                    <TableCell>{row.nic}</TableCell>
-                    <TableCell>{row.bookedBy}</TableCell>
-                    <TableCell>{row.bookedDate}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.refNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.seatNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.vCode}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.modeOfPay}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.route}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.nic}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.bookedBy}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{row.bookedDate}</TableCell>
                   </TableRow>
                 ) : null
               ))}
             </TableBody>
           </Table>
+              <TablePagination
+                        component="div"
+                        count={selectedTransferBus?.bookings.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
         </TableContainer>
 
         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
@@ -461,18 +206,22 @@ const BusReport = () => {
     </Modal>
   );
 
-  const handleBookingToggle = React.useCallback((status) => () => {
+  const handleBookingToggle = React.useCallback((status,bus) => () => {
     setBookingAction(status === "opened" ? "close" : "open");
     setIsBookingStatusModalOpen(true);
   }, []);
 
   const handleBookingConfirm = () => {
     // Add your logic here to handle the status change
-    console.log({
+    api.post("admin/schedule-report/toggle-status",{
       action: bookingAction,
       conductorMobile,
-      busNumber
-    });
+      ...selectedBus
+    }).then(res=>{
+      sendAlert("status changed")
+            loadAll()
+    })
+        .catch(handleError)
 
     setIsBookingStatusModalOpen(false);
   };
@@ -488,13 +237,13 @@ const BusReport = () => {
 
   const handleStatusChangeConfirm = () => {
     const { scheduleId, newStatus } = statusChangeDialog;
-    setSchedules(prevSchedules =>
-      prevSchedules.map(schedule =>
-        schedule.id === scheduleId
-          ? { ...schedule, tripStatus: newStatus }
-          : schedule
-      )
-    );
+    console.log(scheduleId, newStatus);
+    api.post("admin/schedule-report/status-change",statusChangeDialog)
+        .then(res=>{
+          sendAlert("status changed")
+          loadAll()
+        })
+    .catch(handleError)
     setStatusChangeDialog({ open: false, scheduleId: null, newStatus: '', oldStatus: '' });
   };
 
@@ -682,6 +431,52 @@ const BusReport = () => {
     </Box>
   );
 
+  // const renderSeatLayout = (layout) => {
+  //   const rows = 6;
+  //   const cols = 13;
+  //   const grid = [];
+  //
+  //   for (let i = 0; i < rows; i++) {
+  //     for (let j = 0; j < cols; j++) {
+  //       const seatId = `seat-${i}-${j}`;
+  //       const seatInfo = layout.seatDetails[seatId];
+  //
+  //       // Add seat (selected or empty) to the grid
+  //       grid.push(
+  //         seatInfo ? (
+  //           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1">
+  //             <SeatIcon status={seatInfo.status} />
+  //             {seatInfo?.seatNumber && (
+  //               <span style={{ left: "11px", fontWeight: "bold", color: "#FFFFFF" }} className="setpadding01 absolute text-xs font-medium cursor-pointer">
+  //                 {seatInfo.seatNumber}
+  //               </span>
+  //             )}
+  //           </div>
+  //         ) : (
+  //           <div key={seatId} >
+  //             <EmpltySeatIcon />
+  //           </div>
+  //         )
+  //       );
+  //     }
+  //   }
+  //
+  //   return (
+  //     <div
+  //       style={{
+  //         display: 'grid',
+  //         gridTemplateRows: `repeat(${rows}, 1fr)`,
+  //         gridTemplateColumns: `repeat(${cols}, 1fr)`,
+  //         // gap: '10px',
+  //         marginTop: '10px',
+  //         maxWidth: '800px',
+  //         maxHeight: '400px',
+  //       }}
+  //     >
+  //       {grid}
+  //     </div>
+  //   );
+  // };
   const renderSeatLayout = (layout) => {
     const rows = 6;
     const cols = 13;
@@ -694,44 +489,77 @@ const BusReport = () => {
 
         // Add seat (selected or empty) to the grid
         grid.push(
-          seatInfo ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1">
-              <SeatIcon status={seatInfo.status} />
-              {seatInfo?.seatNumber && (
-                <span style={{ left: "11px", fontWeight: "bold", color: "#FFFFFF" }} className="setpadding01 absolute text-xs font-medium cursor-pointer">
-                  {seatInfo.seatNumber}
-                </span>
-              )}
-            </div>
-          ) : (
-            <div key={seatId} >
-              <EmpltySeatIcon />
-            </div>
-          )
+            seatInfo ? (
+                <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    key={seatId}
+                    className="relative m-1"
+                >
+                  <SeatIcon status={seatInfo.status || "default"} />
+                  {seatInfo.seatNumber && (
+                      <span
+                          style={{
+                            left: "11px",
+                            fontWeight: "bold",
+                            color: "#FFFFFF",
+                          }}
+                          className="setpadding01 absolute text-xs font-medium cursor-pointer"
+                      >
+                {String(seatInfo.seatNumber)}
+              </span>
+                  )}
+                </div>
+            ) : (
+                <div key={seatId}>
+                  <EmpltySeatIcon />
+                </div>
+            )
         );
       }
     }
 
     return (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateRows: `repeat(${rows}, 1fr)`,
-          gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          // gap: '10px',
-          marginTop: '10px',
-          maxWidth: '800px',
-          maxHeight: '400px',
-        }}
-      >
-        {grid}
-      </div>
+        <div
+            style={{
+              display: 'grid',
+              gridTemplateRows: `repeat(${rows}, 1fr)`,
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              marginTop: '10px',
+              maxWidth: '800px',
+              maxHeight: '400px',
+            }}
+        >
+          {grid}
+        </div>
     );
   };
+
+ //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container component="main" maxWidth="lg">
+            
+        {/* <LoadingOverlay show={loading} /> */}
+        
+         {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                              setOpen={setAlert}/> : <></>}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
             Bus Schedule Report
@@ -839,35 +667,37 @@ const BusReport = () => {
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>Schedule No</TableCell>
-                  <TableCell>Start date</TableCell>
-                  <TableCell>Start Time</TableCell>
-                  <TableCell>Start Point</TableCell>
-                  <TableCell>End Point</TableCell>
-                  <TableCell>Route No</TableCell>
-                  <TableCell>Bus Type</TableCell>
-                  <TableCell>Bus No</TableCell>
-                  <TableCell>Conductor No</TableCell>
-                  <TableCell>Deport</TableCell>
-                  <TableCell align="center">Status</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                  <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
+                  <TableCell sx={{ py: 1 }}>Start date</TableCell>
+                  <TableCell sx={{ py: 1 }}>Start Time</TableCell>
+                  <TableCell sx={{ py: 1 }}>Start Point</TableCell>
+                  <TableCell sx={{ py: 1 }}>End Point</TableCell>
+                  <TableCell sx={{ py: 1 }}>Route No</TableCell>
+                  <TableCell sx={{ py: 1 }}>Bus Type</TableCell>
+                  <TableCell sx={{ py: 1 }}>Bus No</TableCell>
+                  <TableCell sx={{ py: 1 }}>Conductor No</TableCell>
+                  <TableCell sx={{ py: 1 }}>Deport</TableCell>
+                  <TableCell sx={{ py: 1 }} align="center">Status</TableCell>
+                  <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredSchedules.map((schedule) => (
+                {filteredSchedules
+                   .slice(startIndex, startIndex + rowsPerPage)
+                  .map((schedule) => (
                   <TableRow key={schedule.id}>
-                    <TableCell>{schedule.scheduleNo}</TableCell>
-                    <TableCell>{schedule.startDate}</TableCell>
-                    <TableCell>{schedule.startTime}</TableCell>
-                    <TableCell>{schedule.startPoint}</TableCell>
-                    <TableCell>{schedule.endPoint}</TableCell>
-                    <TableCell>{schedule.routeNo}</TableCell>
-                    <TableCell>{schedule.busType}</TableCell>
-                    <TableCell>{schedule.busNo}</TableCell>
-                    <TableCell>{schedule.conductorNo}</TableCell>
-                    <TableCell>{schedule.depot}</TableCell>
-                    <TableCell align="center">
+                    <TableCell sx={{ py: 0 }}>{schedule.scheduleNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.startDate}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.startTime}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.startPoint}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.endPoint}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.routeNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.busType}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.busNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.conductorNo}</TableCell>
+                    <TableCell sx={{ py: 0 }}>{schedule.depot}</TableCell>
+                    <TableCell sx={{ py: 0 }} align="center">
                       <Select
                         size="small"
                         value={schedule.tripStatus}
@@ -885,11 +715,14 @@ const BusReport = () => {
                         ))}
                       </Select>
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell sx={{ py: 0 }} align="right">
                       <IconButton onClick={() => handleView(schedule)}>
                         <VisibilityIcon />
                       </IconButton>
-                      {schedule?.bookings.length > 0 && (
+                      {schedule?.bookings.filter(booking => {
+                        const matchingBookings = schedule.bookings.filter(b => b.refNo === booking.refNo);
+                        return matchingBookings.length >= 2;
+                      }).length > 0 && (
                         <Button size="small" variant="contained" sx={{ ml: 1, height: 25 }} onClick={() => handleTransfer(schedule)}>
                           Transfer
                         </Button>
@@ -899,6 +732,15 @@ const BusReport = () => {
                 ))}
               </TableBody>
             </Table>
+                   <TablePagination
+                        component="div"
+                        count={filteredSchedules.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
           </TableContainer>
 
           <Modal
@@ -953,7 +795,7 @@ const BusReport = () => {
                   <Button
                     variant="contained"
                     color={selectedBus?.status === "opened" ? "secondary" : "primary"}
-                    onClick={handleBookingToggle(selectedBus?.status)}
+                    onClick={handleBookingToggle(selectedBus?.status,selectedBus)}
                   >
                     <span className="setpadding01">{selectedBus?.status === "opened" ? 'Close Booking' : 'Open Booking'}</span>
                   </Button>
@@ -1011,32 +853,34 @@ const BusReport = () => {
                   <TableContainer component={Paper}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow>
-                          <TableCell>Ref No</TableCell>
-                          <TableCell>Seat no</TableCell>
-                          <TableCell>V-Code</TableCell>
-                          <TableCell>Mode of Pay</TableCell>
-                          <TableCell>Route</TableCell>
-                          <TableCell>NIC</TableCell>
-                          <TableCell>Booked By</TableCell>
-                          <TableCell>Booked Date</TableCell>
+                        <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Ref No</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Seat no</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">V-Code</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Mode of Pay</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Route</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">NIC</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked By</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked Date</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {selectedBus?.bookings.map((booking, index) => (
+                        {selectedBus?.bookings
+                      .map((booking, index) => (
                           <TableRow key={index}>
-                            <TableCell>{booking.refNo}</TableCell>
-                            <TableCell>{booking.seatNo}</TableCell>
-                            <TableCell>{booking.vCode}</TableCell>
-                            <TableCell>{booking.modeOfPay}</TableCell>
-                            <TableCell>{booking.route}</TableCell>
-                            <TableCell>{booking.nic}</TableCell>
-                            <TableCell>{booking.bookedBy}</TableCell>
-                            <TableCell>{booking.bookedDate}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.refNo}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.seatNo}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.vCode}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.modeOfPay}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.route}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.nic}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedBy}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedDate}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
+
                   </TableContainer>
                 </div>
 
@@ -1046,28 +890,30 @@ const BusReport = () => {
                   <TableContainer component={Paper}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow>
-                          <TableCell>Booked By</TableCell>
-                          <TableCell>Mode of Pay</TableCell>
-                          <TableCell>Route</TableCell>
-                          <TableCell>Bus Fare</TableCell>
-                          <TableCell>No of Seats</TableCell>
-                          <TableCell align="right">Total Bus Fare</TableCell>
+                        <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked By</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Mode of Pay</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Route</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">Bus Fare</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01">No of Seats</TableCell>
+                          <TableCell sx={{ py: 1 }} className="setpadding01" align="right">Total Bus Fare</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {selectedBus?.summary.map((summary, index) => (
+                        {selectedBus?.summary
+                        .map((summary, index) => (
                           <TableRow key={index}>
-                            <TableCell>{summary.bookedBy}</TableCell>
-                            <TableCell>{summary.modeOfPay}</TableCell>
-                            <TableCell>{summary.route}</TableCell>
-                            <TableCell>{summary.busFare}</TableCell>
-                            <TableCell>{summary.noOfSeate}</TableCell>
-                            <TableCell align="right">{summary.totalBusFare}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.bookedBy}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.modeOfPay}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.route}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.busFare}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.noOfSeate}</TableCell>
+                            <TableCell sx={{ py: 0 }} className="setpadding01" align="right">{summary.totalBusFare}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
+
                   </TableContainer>
                 </div>
 

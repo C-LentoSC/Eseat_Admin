@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -16,6 +16,7 @@ import {
     IconButton,
     Stack,
     Chip,
+    TablePagination
 } from "@mui/material";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -25,24 +26,42 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from 'dayjs';
 import { setroutval } from "./DashboardLayoutAccount";
+import CustomAlert from "./Parts/CustomAlert";
+import api from "../model/API";
 
 // import CustomAlert from "./Parts/CustomAlert";
 
+// import LoadingOverlay from './Parts/LoadingOverlay';
+
 const CrewManagement = () => {
 
-    //   const BusID = sessionStorage.getItem('currentValueID');
+        // const [loading, setLoading] = useState(false);
+    // setLoading(true);
+    // setLoading(false);
+    
 
-    // const [alert, setAlert] = useState(null);
-    // const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    // const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const BusID = sessionStorage.getItem('currentValueID');
 
-    const details =
-    {
-        routID: 1,
-        ScheduleNum: "KN08-0600MC",
-        CityName: "Colombo-Ampara",
-    };
-
+    const [alert, setAlert] = useState(null);
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const [editMode, setEditMode] = useState(false)
+    const [details, setDetailes] =
+        useState({
+            routID: BusID,
+            ScheduleNum: "",
+            CityName: "",
+        });
+    useEffect(() => {
+        loadInfo()
+    }, []);
+    const loadInfo = () => {
+        api.get('admin/bus/crew/' + BusID + '/info')
+            .then(res => {
+                setDetailes(res.data.main)
+                setCrew(res.data.crew)
+            }).catch(handleError)
+    }
 
     const [crew, setCrew] = useState([]);
     const [openAdd, setOpenAdd] = useState(false);
@@ -51,11 +70,6 @@ const CrewManagement = () => {
     const [currentCrew, setCurrentCrew] = useState(null);
 
     const [formData, setFormData] = useState({
-        conductorName: "",
-        busNumber: "",
-        contactNo: "",
-        userName: "",
-        travelDate: dayjs(),
     });
 
     const handleDateSelect = (date) => {
@@ -69,21 +83,29 @@ const CrewManagement = () => {
     };
 
     const handleSave = () => {
+        let arr = []
         if (selectedDates.length > 0) {
             const newCrewEntries = selectedDates.map((date, index) => ({
-                id: Date.now() + index,
+                busId: BusID,
                 ...formData,
                 travelDate: date
             }));
-            setCrew([...crew, ...newCrewEntries]);
+            arr.push(...newCrewEntries)
         } else {
-            setCrew([...crew, {
-                id: Date.now(),
+
+            arr.push({
+                busId: BusID,
                 ...formData,
                 travelDate: dayjs(formData.travelDate).format('YYYY-MM-DD')
-            }]);
+            });
         }
-        handleCloseAdd();
+        arr.forEach(o => {
+            api.post('admin/bus/crew/add', o).then(res => {
+                sendAlert('new member added')
+                loadInfo()
+                handleCloseAdd();
+            }).catch(handleError)
+        })
     };
 
     const handleEdit = (item) => {
@@ -95,13 +117,20 @@ const CrewManagement = () => {
     };
 
     const handleSaveEdit = () => {
-        setCrew(crew.map(item =>
-            item.id === currentCrew.id ? {
-                ...currentCrew,
-                travelDate: dayjs(currentCrew.travelDate).format('YYYY-MM-DD')
-            } : item
-        ));
-        setOpenEdit(false);
+        // setCrew(crew.map(item =>
+        //     item.id === currentCrew.id ? {
+        //         ...currentCrew,
+        //         travelDate: dayjs(currentCrew.travelDate).format('YYYY-MM-DD')
+        //     } : item
+        // ));
+        api.post('admin/bus/crew/edit', {
+            ...currentCrew,
+            travelDate: dayjs(currentCrew.travelDate).format('YYYY-MM-DD')
+        }).then(res => {
+            sendAlert('updated')
+            loadInfo()
+            setOpenEdit(false);
+        }).catch(handleError)
     };
 
     const handleOpenAdd = () => setOpenAdd(true);
@@ -119,7 +148,11 @@ const CrewManagement = () => {
     };
 
     const handleDelete = (id) => {
-        setCrew(crew.filter(item => item.id !== id));
+        api.post('admin/bus/crew/delete', { id })
+            .then(res => {
+                sendAlert('deleted')
+                loadInfo()
+            }).catch(handleError)
     };
 
     const DateSelectionSection = () => (
@@ -147,18 +180,35 @@ const CrewManagement = () => {
     };
 
 
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Container maxWidth="lg">
+               
+                {/* <LoadingOverlay show={loading} /> */}
+                
+                 {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                    setOpen={setAlert} /> : <></>}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 3, py: 2 }}>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-  
+
                         <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                             <IconButton onClick={handleBackClick} sx={{ marginRight: "10px", padding: '0' }}>
                                 <ArrowBackIcon />
                             </IconButton>
                             <Typography variant="h5" sx={{ fontWeight: 600, display: 'flex' }}>
-                            Manage Crew (
+                                Manage Crew (
                                 <Typography variant="h6">
                                     {details.ScheduleNum} | {details.CityName}
                                 </Typography>
@@ -166,18 +216,18 @@ const CrewManagement = () => {
                             </Typography>
 
                         </Box>
-                        <Button variant="contained" onClick={handleOpenAdd} 
-                        sx={{
-                            padding: "6px 24px",
-                            fontWeight: "bold",
-                            borderRadius: "4px",
-                            height: "40px",
-                            backgroundColor: "#3f51b5",
-                            color: "#fff",
-                            "&:hover": {
-                                backgroundColor: "#303f9f",
-                            },
-                        }}>
+                        <Button variant="contained" onClick={handleOpenAdd}
+                            sx={{
+                                padding: "6px 24px",
+                                fontWeight: "bold",
+                                borderRadius: "4px",
+                                height: "40px",
+                                backgroundColor: "#3f51b5",
+                                color: "#fff",
+                                "&:hover": {
+                                    backgroundColor: "#303f9f",
+                                },
+                            }}>
                             Add New Crew
                         </Button>
                     </Box>
@@ -185,42 +235,53 @@ const CrewManagement = () => {
                     <TableContainer component={Paper}>
                         <Table>
                             <TableHead>
-                                <TableRow>
-                                    <TableCell>Conductor Name</TableCell>
-                                    <TableCell>Bus Number</TableCell>
-                                    <TableCell>Contact No</TableCell>
-                                    <TableCell>Travel Date</TableCell>
-                                    <TableCell>Username</TableCell>
-                                    <TableCell align="right">Actions</TableCell>
+                                <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                    <TableCell sx={{ py: 1 }}>Conductor Name</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Bus Number</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Contact No</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Travel Date</TableCell>
+                                    <TableCell sx={{ py: 1 }}>Username</TableCell>
+                                    <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {crew.map((item) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>{item.conductorName}</TableCell>
-                                        <TableCell>{item.busNumber}</TableCell>
-                                        <TableCell>{item.contactNo}</TableCell>
-                                        <TableCell>{item.travelDate}</TableCell>
-                                        <TableCell>{item.userName}</TableCell>
-                                        <TableCell align="right">
-                                            <IconButton
-                                                color="primary"
-                                                onClick={() => handleEdit(item)}
-                                                sx={{ marginRight: "8px" }}
-                                            >
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                color="error"
-                                                onClick={() => handleDelete(item.id)}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {crew
+                                    .slice(startIndex, startIndex + rowsPerPage)
+                                    .map((item) => (
+                                        <TableRow key={item.id}>
+                                            <TableCell sx={{ py: 0 }}>{item.conductorName}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>{item.busNumber}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>{item.contactNo}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>{item.travelDate}</TableCell>
+                                            <TableCell sx={{ py: 0 }}>{item.userName}</TableCell>
+                                            <TableCell sx={{ py: 0 }} align="right">
+                                                <IconButton
+                                                    color="primary"
+                                                    onClick={() => handleEdit(item)}
+                                                    sx={{ marginRight: "8px" }}
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton
+                                                    color="error"
+                                                    onClick={() => handleDelete(item.id)}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                             </TableBody>
                         </Table>
+                        <TablePagination
+                            component="div"
+                            count={crew.length}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            rowsPerPage={rowsPerPage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            rowsPerPageOptions={[10, 25, 50, 100]}
+                        />
                     </TableContainer>
 
                     {/* Add Modal */}

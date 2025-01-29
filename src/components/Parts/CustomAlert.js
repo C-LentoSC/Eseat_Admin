@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
@@ -18,12 +18,12 @@ import Stack from '@mui/material/Stack';
  * <CustomAlert severity="success" message="Operation completed successfully!" />
  * <CustomAlert severity="error" message="An error occurred." />
  */
-export default function CustomAlert({ severity = 'info', message }) {
-    const [open, setOpen] = useState(true);
+export default function CustomAlert({ severity = 'info', message,open,setOpen=()=>{} }) {
+    // const [open, setOpen] = useState(true);
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setOpen(false);
+            setOpen(null);
         }, 5000);
         return () => clearTimeout(timer);
     }, []);
@@ -53,7 +53,7 @@ export default function CustomAlert({ severity = 'info', message }) {
                     </IconButton>
                 }
             >
-                {message}
+                {message.charAt(0).toUpperCase() + message.slice(1)}
             </Alert>
         </Stack>
     );
@@ -70,4 +70,5 @@ CustomAlert.propTypes = {
      * The message content to display inside the alert.
      */
     message: PropTypes.string.isRequired,
+
 };
