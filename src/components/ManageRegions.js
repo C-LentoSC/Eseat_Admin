@@ -582,7 +582,6 @@ const ManageRegions = () => {
                                             <IconButton
                                                 color="primary"
                                                 onClick={() => handleOpen(region)}
-                                                sx={{ marginRight: "8px" }}
                                             >
                                                 <EditIcon />
                                             </IconButton>
