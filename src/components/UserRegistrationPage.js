@@ -214,7 +214,7 @@ const UserRegistrationPage = () => {
                                 label="Mobile Number"
                                 variant="outlined"
                                 required
-                                type="number"
+                                type="tel"
                                 InputProps={{
                                     startAdornment: (<InputAdornment position="start">
                                         <PhoneIcon />
