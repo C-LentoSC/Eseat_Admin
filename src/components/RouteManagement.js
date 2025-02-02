@@ -152,7 +152,7 @@ const RouteManagement = () => {
 
     // Export to CSV
     const handleExport = () => {
-        const csvData = routes.map((route) =>
+        const csvData = filteredRoute.map((route) =>
             [
                 route.routeNo,
                 route.startPoint,
