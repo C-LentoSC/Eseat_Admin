@@ -243,7 +243,7 @@ const BusSchedule = () => {
                     label="Travel Date"
                     value={formData.travelDate}
                     onChange={(date) => setFormData({...formData, travelDate: date})}
-                         minDate={new Date()}
+              
                 />
                 <DatePicker
                     label="End Date"
@@ -255,7 +255,7 @@ const BusSchedule = () => {
                     label="Closing Date"
                     value={formData.closingDate}
                     onChange={(date) => setFormData({...formData, closingDate: date})}
-                         minDate={new Date()}
+
                 />
             </Box>
             {enableMultiDates && (<Box sx={{border: 1, borderColor: 'divider', p: 2, borderRadius: 1}}>
