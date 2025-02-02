@@ -549,7 +549,7 @@ const RouteManagement = () => {
                                             <IconButton
                                                 color="primary"
                                                 onClick={() => handleOpen(route)}
-                                                sx={{ marginRight: "8px" }}
+                                                
                                             >
                                                 <EditIcon />
                                             </IconButton>
