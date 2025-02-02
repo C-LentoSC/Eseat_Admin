@@ -328,7 +328,6 @@ const ManageRegions = () => {
                                     variant="outlined"
                                     required
                                     value={mobile}
-                                    type="number"
                                     onChange={(e) => setMobile(e.target.value)}
                                     InputProps={{
                                         startAdornment: (
@@ -647,7 +646,6 @@ const ManageRegions = () => {
                             label="Mobile"
                             variant="outlined"
                             name="mobile"
-                            type="number"
                             value={currentRegion?.mobile || ""}
                             onChange={handleInputChange}
                             sx={{ marginBottom: "16px" }}
