@@ -318,7 +318,7 @@ const ManageFare = () => {
                                                 disabled
                                                 value={`LKR ${route.oldFare}`}
                                                 size="small"
-                                                sx={{ width: 150 }}
+                                                sx={{ width: 250 }}
                                             />
                                         </TableCell>
                                         <TableCell sx={{ py: 0 }} align="center">=</TableCell>
@@ -327,7 +327,7 @@ const ManageFare = () => {
                                                 value={route.newFare}
                                                 onChange={(e) => handleFareChange(route.id, e.target.value)}
                                                 size="small"
-                                                sx={{ width: 150 }}
+                                                sx={{ width: 250 }}
                                                 InputProps={{
                                                     startAdornment: <InputAdornment position="start">LKR</InputAdornment>
                                                 }}
