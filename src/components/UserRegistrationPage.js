@@ -383,6 +383,8 @@ const UserRegistrationPage = () => {
                     </TableBody>
                 </Table>
                 <TablePagination
+                    showFirstButton
+                    showLastButton
                     component="div"
                     count={users.length}
                     page={page}

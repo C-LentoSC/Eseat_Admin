@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
@@ -10,7 +10,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import CustomAlert from "./Parts/CustomAlert";
-import {api2 as api} from "../model/API";
+import { api2 as api } from "../model/API";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -27,10 +27,10 @@ const PendingBookings = () => {
 
 
     // Sample initial data
-    const [bookings,setBookings] = useState([]);
-    const loadAll=()=>{
+    const [bookings, setBookings] = useState([]);
+    const loadAll = () => {
         api.get('admin/bookings/get-pending')
-            .then(res=>{
+            .then(res => {
                 setBookings(res.data)
             })
             .catch(handleError)
@@ -112,8 +112,8 @@ const PendingBookings = () => {
     };
 
     const handleConfirmPayment = () => {
-        api.post('admin/bookings/confirm-booking', {id:selectedBooking.id,keys:Object.entries(selectedSeats).map((value) => value[0])})
-            .then(res=>{
+        api.post('admin/bookings/confirm-booking', { id: selectedBooking.id, keys: Object.entries(selectedSeats).map((value) => value[0]) })
+            .then(res => {
                 sendAlert("booking confirmed")
                 setModalOpen(false);
                 loadAll()
@@ -226,26 +226,26 @@ const PendingBookings = () => {
     };
 
 
-        //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
 
     return (
         <Container component="main" maxWidth="lg">
-           
+
             {/* <LoadingOverlay show={loading} /> */}
-            
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Pending Bookings (Live Updates)
@@ -463,50 +463,50 @@ const PendingBookings = () => {
                         </TableHead>
                         <TableBody>
                             {filteredBookings
-                             .slice(startIndex, startIndex + rowsPerPage)
-                             .map((booking) => (
-                                <TableRow key={booking.id}>
-                                    <TableCell sx={{ py: 0 }}>{booking.vCode}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.refNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.scheduleNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.route}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.seatDetails.map(s => s.seatNo).join(', ')}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.name}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.mobileNo}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.travelDate}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.bookBy}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.bookDate}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.netAmount}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{booking.paymentType}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <Chip
-                                            label={booking.bookingStatus}
-                                            color={booking.bookingStatus === 'Booked' ? 'success' : booking.bookingStatus === 'Pending' ? 'warning' : 'error'}
-                                            size="small"
-                                            sx={{ width: 80, height: 20, paddingTop: '2px' }}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <Chip
-                                            label={booking.paymentStatus}
-                                            color={booking.paymentStatus === 'Paid' ? 'success' : booking.paymentStatus === 'Pending' ? 'warning' : 'error'}
-                                            size="small"
-                                            sx={{ width: 80, height: 20, paddingTop: '2px' }}
-                                        />
-                                    </TableCell>
-                                    {selectedBookingStatus === 'Deleted' && <TableCell sx={{ py: 0 }}>{booking.deleteDate}</TableCell>}
-                                    <TableCell sx={{ py: 0 }} align='right'>
-                                        {/* {booking.seatDetails.some((s) => s.status === 'Pending') && (
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((booking) => (
+                                    <TableRow key={booking.id}>
+                                        <TableCell sx={{ py: 0 }}>{booking.vCode}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.refNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.scheduleNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.route}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.seatDetails.map(s => s.seatNo).join(', ')}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.name}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.mobileNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.travelDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.bookBy}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.bookDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.netAmount}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.paymentType}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <Chip
+                                                label={booking.bookingStatus}
+                                                color={booking.bookingStatus === 'Booked' ? 'success' : booking.bookingStatus === 'Pending' ? 'warning' : 'error'}
+                                                size="small"
+                                                sx={{ width: 80, height: 20, paddingTop: '2px' }}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <Chip
+                                                label={booking.paymentStatus}
+                                                color={booking.paymentStatus === 'Paid' ? 'success' : booking.paymentStatus === 'Pending' ? 'warning' : 'error'}
+                                                size="small"
+                                                sx={{ width: 80, height: 20, paddingTop: '2px' }}
+                                            />
+                                        </TableCell>
+                                        {selectedBookingStatus === 'Deleted' && <TableCell sx={{ py: 0 }}>{booking.deleteDate}</TableCell>}
+                                        <TableCell sx={{ py: 0 }} align='right'>
+                                            {/* {booking.seatDetails.some((s) => s.status === 'Pending') && (
                                             <IconButton onClick={() => handleViewPayment(booking)}>
                                                 <Visibility />
                                             </IconButton>
                                         )} */}
-                                        {booking.bookingStatus === 'Pending' && (
-                                            <IconButton onClick={() => handleViewPayment(booking)}>
-                                                <Visibility />
-                                            </IconButton>
-                                        )}
-                                        {/* {booking.bookingStatus === 'Deleted' && (
+                                            {booking.bookingStatus === 'Pending' && (
+                                                <IconButton onClick={() => handleViewPayment(booking)}>
+                                                    <Visibility />
+                                                </IconButton>
+                                            )}
+                                            {/* {booking.bookingStatus === 'Deleted' && (
                                             <>
                                                 <IconButton onClick={() => handleRestore(booking.id)} color="primary">
                                                     <RestoreFromTrash />
@@ -516,20 +516,22 @@ const PendingBookings = () => {
                                                 </IconButton>
                                             </>
                                         )} */}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                     <TablePagination
-                                            component="div"
-                                            count={filteredBookings.length}
-                                            page={page}
-                                            onPageChange={handleChangePage}
-                                            rowsPerPage={rowsPerPage}
-                                            onRowsPerPageChange={handleChangeRowsPerPage}
-                                            rowsPerPageOptions={[10, 25, 50, 100]}
-                                        />
+                    <TablePagination
+                        showFirstButton
+                        showLastButton
+                        component="div"
+                        count={filteredBookings.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
 
 
@@ -570,43 +572,45 @@ const PendingBookings = () => {
                                 </TableHead>
                                 <TableBody>
                                     {selectedBooking?.seatDetails
-                                     .slice(startIndex, startIndex + rowsPerPage)
-                                     .map((seat) => (
-                                        <TableRow key={seat.seatNo}>
-                                            <TableCell sx={{ py: 0 }}>{seat.seatNo}</TableCell>
-                                            <TableCell sx={{ py: 0 }}>{seat.seatCost}</TableCell>
-                                            <TableCell sx={{ py: 0 }}>{seat.serviceCharge}</TableCell>
-                                            <TableCell sx={{ py: 0 }}>{seat.vat}</TableCell>
-                                            <TableCell sx={{ py: 0 }}>{seat.discount}</TableCell>
-                                            <TableCell sx={{ py: 0 }}>{seat.otherCharges}</TableCell>
-                                            <TableCell sx={{ py: 0 }}>
-                                                {seat.status === 'Pending' ? (
-                                                    <Checkbox
-                                                        checked={selectedSeats[seat.seatNo] || false}
-                                                        onChange={() => handleSeatSelect(seat.seatNo)}
-                                                    />
-                                                ) : (
-                                                    <IconButton
-                                                    color="success"
-                                                    >
-                                                        <CheckCircle />
-                                                    </IconButton>
-                                                )}
+                                        .slice(startIndex, startIndex + rowsPerPage)
+                                        .map((seat) => (
+                                            <TableRow key={seat.seatNo}>
+                                                <TableCell sx={{ py: 0 }}>{seat.seatNo}</TableCell>
+                                                <TableCell sx={{ py: 0 }}>{seat.seatCost}</TableCell>
+                                                <TableCell sx={{ py: 0 }}>{seat.serviceCharge}</TableCell>
+                                                <TableCell sx={{ py: 0 }}>{seat.vat}</TableCell>
+                                                <TableCell sx={{ py: 0 }}>{seat.discount}</TableCell>
+                                                <TableCell sx={{ py: 0 }}>{seat.otherCharges}</TableCell>
+                                                <TableCell sx={{ py: 0 }}>
+                                                    {seat.status === 'Pending' ? (
+                                                        <Checkbox
+                                                            checked={selectedSeats[seat.seatNo] || false}
+                                                            onChange={() => handleSeatSelect(seat.seatNo)}
+                                                        />
+                                                    ) : (
+                                                        <IconButton
+                                                            color="success"
+                                                        >
+                                                            <CheckCircle />
+                                                        </IconButton>
+                                                    )}
 
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                 </TableBody>
                             </Table>
-                             <TablePagination
-                                                    component="div"
-                                                    count={selectedBooking?.seatDetails.length}
-                                                    page={page}
-                                                    onPageChange={handleChangePage}
-                                                    rowsPerPage={rowsPerPage}
-                                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                                    rowsPerPageOptions={[10, 25, 50, 100]}
-                                                />
+                            <TablePagination
+                                showFirstButton
+                                showLastButton
+                                component="div"
+                                count={selectedBooking?.seatDetails.length}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                rowsPerPage={rowsPerPage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                rowsPerPageOptions={[10, 25, 50, 100]}
+                            />
                         </TableContainer>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                             <Button

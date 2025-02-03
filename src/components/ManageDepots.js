@@ -29,7 +29,7 @@ import CustomAlert from "./Parts/CustomAlert";
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ManageDepots = () => {
-    
+
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
@@ -203,9 +203,9 @@ const ManageDepots = () => {
 
     const filteredoption = depots.filter(option => {
         const nameMatch = !filterRegion || option.region.toLowerCase().includes(filterRegion.toLowerCase());
-        const nameMatch2 = !filterDepotName|| option.depotName.toLowerCase().includes(filterDepotName.toLowerCase());
-        const nameMatch3 = !filterDSName|| option.dsName.toLowerCase().includes(filterDSName.toLowerCase());
-        const nameMatch4 = !filterMobile|| option.mobile.toLowerCase().includes(filterMobile.toLowerCase());
+        const nameMatch2 = !filterDepotName || option.depotName.toLowerCase().includes(filterDepotName.toLowerCase());
+        const nameMatch3 = !filterDSName || option.dsName.toLowerCase().includes(filterDSName.toLowerCase());
+        const nameMatch4 = !filterMobile || option.mobile.toLowerCase().includes(filterMobile.toLowerCase());
         return nameMatch && nameMatch2 && nameMatch3 && nameMatch4;
     });
 
@@ -224,10 +224,10 @@ const ManageDepots = () => {
 
     return (
         <Container component="main" maxWidth="lg">
-           
+
             {/* <LoadingOverlay show={loading} /> */}
-            
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
@@ -573,6 +573,8 @@ const ManageDepots = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredoption.length}
                         page={page}

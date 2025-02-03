@@ -27,7 +27,7 @@ import api from "../model/API";
 
 const ActiveRouteManagement = () => {
 
-        // const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
 
@@ -107,10 +107,10 @@ const ActiveRouteManagement = () => {
     return (
         <Container component="main" maxWidth="lg">
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                
+
                 {/* <LoadingOverlay show={loading} /> */}
-                
-                 {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+
+                {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                     setOpen={setAlert} /> : <></>}
                 {/* Table Section */}
 
@@ -222,6 +222,8 @@ const ActiveRouteManagement = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredRoute.length}
                         page={page}

@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     Box,
     Button,
@@ -39,22 +39,22 @@ const ManageBreakFare = () => {
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // const [selectedBusType, setSelectedBusType] = useState(null);
-        const fileInputRef = useRef();
+    const fileInputRef = useRef();
     const [percentage, setPercentage] = useState('');
 
     const [breaks, setBreaks] = useState([
 
     ]);
-    const loadAll=()=>{
+    const loadAll = () => {
         api.get('admin/bulk-fare/get-all-brake')
-            .then(res=>{
+            .then(res => {
                 setBreaks(res.data)
             })
             .catch(handleError)
     }
     useEffect(() => {
         loadAll();
-    },[])
+    }, [])
 
     // const busTypes = ["Express", "Semi-Express", "Normal"];
 
@@ -70,7 +70,7 @@ const ManageBreakFare = () => {
     };
 
     const handleBreakFareChange = (id, value) => {
-       setBreaks(breaks.map(breakRoute =>
+        setBreaks(breaks.map(breakRoute =>
             breakRoute.id === id ? { ...breakRoute, newFare: parseInt(value) || 0 } : breakRoute
         ));
     };
@@ -126,33 +126,33 @@ const ManageBreakFare = () => {
 
 
     const handleSave = () => {
-        api.post('admin/bulk-fare/save-brake', {breaks})
-            .then(res=>{
+        api.post('admin/bulk-fare/save-brake', { breaks })
+            .then(res => {
                 sendAlert('fare brake saved');
                 loadAll()
             })
             .catch(handleError)
     };
 
-        //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
     return (
         <Container maxWidth="lg">
-         
-          {/* <LoadingOverlay show={loading} /> */}
-          
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
+
+            {/* <LoadingOverlay show={loading} /> */}
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
@@ -242,7 +242,7 @@ const ManageBreakFare = () => {
                     </Box>
 
                     <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-                    <input
+                        <input
                             type="file"
                             accept=".csv"
                             ref={fileInputRef}
@@ -307,43 +307,45 @@ const ManageBreakFare = () => {
                             </TableHead>
                             <TableBody>
                                 {breaks
-                                .slice(startIndex, startIndex + rowsPerPage)
-                                .map((breakRoute) => (
-                                    <TableRow key={breakRoute.id}>
-                                        <TableCell sx={{ py: 0 }}>{breakRoute.name}</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
-                                            <TextField
-                                                disabled
-                                                value={`LKR ${breakRoute.oldFare}`}
-                                                size="small"
-                                                sx={{ width: 250 }}
-                                            />
-                                        </TableCell>
-                                        <TableCell sx={{ py: 0 }} align="center">=</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
-                                            <TextField
-                                                value={breakRoute.newFare}
-                                                onChange={(e) => handleBreakFareChange(breakRoute.id, e.target.value)}
-                                                size="small"
-                                                sx={{ width: 250 }}
-                                                InputProps={{
-                                                    startAdornment: <InputAdornment position="start">LKR</InputAdornment>
-                                                }}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                    .slice(startIndex, startIndex + rowsPerPage)
+                                    .map((breakRoute) => (
+                                        <TableRow key={breakRoute.id}>
+                                            <TableCell sx={{ py: 0 }}>{breakRoute.name}</TableCell>
+                                            <TableCell sx={{ py: 0 }} align="right">
+                                                <TextField
+                                                    disabled
+                                                    value={`LKR ${breakRoute.oldFare}`}
+                                                    size="small"
+                                                    sx={{ width: 250 }}
+                                                />
+                                            </TableCell>
+                                            <TableCell sx={{ py: 0 }} align="center">=</TableCell>
+                                            <TableCell sx={{ py: 0 }} align="right">
+                                                <TextField
+                                                    value={breakRoute.newFare}
+                                                    onChange={(e) => handleBreakFareChange(breakRoute.id, e.target.value)}
+                                                    size="small"
+                                                    sx={{ width: 250 }}
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position="start">LKR</InputAdornment>
+                                                    }}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                             </TableBody>
                         </Table>
-                          <TablePagination
-                                                component="div"
-                                                count={breaks.length}
-                                                page={page}
-                                                onPageChange={handleChangePage}
-                                                rowsPerPage={rowsPerPage}
-                                                onRowsPerPageChange={handleChangeRowsPerPage}
-                                                rowsPerPageOptions={[10, 25, 50, 100]}
-                                            />
+                        <TablePagination
+                            showFirstButton
+                            showLastButton
+                            component="div"
+                            count={breaks.length}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            rowsPerPage={rowsPerPage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            rowsPerPageOptions={[10, 25, 50, 100]}
+                        />
                     </TableContainer>
                 </Paper>
             </Box>

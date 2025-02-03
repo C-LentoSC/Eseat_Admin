@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Stack,
@@ -12,7 +12,7 @@ import CustomAlert from "./Parts/CustomAlert";
 
 const BulkBusManagement = () => {
 
-        // const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
 
@@ -30,8 +30,8 @@ const BulkBusManagement = () => {
         loadAllBus()
     }, []);
     const [alert, setAlert] = useState(null)
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
     // Filter states
@@ -62,17 +62,17 @@ const BulkBusManagement = () => {
 
     // Handle bulk status updates
     const handleBulkStatusUpdate = (statusType) => {
-        let obg = {statusType,filteredBuses}
+        let obg = { statusType, filteredBuses }
 
         switch (statusType) {
             case 'online':
-                obg = {...obg, status: bulkOnlineStatus}
+                obg = { ...obg, status: bulkOnlineStatus }
                 break
             case 'agent':
-                obg = {...obg, status: bulkAgentStatus}
+                obg = { ...obg, status: bulkAgentStatus }
                 break
             case 'main':
-                obg = {...obg, status: bulkMainBusStatus}
+                obg = { ...obg, status: bulkMainBusStatus }
                 break
             default:
                 break
@@ -86,16 +86,16 @@ const BulkBusManagement = () => {
 
     // Handle individual status updates
     const handleStatusChange = (id, statusType) => {
-        let obg = {id, statusType}
+        let obg = { id, statusType }
         switch (statusType) {
             case 'online':
-                obg = {...obg, status: bulkOnlineStatus}
+                obg = { ...obg, status: bulkOnlineStatus }
                 break
             case 'agent':
-                obg = {...obg, status: bulkAgentStatus}
+                obg = { ...obg, status: bulkAgentStatus }
                 break
             case 'main':
-                obg = {...obg, status: bulkMainBusStatus}
+                obg = { ...obg, status: bulkMainBusStatus }
                 break
             default:
                 break
@@ -107,7 +107,7 @@ const BulkBusManagement = () => {
             .catch(handleError)
     };
 
-        //Pagination
+    //Pagination
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const handleChangePage = (event, newPage) => {
@@ -123,17 +123,17 @@ const BulkBusManagement = () => {
     return (
         <Container component="main" maxWidth="lg">
 
-             {/* <LoadingOverlay show={loading} /> */}
+            {/* <LoadingOverlay show={loading} /> */}
 
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
-            <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
-                <Typography variant="h5" sx={{fontWeight: 600, mb: 3}}>
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                setOpen={setAlert} /> : <></>}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Bulk Manage of Buses
                 </Typography>
 
                 {/* Filters */}
-                <Grid container spacing={2} sx={{mb: 0}}>
+                <Grid container spacing={2} sx={{ mb: 0 }}>
                     <Grid item xs={12} sm={6} md={3}>
                         <Autocomplete
                             value={selectedDepot}
@@ -245,12 +245,12 @@ const BulkBusManagement = () => {
                 </Grid>
 
                 {/* Bulk Actions */}
-                <Paper sx={{p: 1}}>
+                <Paper sx={{ p: 1 }}>
                     <Stack spacing={2}>
 
                         <Grid container spacing={0}>
                             <Grid item xs={12} sm={4}>
-                                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                     <FormControlLabel
                                         control={
                                             <Switch
@@ -280,7 +280,7 @@ const BulkBusManagement = () => {
                                 </Box>
                             </Grid>
                             <Grid item xs={12} sm={4}>
-                                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                     <FormControlLabel
                                         control={
                                             <Switch
@@ -309,7 +309,7 @@ const BulkBusManagement = () => {
                                 </Box>
                             </Grid>
                             <Grid item xs={12} sm={4}>
-                                <Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                     <FormControlLabel
                                         control={
                                             <Switch
@@ -345,7 +345,7 @@ const BulkBusManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                                 <TableCell sx={{ py: 1 }}>Depot</TableCell>
                                 <TableCell sx={{ py: 1 }}>Region</TableCell>
                                 <TableCell sx={{ py: 1 }}>Route</TableCell>
@@ -358,52 +358,54 @@ const BulkBusManagement = () => {
                         </TableHead>
                         <TableBody>
                             {filteredBuses
-                              .slice(startIndex, startIndex + rowsPerPage)
-                    .map((bus) => (
-                                <TableRow key={bus.id}>
-                                    <TableCell sx={{ py: 0 }}>{bus.depot}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{bus.region}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{bus.route}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{bus.busType}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{bus.scheduleNumber}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={bus.onlineBookingStatus}
-                                                    onChange={() => handleStatusChange(bus.id, 'online')}
-                                                />
-                                            }
-                                            label={bus.onlineBookingStatus ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={bus.agentBookingStatus}
-                                                    onChange={() => handleStatusChange(bus.id, 'agent')}
-                                                />
-                                            }
-                                            label={bus.agentBookingStatus ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={bus.mainBusStatus}
-                                                    onChange={() => handleStatusChange(bus.id, 'main')}
-                                                />
-                                            }
-                                            label={bus.mainBusStatus ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((bus) => (
+                                    <TableRow key={bus.id}>
+                                        <TableCell sx={{ py: 0 }}>{bus.depot}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{bus.region}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{bus.route}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{bus.busType}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{bus.scheduleNumber}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={bus.onlineBookingStatus}
+                                                        onChange={() => handleStatusChange(bus.id, 'online')}
+                                                    />
+                                                }
+                                                label={bus.onlineBookingStatus ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={bus.agentBookingStatus}
+                                                        onChange={() => handleStatusChange(bus.id, 'agent')}
+                                                    />
+                                                }
+                                                label={bus.agentBookingStatus ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={bus.mainBusStatus}
+                                                        onChange={() => handleStatusChange(bus.id, 'main')}
+                                                    />
+                                                }
+                                                label={bus.mainBusStatus ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                                 <TablePagination
+                    <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredBuses.length}
                         page={page}

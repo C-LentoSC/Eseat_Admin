@@ -36,11 +36,11 @@ import CustomAlert from "./Parts/CustomAlert";
 
 const BusManagement = () => {
 
-        // const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
 
-    
+
     const DepotID = sessionStorage.getItem('currentValueID');
     // const DepotID = 2;
 
@@ -259,7 +259,7 @@ const BusManagement = () => {
                 others: oi
             },
             layoutId: selectedLayout?.id,
-            bookactivity:newBus.bookactivity??{}
+            bookactivity: newBus.bookactivity ?? {}
         };
         if (editMode) api.post('admin/bus/edit', formattedBus, { headers: { "Content-Type": "multipart/form-data" } })
             .then(res => {
@@ -628,7 +628,7 @@ const BusManagement = () => {
             <Grid item xs={12} sm={6}>
                 <FormControlLabel
                     control={<Checkbox
-                        checked={newBus.bookactivity.online||false}
+                        checked={newBus.bookactivity.online || false}
                         onChange={(e) => setNewBus(prev => ({
                             ...prev, bookactivity: {
                                 ...prev.bookactivity, online: e.target.checked
@@ -641,7 +641,7 @@ const BusManagement = () => {
             <Grid item xs={12} sm={6}>
                 <FormControlLabel
                     control={<Checkbox
-                        checked={newBus.bookactivity.counter||false}
+                        checked={newBus.bookactivity.counter || false}
                         onChange={(e) => setNewBus(prev => ({
                             ...prev, bookactivity: {
                                 ...prev.bookactivity, counter: e.target.checked
@@ -916,8 +916,8 @@ const BusManagement = () => {
     return (<Container component="main" maxWidth="lg">
 
         {/* <LoadingOverlay show={loading} /> */}
-        
-         {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+
+        {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
             setOpen={setAlert} /> : <></>}
 
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
@@ -1060,6 +1060,8 @@ const BusManagement = () => {
                     </TableBody>
                 </Table>
                 <TablePagination
+                    showFirstButton
+                    showLastButton
                     component="div"
                     count={filteredBuses.length}
                     page={page}
@@ -1085,34 +1087,34 @@ const BusManagement = () => {
             <Modal
                 open={addModalOpen}
                 onClose={() => {
-                setNewBus({
-                    scheduleNumber: "",
-                    busType: "",
-                    route: "",
-                    routeNo: "",
-                    seats: "",
-                    busModel: "",
-                    status: true,
-                    paymentMethods: {
-                        card: false, cash: false, bank: false, ezcash: false, reload: false
-                    },
-                    bookactivity: {
-                        online: false, counter: false
-                    },
-                    facilities: {
-                        wifi: false, usb: false, seatBelt: false, phoneCharger: false
-                    },
-                    settings: {
-                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
-                    }
-                });
-                setEditMode(false)
-                setSelectedLayout(null);
-                setMainImage(null);
-                setOtherImages([]);
-                setSelectedFacilities([])
-                setRouteData(null);
-                setAddModalOpen(false);
+                    setNewBus({
+                        scheduleNumber: "",
+                        busType: "",
+                        route: "",
+                        routeNo: "",
+                        seats: "",
+                        busModel: "",
+                        status: true,
+                        paymentMethods: {
+                            card: false, cash: false, bank: false, ezcash: false, reload: false
+                        },
+                        bookactivity: {
+                            online: false, counter: false
+                        },
+                        facilities: {
+                            wifi: false, usb: false, seatBelt: false, phoneCharger: false
+                        },
+                        settings: {
+                            onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
+                        }
+                    });
+                    setEditMode(false)
+                    setSelectedLayout(null);
+                    setMainImage(null);
+                    setOtherImages([]);
+                    setSelectedFacilities([])
+                    setRouteData(null);
+                    setAddModalOpen(false);
                 }}
             >
                 <Box sx={{
@@ -1151,34 +1153,34 @@ const BusManagement = () => {
                             variant="contained"
                             color="secondary"
                             onClick={() => {
-                               setNewBus({
-                    scheduleNumber: "",
-                    busType: "",
-                    route: "",
-                    routeNo: "",
-                    seats: "",
-                    busModel: "",
-                    status: true,
-                    paymentMethods: {
-                        card: false, cash: false, bank: false, ezcash: false, reload: false
-                    },
-                    bookactivity: {
-                        online: false, counter: false
-                    },
-                    facilities: {
-                        wifi: false, usb: false, seatBelt: false, phoneCharger: false
-                    },
-                    settings: {
-                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
-                    }
-                });
-                setEditMode(false)
-                setSelectedLayout(null);
-                setMainImage(null);
-                setOtherImages([]);
-                setSelectedFacilities([])
-                setRouteData(null);
-                setAddModalOpen(false);
+                                setNewBus({
+                                    scheduleNumber: "",
+                                    busType: "",
+                                    route: "",
+                                    routeNo: "",
+                                    seats: "",
+                                    busModel: "",
+                                    status: true,
+                                    paymentMethods: {
+                                        card: false, cash: false, bank: false, ezcash: false, reload: false
+                                    },
+                                    bookactivity: {
+                                        online: false, counter: false
+                                    },
+                                    facilities: {
+                                        wifi: false, usb: false, seatBelt: false, phoneCharger: false
+                                    },
+                                    settings: {
+                                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
+                                    }
+                                });
+                                setEditMode(false)
+                                setSelectedLayout(null);
+                                setMainImage(null);
+                                setOtherImages([]);
+                                setSelectedFacilities([])
+                                setRouteData(null);
+                                setAddModalOpen(false);
                             }}
                             sx={{ backgroundColor: 'gray' }}
                         >

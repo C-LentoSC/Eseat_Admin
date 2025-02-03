@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Button,
@@ -17,10 +17,10 @@ import api from "../model/API";
 
 const AgentManagement = () => {
 
-        // const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
-    
+
     const [agents, setAgents] = useState([]);
 
     const initialAgentState = {
@@ -79,8 +79,8 @@ const AgentManagement = () => {
         loadAllAgents()
     }, []);
     const handleDelete = (agent) => {
-        api.post('admin/agent/delete',agent)
-            .then(res=>{
+        api.post('admin/agent/delete', agent)
+            .then(res => {
                 loadAllAgents()
             })
             .catch(handleError)
@@ -118,7 +118,7 @@ const AgentManagement = () => {
     };
 
     const handleBusAssignment = useCallback((agent) => {
-        setSelectedAgent({...agent});
+        setSelectedAgent({ ...agent });
         setBusModalOpen(true);
     }, []);
 
@@ -143,11 +143,11 @@ const AgentManagement = () => {
     const removeBus = useCallback((busId) => {
 
         const updatedAgent = {
-            id:selectedAgent.id,
+            id: selectedAgent.id,
             busId: busId
         }
-        api.post('admin/agent/remove-bus',updatedAgent)
-            .then(res=>{
+        api.post('admin/agent/remove-bus', updatedAgent)
+            .then(res => {
                 loadAllAgents()
             })
             .catch(handleError)
@@ -165,11 +165,11 @@ const AgentManagement = () => {
         return availableBuses.filter(bus => !assignedBusIds.includes(bus.id));
     };
     const [alert, setAlert] = useState(null)
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
-        //Pagination
+    //Pagination
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const handleChangePage = (event, newPage) => {
@@ -181,17 +181,17 @@ const AgentManagement = () => {
     };
     const startIndex = page * rowsPerPage;
     //End Pagination
-    
+
     return (
         <Container component="main" maxWidth="lg">
-           
+
             {/* <LoadingOverlay show={loading} /> */}
-            
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
-            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
-                <Box sx={{display: "flex", alignItems: "center", mb: 3}}>
-                    <Typography variant="h5" sx={{fontWeight: 600}}>
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                setOpen={setAlert} /> : <></>}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
                         Agent Management
                     </Typography>
                 </Box>
@@ -206,7 +206,7 @@ const AgentManagement = () => {
                     flexWrap: "wrap",
                     gap: 2
                 }}>
-                    <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
                         <TextField
                             label="Agent Name"
                             value={selectedName}
@@ -264,8 +264,8 @@ const AgentManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
-                             <TableCell sx={{ py: 1 }}>Agent ID</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Agent ID</TableCell>
                                 <TableCell sx={{ py: 1 }}>Agent Name</TableCell>
                                 <TableCell sx={{ py: 1 }}>Mobile Number</TableCell>
                                 <TableCell sx={{ py: 1 }}>Username</TableCell>
@@ -275,56 +275,58 @@ const AgentManagement = () => {
                         </TableHead>
                         <TableBody>
                             {filteredAgents
-                               .slice(startIndex, startIndex + rowsPerPage)
-                            .map((agent) => (
-                                <TableRow key={agent.id}>
-                                    <TableCell sx={{ py: 0 }}>{agent.id}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{agent.name}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{agent.mobile}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{agent.username}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={agent.status}
-                                                    onChange={() => {
-                                                        api.post('admin/agent/toggle-status',agent)
-                                                            .then(res=>{
-                                                                loadAllAgents()
-                                                            })
-                                                            .catch(handleError)
-                                                    }}
-                                                />
-                                            }
-                                            label={agent.status ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{ py: 0 }} align="right">
-                                        <IconButton
-                                            sx={{color: 'green'}}
-                                            onClick={() => handleBusAssignment(agent)}
-                                        >
-                                            <DirectionsBusIcon/>
-                                        </IconButton>
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((agent) => (
+                                    <TableRow key={agent.id}>
+                                        <TableCell sx={{ py: 0 }}>{agent.id}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{agent.name}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{agent.mobile}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{agent.username}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={agent.status}
+                                                        onChange={() => {
+                                                            api.post('admin/agent/toggle-status', agent)
+                                                                .then(res => {
+                                                                    loadAllAgents()
+                                                                })
+                                                                .catch(handleError)
+                                                        }}
+                                                    />
+                                                }
+                                                label={agent.status ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton
+                                                sx={{ color: 'green' }}
+                                                onClick={() => handleBusAssignment(agent)}
+                                            >
+                                                <DirectionsBusIcon />
+                                            </IconButton>
 
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleEdit(agent)}
-                                        >
-                                            <EditIcon/>
-                                        </IconButton>
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDelete(agent)}
-                                        >
-                                            <DeleteIcon/>
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleEdit(agent)}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleDelete(agent)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                                 <TablePagination
+                    <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredAgents.length}
                         page={page}
@@ -350,7 +352,7 @@ const AgentManagement = () => {
                         bgcolor: 'background.paper',
                         boxShadow: 24,
                         p: 4,
-                           borderRadius: "10px",
+                        borderRadius: "10px",
                         border: "2px solid gray"
                     }}>
                         <Typography variant="h6" gutterBottom>
@@ -363,7 +365,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="Agent Name"
                                     value={newAgent.name}
-                                    onChange={(e) => setNewAgent(prev => ({...prev, name: e.target.value}))}
+                                    onChange={(e) => setNewAgent(prev => ({ ...prev, name: e.target.value }))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -371,7 +373,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="Mobile Number"
                                     value={newAgent.mobile}
-                                    onChange={(e) => setNewAgent(prev => ({...prev, mobile: e.target.value}))}
+                                    onChange={(e) => setNewAgent(prev => ({ ...prev, mobile: e.target.value }))}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -379,7 +381,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="Address"
                                     value={newAgent.address}
-                                    onChange={(e) => setNewAgent(prev => ({...prev, address: e.target.value}))}
+                                    onChange={(e) => setNewAgent(prev => ({ ...prev, address: e.target.value }))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -387,7 +389,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="NIC"
                                     value={newAgent.nic}
-                                    onChange={(e) => setNewAgent(prev => ({...prev, nic: e.target.value}))}
+                                    onChange={(e) => setNewAgent(prev => ({ ...prev, nic: e.target.value }))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -395,7 +397,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="SMS Sender ID"
                                     value={newAgent.smsId}
-                                    onChange={(e) => setNewAgent(prev => ({...prev, smsId: e.target.value}))}
+                                    onChange={(e) => setNewAgent(prev => ({ ...prev, smsId: e.target.value }))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -403,7 +405,7 @@ const AgentManagement = () => {
                                     fullWidth
                                     label="Username"
                                     value={newAgent.username}
-                                    onChange={(e) => setNewAgent(prev => ({...prev, username: e.target.value}))}
+                                    onChange={(e) => setNewAgent(prev => ({ ...prev, username: e.target.value }))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -412,36 +414,36 @@ const AgentManagement = () => {
                                     type="password"
                                     label="Password"
                                     value={newAgent.password}
-                                    onChange={(e) => setNewAgent(prev => ({...prev, password: e.target.value}))}
+                                    onChange={(e) => setNewAgent(prev => ({ ...prev, password: e.target.value }))}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Autocomplete
                                     value={newAgent.agentType}
-                                    onChange={(_, value) => setNewAgent(prev => ({...prev, agentType: value}))}
+                                    onChange={(_, value) => setNewAgent(prev => ({ ...prev, agentType: value }))}
                                     options={agentTypes}
-                                    renderInput={(params) => <TextField {...params} label="Agent Type"/>}
+                                    renderInput={(params) => <TextField {...params} label="Agent Type" />}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <Autocomplete
                                     multiple
                                     value={newAgent.paymentMethods}
-                                    onChange={(_, value) => setNewAgent(prev => ({...prev, paymentMethods: value}))}
+                                    onChange={(_, value) => setNewAgent(prev => ({ ...prev, paymentMethods: value }))}
                                     options={paymentMethodOptions}
-                                    renderInput={(params) => <TextField {...params} label="Payment Methods"/>}
+                                    renderInput={(params) => <TextField {...params} label="Payment Methods" />}
                                 />
                             </Grid>
                         </Grid>
 
 
-                        <Grid item xs={12} sx={{mt: 3}}>
-                            <Box sx={{display: "flex", justifyContent: "flex-end"}}>
+                        <Grid item xs={12} sx={{ mt: 3 }}>
+                            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                                 <Button
                                     variant="contained"
                                     color="primary"
                                     onClick={handleSaveAgent}
-                                    sx={{marginRight: "8px"}}
+                                    sx={{ marginRight: "8px" }}
                                 >
                                     {newAgent.id ? 'Update' : 'Save'}
                                 </Button>
@@ -484,12 +486,12 @@ const AgentManagement = () => {
                         border: "2px solid gray"
                     }}>
                         <Stack spacing={3}>
-                            <Typography variant="h5" sx={{fontWeight: 600}}>
+                            <Typography variant="h5" sx={{ fontWeight: 600 }}>
                                 Manage Bus Assignments
                             </Typography>
 
                             <Box>
-                                <Typography variant="subtitle1" sx={{mb: 2, fontWeight: 500}}>
+                                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
                                     Assign New Bus:
                                 </Typography>
                                 <Stack direction="row" spacing={2} alignItems="center">
@@ -518,24 +520,24 @@ const AgentManagement = () => {
                                                 }}
                                             />
                                         )}
-                                        sx={{flex: 1}}
+                                        sx={{ flex: 1 }}
                                     />
                                     <Button
                                         variant="contained"
                                         onClick={() => assignBus(selectedBus)}
                                         disabled={!selectedBus}
-                                        sx={{height: '40px'}}
-                                        startIcon={<BusIcon/>}
+                                        sx={{ height: '40px' }}
+                                        startIcon={<BusIcon />}
                                     >
                                         Assign Bus
                                     </Button>
                                 </Stack>
                             </Box>
 
-                            <Divider/>
+                            <Divider />
 
                             <Box>
-                                <Typography variant="subtitle1" sx={{mb: 2, fontWeight: 500}}>
+                                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
                                     Currently Assigned Buses:
                                 </Typography>
                                 <Grid container spacing={2}>
@@ -562,11 +564,11 @@ const AgentManagement = () => {
                                                         color: 'error.main'
                                                     }}
                                                 >
-                                                    <CloseIcon/>
+                                                    <CloseIcon />
                                                 </IconButton>
                                                 <Stack spacing={1}>
-                                                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                                                        <BusIcon color="primary"/>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        <BusIcon color="primary" />
                                                         <Typography variant="subtitle2" color="primary">
                                                             {bus.route}
                                                         </Typography>
@@ -581,8 +583,8 @@ const AgentManagement = () => {
                                 </Grid>
                             </Box>
 
-                            <Grid item xs={12} sx={{mt: 3}}>
-                                <Box sx={{display: "flex", justifyContent: "flex-end"}}>
+                            <Grid item xs={12} sx={{ mt: 3 }}>
+                                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                                     <Button
                                         variant="contained"
                                         onClick={() => setBusModalOpen(false)}

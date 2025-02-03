@@ -26,7 +26,7 @@ import CustomAlert from "./Parts/CustomAlert";
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ManageBusFacilities = () => {
-    
+
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
@@ -153,10 +153,10 @@ const ManageBusFacilities = () => {
     //End Pagination
     return (
         <Container component="main" maxWidth="lg" sx={{ py: 0 }}>
-            
-             {/* <LoadingOverlay show={loading} /> */}
-             
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+
+            {/* <LoadingOverlay show={loading} /> */}
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 {/* Title Section */}
@@ -337,6 +337,8 @@ const ManageBusFacilities = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={facilities.length}
                         page={page}

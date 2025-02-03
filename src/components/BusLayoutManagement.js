@@ -36,7 +36,7 @@ const BusLayoutManagement = () => {
     // setLoading(true);
     // setLoading(false);
 
-    
+
     // Sample data
     const [layouts, setLayouts] = useState([]);
     const loadLayOuts = () => {
@@ -64,8 +64,8 @@ const BusLayoutManagement = () => {
     });
     const [currentStep, setCurrentStep] = useState(1);
     const [alert, setAlert] = useState(null)
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
 
@@ -120,17 +120,17 @@ const BusLayoutManagement = () => {
         setCurrentLayout(layout);
         setIsEditMode(false);
         setOpen(true);
-        
+
         const rows = 6;
         const cols = 13;
         const grid = [];
-        
+
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 const seatId = `seat-${i}-${j}`;
                 const seatInfo = layout.seatDetails[seatId];
                 if (seatInfo && Object.keys(seatInfo).length > 0) {
-                    setSelectedViewSeat(seatInfo); 
+                    setSelectedViewSeat(seatInfo);
                     break;
                 }
             }
@@ -148,8 +148,8 @@ const BusLayoutManagement = () => {
         if (currentStep === 1) {
             // Step 1: Only select/deselect seats
 
-            if(newLayout.seatDetails[seatId] && newLayout.seatDetails[seatId].hasRelations !== undefined){
-                if(newLayout.seatDetails[seatId].hasRelations === false){
+            if (newLayout.seatDetails[seatId] && newLayout.seatDetails[seatId].hasRelations !== undefined) {
+                if (newLayout.seatDetails[seatId].hasRelations === false) {
                     setNewLayout(prev => {
                         const updatedDetails = { ...prev.seatDetails };
                         if (updatedDetails[seatId]) {
@@ -159,10 +159,10 @@ const BusLayoutManagement = () => {
                         }
                         return { ...prev, seatDetails: updatedDetails };
                     });
-                }else{
-                    setAlert({message: "The selection cannot be removed. This seat is used", severity: "error"})
+                } else {
+                    setAlert({ message: "The selection cannot be removed. This seat is used", severity: "error" })
                 }
-            }else{
+            } else {
                 setNewLayout(prev => {
                     const updatedDetails = { ...prev.seatDetails };
                     if (updatedDetails[seatId]) {
@@ -218,7 +218,7 @@ const BusLayoutManagement = () => {
     };
 
     const handleSaveLayout = () => {
-        if (newLayout.layoutName === '' || newLayout.busType === '' ) {
+        if (newLayout.layoutName === '' || newLayout.busType === '') {
             sendAlert("Please fill in all required fields.");
         } else {
             if (isEditMode) {
@@ -272,16 +272,16 @@ const BusLayoutManagement = () => {
 
     // Step navigation handlers
     const handleNextStep = () => {
-         if (!newLayout.layoutName.trim()) {
-            setAlert({message: "Layout Name is required.", severity: "error"})
+        if (!newLayout.layoutName.trim()) {
+            setAlert({ message: "Layout Name is required.", severity: "error" })
             return;
         }
         if (!newLayout.busType) {
-             setAlert({message: "Bus Type is required.", severity: "error"})
+            setAlert({ message: "Bus Type is required.", severity: "error" })
             return;
         }
         if (Object.keys(newLayout.seatDetails).length === 0) {
-            setAlert({message: "Please select at least one seat", severity: "error"})
+            setAlert({ message: "Please select at least one seat", severity: "error" })
             return;
         }
         setCurrentStep(2);
@@ -731,7 +731,7 @@ const BusLayoutManagement = () => {
     };
 
     const handleDelete = (id) => {
-        api.post('admin/seat-layout/delete', {id})
+        api.post('admin/seat-layout/delete', { id })
             .then(res => {
                 loadLayOuts()
                 sendAlert('deleted')
@@ -753,11 +753,11 @@ const BusLayoutManagement = () => {
     //End Pagination
     return (
         <Container component="main" maxWidth="lg">
-            
-             {/* <LoadingOverlay show={loading} /> */}
-             
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                                                        setOpen={setAlert}/> : <></>}
+
+            {/* <LoadingOverlay show={loading} /> */}
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 
                 <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
@@ -823,7 +823,7 @@ const BusLayoutManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                                 <TableCell sx={{ py: 1 }}>Layout Name</TableCell>
                                 <TableCell sx={{ py: 1 }}>Bus Type</TableCell>
                                 <TableCell sx={{ py: 1 }} align="center">Seats Count</TableCell>
@@ -833,40 +833,42 @@ const BusLayoutManagement = () => {
                         </TableHead>
                         <TableBody>
                             {filteredLayouts
-                              .slice(startIndex, startIndex + rowsPerPage)
-                    .map((layout) => (
-                                <TableRow key={layout.id}>
-                                    <TableCell sx={{ py: 0 }}>{layout.layoutName}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{layout.busType}</TableCell>
-                                    <TableCell sx={{ py: 0 }} align="center">{layout.seatsCount}</TableCell>
-                                    <TableCell sx={{ py: 0 }}>{layout.description}</TableCell>
-                                    <TableCell sx={{ py: 0 }} align="right">
-                                        <IconButton
-                                            color="info"
-                                            onClick={() => handleView(layout)}
-                                            sx={{ marginRight: "8px" }}
-                                        >
-                                            <VisibilityIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleEdit(layout)}
-                                            sx={{ marginRight: "8px" }}
-                                        >
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDelete(layout.id)}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((layout) => (
+                                    <TableRow key={layout.id}>
+                                        <TableCell sx={{ py: 0 }}>{layout.layoutName}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{layout.busType}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="center">{layout.seatsCount}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{layout.description}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            <IconButton
+                                                color="info"
+                                                onClick={() => handleView(layout)}
+                                                sx={{ marginRight: "8px" }}
+                                            >
+                                                <VisibilityIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleEdit(layout)}
+                                                sx={{ marginRight: "8px" }}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleDelete(layout.id)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                                <TablePagination
+                    <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredLayouts.length}
                         page={page}
@@ -1062,7 +1064,7 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.serviceCharge01}
                                                     onChange={handleInputChange}
-                                                     InputProps={{
+                                                    InputProps={{
                                                         startAdornment: (
                                                             <InputAdornment position="start">
                                                                 <InputAdornment position="start">LKR</InputAdornment>
@@ -1080,7 +1082,7 @@ const BusLayoutManagement = () => {
                                                     type="number"
                                                     value={seatDetails.serviceCharge02}
                                                     onChange={handleInputChange}
-                                                     InputProps={{
+                                                    InputProps={{
                                                         startAdornment: (
                                                             <InputAdornment position="start">
                                                                 <InputAdornment position="start">LKR</InputAdornment>

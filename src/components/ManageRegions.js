@@ -30,7 +30,7 @@ import api from "../model/API";
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ManageRegions = () => {
-    
+
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
@@ -40,9 +40,9 @@ const ManageRegions = () => {
     const [alert, setAlert] = useState(null)
     const [addmodel, setAddmodel] = useState(false);
 
-    const [filterRegionName,setFilterRegionName] = useState("");
-    const [filterMobile,setFilterMobile] = useState("");
-    const [filterEmail,setFilterEmail] = useState("");
+    const [filterRegionName, setFilterRegionName] = useState("");
+    const [filterMobile, setFilterMobile] = useState("");
+    const [filterEmail, setFilterEmail] = useState("");
 
     const [regionName, setRegionName] = useState("");
     const [mobile, setMobile] = useState("");
@@ -246,8 +246,8 @@ const ManageRegions = () => {
 
     const filteredoption = regions.filter(option => {
         const nameMatch = !filterRegionName || option.regionName.toLowerCase().includes(filterRegionName.toLowerCase());
-        const nameMatch2 = !filterMobile|| option.mobile.toLowerCase().includes(filterMobile.toLowerCase());
-        const nameMatch3 = !filterEmail|| option.email.toLowerCase().includes(filterEmail.toLowerCase());
+        const nameMatch2 = !filterMobile || option.mobile.toLowerCase().includes(filterMobile.toLowerCase());
+        const nameMatch3 = !filterEmail || option.email.toLowerCase().includes(filterEmail.toLowerCase());
         return nameMatch && nameMatch2 && nameMatch3;
     });
 
@@ -266,10 +266,10 @@ const ManageRegions = () => {
 
     return (
         <Container component="main" maxWidth="lg">
-            
-             {/* <LoadingOverlay show={loading} /> */}
-             
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+
+            {/* <LoadingOverlay show={loading} /> */}
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
@@ -597,6 +597,8 @@ const ManageRegions = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredoption.length}
                         page={page}

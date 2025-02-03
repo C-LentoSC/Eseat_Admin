@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     Box,
     Button,
@@ -46,9 +46,9 @@ const ManageFare = () => {
     const [percentage, setPercentage] = useState('');
 
     const [routes, setRoutes] = useState([]);
-    const loadAll=()=>{
+    const loadAll = () => {
         api.get('admin/bulk-fare/get-all')
-            .then(res=>{
+            .then(res => {
                 setRoutes(res.data)
             })
             .catch(handleError)
@@ -65,13 +65,13 @@ const ManageFare = () => {
 
         setRoutes(routes.map(route => ({
             ...route,
-              newFare: parseFloat((route.oldFare * multiplier).toFixed(2))
+            newFare: parseFloat((route.oldFare * multiplier).toFixed(2))
         })));
     };
 
     const handleFareChange = (id, value) => {
-       const regex = /^\d+(\.\d{0,2})?$/;
-        
+        const regex = /^\d+(\.\d{0,2})?$/;
+
         if (value === "" || regex.test(value)) {
             setRoutes(routes.map(route =>
                 route.id === id ? { ...route, newFare: value } : route
@@ -129,8 +129,8 @@ const ManageFare = () => {
 
 
     const handleSave = () => {
-        api.post('admin/bulk-fare/save', {routes})
-            .then(()=> {
+        api.post('admin/bulk-fare/save', { routes })
+            .then(() => {
                 loadAll()
                 sendAlert('fare saved successfully')
             })
@@ -138,25 +138,25 @@ const ManageFare = () => {
     };
 
     //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
 
     return (
         <Container maxWidth="lg">
-           
+
             {/* <LoadingOverlay show={loading} /> */}
-            
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
@@ -313,43 +313,45 @@ const ManageFare = () => {
                             </TableHead>
                             <TableBody>
                                 {routes
-                                .slice(startIndex, startIndex + rowsPerPage)
-                                .map((route) => (
-                                    <TableRow key={route.id}>
-                                        <TableCell sx={{ py: 0 }}>{route.name}</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
-                                            <TextField
-                                                disabled
-                                                value={`LKR ${route.oldFare ? parseFloat(route.oldFare).toFixed(2) : "0.00"}`}
-                                                size="small"
-                                                sx={{ width: 250 }}
-                                            />
-                                        </TableCell>
-                                        <TableCell sx={{ py: 0 }} align="center">=</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
-                                            <TextField
-                                                value={route.newFare}
-                                                onChange={(e) => handleFareChange(route.id, e.target.value)}
-                                                size="small"
-                                                sx={{ width: 250 }}
-                                                InputProps={{
-                                                    startAdornment: <InputAdornment position="start">LKR</InputAdornment>
-                                                }}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                    .slice(startIndex, startIndex + rowsPerPage)
+                                    .map((route) => (
+                                        <TableRow key={route.id}>
+                                            <TableCell sx={{ py: 0 }}>{route.name}</TableCell>
+                                            <TableCell sx={{ py: 0 }} align="right">
+                                                <TextField
+                                                    disabled
+                                                    value={`LKR ${route.oldFare ? parseFloat(route.oldFare).toFixed(2) : "0.00"}`}
+                                                    size="small"
+                                                    sx={{ width: 250 }}
+                                                />
+                                            </TableCell>
+                                            <TableCell sx={{ py: 0 }} align="center">=</TableCell>
+                                            <TableCell sx={{ py: 0 }} align="right">
+                                                <TextField
+                                                    value={route.newFare}
+                                                    onChange={(e) => handleFareChange(route.id, e.target.value)}
+                                                    size="small"
+                                                    sx={{ width: 250 }}
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position="start">LKR</InputAdornment>
+                                                    }}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                             </TableBody>
                         </Table>
-                         <TablePagination
-                                                component="div"
-                                                count={routes.length}
-                                                page={page}
-                                                onPageChange={handleChangePage}
-                                                rowsPerPage={rowsPerPage}
-                                                onRowsPerPageChange={handleChangeRowsPerPage}
-                                                rowsPerPageOptions={[10, 25, 50, 100]}
-                                            />
+                        <TablePagination
+                            showFirstButton
+                            showLastButton
+                            component="div"
+                            count={routes.length}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            rowsPerPage={rowsPerPage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            rowsPerPageOptions={[10, 25, 50, 100]}
+                        />
                     </TableContainer>
                 </Paper>
             </Box>

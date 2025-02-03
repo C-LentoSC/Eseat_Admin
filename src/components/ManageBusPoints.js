@@ -88,8 +88,8 @@ const ManageBusPoints = () => {
     const [currentBusPoint, setCurrentBusPoint] = useState(null);
     const [openOrderModal, setOpenOrderModal] = useState(false);
 
-    const [filterDirection,setFilterDirection] = useState("");
-    const [filterRoute,setFilterRoute] = useState("");
+    const [filterDirection, setFilterDirection] = useState("");
+    const [filterRoute, setFilterRoute] = useState("");
 
     // Add new bus point
     const handleAddBusPoint = () => {
@@ -278,7 +278,7 @@ const ManageBusPoints = () => {
 
             {/* <LoadingOverlay show={loading} /> */}
 
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 
@@ -541,6 +541,8 @@ const ManageBusPoints = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredOption.length}
                         page={page}
