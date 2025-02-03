@@ -70,9 +70,12 @@ const ManageFare = () => {
     };
 
     const handleFareChange = (id, value) => {
-        setRoutes(routes.map(route =>
-            route.id === id ? { ...route, newFare: parseInt(value) || 0 } : route
-        ));
+        const regex = /^(?:\d{1,2})(?:\.\d{1,2})?$/;
+        if (regex.test(value)) {
+            setRoutes(routes.map(route =>
+                route.id === id ? { ...route, newFare: parseInt(value) || 0 } : route
+            ));
+        }
     };
 
     const handleExport = () => {
