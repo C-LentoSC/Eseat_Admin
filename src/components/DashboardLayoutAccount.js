@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { createTheme } from '@mui/material/styles';
-// import DashboardIcon from '@mui/icons-material/Dashboard';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 // import BarChartIcon from '@mui/icons-material/BarChart';
 // import DescriptionIcon from '@mui/icons-material/Description';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -42,7 +42,7 @@ import { useDemoRouter } from '@toolpad/core/internal';
 import { ReactComponent as Logo } from '../resources/eseat.svg';
 
 
-// import Dashboard from './Dashboard'; //Dummy
+import Dashboard from './Dashboard'; 
 import UserRegistrationPage from './UserRegistrationPage';
 import ManageBusFacilities from './ManageBusFacilities';
 import PointsManagement from './PointsManagement';
@@ -82,11 +82,11 @@ import CustomAlert from './Parts/CustomAlert';
 
 const NAVIGATION = {
   SuperAdmin: [
-    // {
-    //   segment: 'dashboard',
-    //   title: 'Dashboard',
-    //   icon: <DashboardIcon />,
-    // },
+    {
+      segment: 'dashboard',
+      title: 'Dashboard',
+      icon: <DashboardIcon />,
+    },
     {
       segment: 'user-registration',
       title: 'User Registration',
@@ -282,11 +282,11 @@ function DemoPageContent({ pathname }) {
 
   switch (pathname) {
     case '/':
-      content = <UserRegistrationPage />; //Dummy
+      content = <UserRegistrationPage />;
       break;
-    // case '/dashboard':
-    //   content = <Dashboard />; //Dummy
-    //   break;
+    case '/dashboard':
+      content = <Dashboard />; 
+      break;
     case '/user-registration':
       content = <UserRegistrationPage />;
       break;
