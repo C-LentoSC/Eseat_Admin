@@ -70,24 +70,29 @@ const ManageBreakFare = () => {
     };
 
     const handleBreakFareChange = (id, value) => {
-         if (value === '') {
-            setBreaks(breaks.map(breakRoute =>
-                breakRoute.id === id ? { ...breakRoute, newFare: value } : breakRoute
-            ));
-            return;
-        }
-        
-        let formattedValue = value.replace(/[^0-9.]/g, '');
-        if (formattedValue.indexOf('.') !== -1) {
-            const [integerPart, decimalPart] = formattedValue.split('.');
-            formattedValue = `${integerPart}.${decimalPart.slice(0, 2)}`; 
-        }
-        if (formattedValue) {
-            formattedValue = parseFloat(formattedValue).toFixed(2); 
-        }
+   // Allow empty value (so backspace works and field can be empty)
+    if (value === '') {
         setBreaks(breaks.map(breakRoute =>
-            breakRoute.id === id ? { ...breakRoute, newFare: formattedValue } : breakRoute
+            breakRoute.id === id ? { ...breakRoute, newFare: value } : breakRoute
         ));
+        return;
+    }
+
+    // Remove any non-numeric characters except decimal point
+    let formattedValue = value.replace(/[^0-9.]/g, '');
+
+    // Ensure only one decimal point is allowed
+    if (formattedValue.indexOf('.') !== -1) {
+        const [integerPart, decimalPart] = formattedValue.split('.');
+        formattedValue = `${integerPart}.${decimalPart.slice(0, 2)}`; // Limit to 2 decimals
+    }
+
+    // Format the value to two decimal places
+    formattedValue = parseFloat(formattedValue).toFixed(2);
+
+    setBreaks(breaks.map(breakRoute =>
+        breakRoute.id === id ? { ...breakRoute, newFare: formattedValue } : breakRoute
+    ));
     };
 
     const handleExport = () => {
