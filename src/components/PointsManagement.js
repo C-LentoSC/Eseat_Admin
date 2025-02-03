@@ -24,6 +24,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
 
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import LastPageIcon from '@mui/icons-material/LastPage';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const PointsManagement = () => {
