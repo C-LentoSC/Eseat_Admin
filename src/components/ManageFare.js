@@ -78,7 +78,6 @@ const ManageFare = () => {
         if (formattedValue) {
             formattedValue = parseFloat(formattedValue).toFixed(2);
         }
-         const formattedValue = parseFloat(value).toFixed(2);
          setRoutes(routes.map(route =>
             route.id === id ? { ...route, newFare: formattedValue } : route
         ));
