@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
-    TextField, InputAdornment, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions
+    TextField, InputAdornment, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TablePagination
 } from '@mui/material';
 import { FileDownload, CheckCircle, HourglassEmpty } from '@mui/icons-material';
 import dayjs from 'dayjs';
@@ -12,7 +12,7 @@ import CustomAlert from "./Parts/CustomAlert";
 import LoadingOverlay from './Parts/LoadingOverlay';
 
 const TicketMarkingSystem = () => {
-    const [loadingList,setLoadingList] = useState([]);
+    const [loadingList, setLoadingList] = useState([]);
     const loading = false;
     // setLoading(true);
     // setLoading(false);
@@ -21,28 +21,28 @@ const TicketMarkingSystem = () => {
     // Sample initial data
     const [tickets, setTickets] = useState([]);
     const [alert, setAlert] = useState(null);
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
-    const startLoading = (id) => setLoadingList(prevState => [...prevState,id])
-    const endLoading=(id)=>setLoadingList(prevState => prevState.filter(i=>i!==id))
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const startLoading = (id) => setLoadingList(prevState => [...prevState, id])
+    const endLoading = (id) => setLoadingList(prevState => prevState.filter(i => i !== id))
     // States for filters
     const [depot, setDepot] = useState('');
     const [scheduleNo, setScheduleNo] = useState('');
     const [vCode, setVCode] = useState('');
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const loadAll=()=>{
-        const id=generateUniqueId()
+    const loadAll = () => {
+        const id = generateUniqueId()
         startLoading(id)
         api.get('admin/ticket-marking/get-all')
-            .then(res=>{
+            .then(res => {
                 endLoading(id)
                 setTickets(res.data)
-                if(selectedTicket){
-                    setSelectedTicket(p=>res.data.filter(i=>i.id===p.id)[0])
+                if (selectedTicket) {
+                    setSelectedTicket(p => res.data.filter(i => i.id === p.id)[0])
                 }
             })
-            .catch(err=>{
+            .catch(err => {
                 endLoading(id)
                 handleError(err)
             })
@@ -137,33 +137,47 @@ const TicketMarkingSystem = () => {
 
         const id = generateUniqueId();
         startLoading(id)
-        api.post('admin/ticket-marking/confirm', {...ticket, seatNo: seatNo})
-            .then(res=>{
+        api.post('admin/ticket-marking/confirm', { ...ticket, seatNo: seatNo })
+            .then(res => {
                 endLoading(id)
                 sendAlert("seat marked")
                 loadAll()
             })
-            .catch(err=>{
+            .catch(err => {
                 endLoading(id)
                 handleError(err)
             })
-    
+
 
         // setSelectedTicket();
     };
-    
+
 
     const allSeatsConfirmed = (ticket) => {
         return ticket.seatNoDetails.every(s => s.confirmed);
     };
 
+
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
+
     return (
         <Container component="main" maxWidth="lg">
-           
-             <LoadingOverlay show={loading} />
+
+            <LoadingOverlay show={loading} />
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
-             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                setOpen={setAlert} /> : <></>}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Ticket Marking System
                 </Typography>
@@ -251,48 +265,61 @@ const TicketMarkingSystem = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow>
-                                <TableCell>Ref No</TableCell>
-                                <TableCell>Ticket Type</TableCell>
-                                <TableCell>Seat No</TableCell>
-                                <TableCell>Depot</TableCell>
-                                <TableCell>Schedule No</TableCell>
-                                <TableCell>V-Code</TableCell>
-                                <TableCell>Mode of Pay</TableCell>
-                                <TableCell>Route</TableCell>
-                                <TableCell>NIC</TableCell>
-                                <TableCell>Booked By</TableCell>
-                                <TableCell>Booked Date</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Ref No</TableCell>
+                                <TableCell sx={{ py: 1 }}>Ticket Type</TableCell>
+                                <TableCell sx={{ py: 1 }}>Seat No</TableCell>
+                                <TableCell sx={{ py: 1 }}>Depot</TableCell>
+                                <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
+                                <TableCell sx={{ py: 1 }}>V-Code</TableCell>
+                                <TableCell sx={{ py: 1 }}>Mode of Pay</TableCell>
+                                <TableCell sx={{ py: 1 }}>Route</TableCell>
+                                <TableCell sx={{ py: 1 }}>NIC</TableCell>
+                                <TableCell sx={{ py: 1 }}>Booked By</TableCell>
+                                <TableCell sx={{ py: 1 }}>Booked Date</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredTickets.map((ticket) => (
-                                <TableRow key={ticket.id}>
-                                    <TableCell>{ticket.refNo}</TableCell>
-                                    <TableCell>{ticket.ticketType}</TableCell>
-                                    <TableCell>{ticket.seatNoDetails.map(s => s.seatNo).join(', ')}</TableCell>
-                                    <TableCell>{ticket.depot}</TableCell>
-                                    <TableCell>{ticket.scheduleNo}</TableCell>
-                                    <TableCell>{ticket.vCode}</TableCell>
-                                    <TableCell>{ticket.modeOfPay}</TableCell>
-                                    <TableCell>{ticket.route}</TableCell>
-                                    <TableCell>{ticket.nic}</TableCell>
-                                    <TableCell>{ticket.bookedBy}</TableCell>
-                                    <TableCell>{ticket.bookedDate}</TableCell>
-                                    <TableCell align="right">
-                                        {allSeatsConfirmed(ticket) ? (
-                                            <CheckCircle color="success" />
-                                        ) : (
-                                            <IconButton onClick={() => handleViewSeats(ticket)} color="primary">
-                                                <HourglassEmpty />
-                                            </IconButton>
-                                        )}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {filteredTickets
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((ticket) => (
+                                    <TableRow key={ticket.id}>
+                                        <TableCell sx={{ py: 0 }}>{ticket.refNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.ticketType}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.seatNoDetails.map(s => s.seatNo).join(', ')}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.depot}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.scheduleNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.vCode}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.modeOfPay}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.route}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.nic}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.bookedBy}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{ticket.bookedDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
+                                            {allSeatsConfirmed(ticket) ? (
+                                                <CheckCircle color="success" />
+                                            ) : (
+                                                <IconButton onClick={() => handleViewSeats(ticket)} color="primary">
+                                                    <HourglassEmpty />
+                                                </IconButton>
+                                            )}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        showFirstButton
+                        showLastButton
+                        component="div"
+                        count={filteredTickets.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
             </Box>
 
