@@ -257,8 +257,16 @@ const BusLayoutManagement = () => {
 
     // Step navigation handlers
     const handleNextStep = () => {
+         if (!newLayout.layoutName.trim()) {
+            setAlert({message: "Layout Name is required.", severity: "error"})
+            return;
+        }
+        if (!newLayout.busType) {
+             setAlert({message: "Bus Type is required.", severity: "error"})
+            return;
+        }
         if (Object.keys(newLayout.seatDetails).length === 0) {
-            alert("Please select at least one seat");
+            setAlert({message: "Please select at least one seat", severity: "error"})
             return;
         }
         setCurrentStep(2);
