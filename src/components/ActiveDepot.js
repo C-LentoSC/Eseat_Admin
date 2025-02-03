@@ -22,7 +22,6 @@ import { setroutval } from "./DashboardLayoutAccount";
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
 
-
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ActiveDepot = () => {
