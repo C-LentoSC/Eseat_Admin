@@ -135,8 +135,8 @@ const PointsManagement = () => {
     const handleFirstPage = () => {
     setPage(0);
     };
-    const handleLastPage = () => {
-        setPage(Math.max(0, Math.floor((users.length - 1) / rowsPerPage)));
+    const handleLastPage = (data) => {
+        setPage(Math.max(0, Math.floor((data.length - 1) / rowsPerPage)));
     };
     //End Pagination
 
@@ -328,7 +328,7 @@ const PointsManagement = () => {
                                     <KeyboardArrowRightIcon />
                                 </IconButton>
                                 <IconButton 
-                                    onClick={handleLastPage} 
+                                    onClick={handleLastPage(filteredPoint)} 
                                     disabled={props.page >= Math.ceil(props.count / props.rowsPerPage) - 1}
                                 >
                                     <LastPageIcon />
