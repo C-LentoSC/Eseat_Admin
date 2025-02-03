@@ -70,7 +70,7 @@ const ManageFare = () => {
     };
 
     const handleFareChange = (id, value) => {
-        const regex = /^\d{0,2}(\.\d*)?$/;
+        const regex = /^(?:\d{0,2})(?:\.\d{0,2})?$/;
 
         if (value === "" || regex.test(value)) {
             setRoutes(routes.map(route =>
