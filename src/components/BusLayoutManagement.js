@@ -907,7 +907,6 @@ const BusLayoutManagement = () => {
                         position: 'fixed',
                         width: '100%',
                         height: '100%',
-                        bgcolor: 'rgba(0, 0, 0, 0.5)'
                     }}>
                         <Draggable
                             handle="#draggable-modal-header"
@@ -927,7 +926,6 @@ const BusLayoutManagement = () => {
                                 <div id="draggable-modal-header" style={{
                                     cursor: 'move',
                                     padding: '16px',
-                                    backgroundColor: '#f5f5f5',
                                     borderBottom: '1px solid #ddd',
                                     borderRadius: '8px 8px 0 0'
                                 }}>
