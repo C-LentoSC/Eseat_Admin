@@ -124,19 +124,15 @@ const BusLayoutManagement = () => {
         const rows = 6;
         const cols = 13;
         const grid = [];
-        const selectedSeats = [];
         
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 const seatId = `seat-${i}-${j}`;
                 const seatInfo = layout.seatDetails[seatId];
-                if (seatInfo) {
-                    selectedSeats.push(seatInfo); 
+                if (seatInfo && Object.keys(seatInfo).length > 0) {
+                    setSelectedViewSeat(seatInfo); 
                 }
             }
-        }
-        if (selectedSeats.length > 0) {
-            setSelectedViewSeat(selectedSeats); 
         }
     };
 
