@@ -186,16 +186,16 @@ const ScheduleManagement = () => {
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((schedule) => (
                                     <TableRow key={schedule.id}>
-                                        <TableCell>{schedule.scheduleNumber}</TableCell>
-                                        <TableCell>{schedule.routeNo}</TableCell>
-                                        <TableCell>{schedule.route}</TableCell>
-                                        <TableCell>{schedule.travelDate}</TableCell>
-                                        <TableCell>{schedule.startTime}</TableCell>
-                                        <TableCell>{schedule.endDate}</TableCell>
-                                        <TableCell>{schedule.endTime}</TableCell>
-                                        <TableCell>{schedule.closingDate}</TableCell>
-                                        <TableCell>{schedule.closingTime}</TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.scheduleNumber}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.routeNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.route}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.travelDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.startTime}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.endDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.endTime}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.closingDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.closingTime}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
                                             {/* <Typography variant="body2" sx={{ color: schedule.status === 'Active' ? 'green' : 'red' }}>{schedule.status}</Typography> */}
 
                                             <FormControlLabel

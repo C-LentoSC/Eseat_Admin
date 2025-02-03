@@ -298,7 +298,9 @@ const TicketMarkingSystem = () => {
                                         <TableCell sx={{ py: 0 }}>{ticket.bookedDate}</TableCell>
                                         <TableCell sx={{ py: 0 }} align="right">
                                             {allSeatsConfirmed(ticket) ? (
-                                                <CheckCircle color="success" />
+                                                <IconButton>
+                                                    <CheckCircle color="success" />
+                                                </IconButton>
                                             ) : (
                                                 <IconButton onClick={() => handleViewSeats(ticket)} color="primary">
                                                     <HourglassEmpty />
