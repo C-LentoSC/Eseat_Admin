@@ -396,6 +396,7 @@ const UserRegistrationPage = () => {
                 />
             </TableContainer>
 
+
             {/* Edit User Modal */}
             <Modal open={open} onClose={handleClose}>
                 <Box
