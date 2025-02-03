@@ -24,11 +24,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
 
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const PointsManagement = () => {
@@ -131,13 +126,6 @@ const PointsManagement = () => {
         setPage(0);
     };
     const startIndex = page * rowsPerPage;
-
-    const handleFirstPage = () => {
-    setPage(0);
-    };
-    const handleLastPage = (data) => {
-        setPage(Math.max(0, Math.floor((data.length - 1) / rowsPerPage)));
-    };
     //End Pagination
 
     return (
@@ -307,34 +295,6 @@ const PointsManagement = () => {
                         rowsPerPage={rowsPerPage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                         rowsPerPageOptions={[10, 25, 50, 100]}
-                        ActionsComponent={(props) => (
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <IconButton 
-                                    onClick={handleFirstPage} 
-                                    disabled={props.page === 0}
-                                >
-                                    <FirstPageIcon />
-                                </IconButton>
-                                <IconButton 
-                                    onClick={props.onPageChange} 
-                                    disabled={props.page === 0}
-                                >
-                                    <KeyboardArrowLeftIcon />
-                                </IconButton>
-                                <IconButton 
-                                    onClick={props.onPageChange} 
-                                    disabled={props.page >= Math.ceil(props.count / props.rowsPerPage) - 1}
-                                >
-                                    <KeyboardArrowRightIcon />
-                                </IconButton>
-                                <IconButton 
-                                    onClick={handleLastPage(filteredPoint)} 
-                                    disabled={props.page >= Math.ceil(props.count / props.rowsPerPage) - 1}
-                                >
-                                    <LastPageIcon />
-                                </IconButton>
-                            </Box>
-                     )}
                     />
                 </TableContainer>
 
