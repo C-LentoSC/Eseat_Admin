@@ -70,8 +70,10 @@ const ManageFare = () => {
     };
 
     const handleFareChange = (id, value) => {
+         const formattedValue = parseFloat(value).toFixed(2);
+        
         setRoutes(routes.map(route =>
-            route.id === id ? { ...route, newFare: parseInt(value) || 0 } : route
+            route.id === id ? { ...route, newFare: formattedValue || 0 } : route
         ));
     };
 
