@@ -70,6 +70,13 @@ const ManageBreakFare = () => {
     };
 
     const handleBreakFareChange = (id, value) => {
+         if (value === '') {
+            setBreaks(breaks.map(breakRoute =>
+                breakRoute.id === id ? { ...breakRoute, newFare: value } : breakRoute
+            ));
+            return;
+        }
+        
         let formattedValue = value.replace(/[^0-9.]/g, '');
         if (formattedValue.indexOf('.') !== -1) {
             const [integerPart, decimalPart] = formattedValue.split('.');
