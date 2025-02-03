@@ -70,24 +70,8 @@ const ManageBreakFare = () => {
     };
 
     const handleBreakFareChange = (id, value) => {
-        if (value === '') {
-            setBreaks(breaks.map(breakRoute =>
-                breakRoute.id === id ? { ...breakRoute, newFare: value } : breakRoute
-            ));
-            return;
-        }
-    
-        let formattedValue = value.replace(/[^0-9.]/g, '');
-    
-        if (formattedValue.indexOf('.') !== -1) {
-            const [integerPart, decimalPart] = formattedValue.split('.');
-            formattedValue = `${integerPart}.${decimalPart.slice(0, 2)}`;
-        }
-    
-        formattedValue = parseFloat(formattedValue).toFixed(2);
-    
-        setBreaks(breaks.map(breakRoute =>
-            breakRoute.id === id ? { ...breakRoute, newFare: formattedValue } : breakRoute
+       setBreaks(breaks.map(breakRoute =>
+            breakRoute.id === id ? { ...breakRoute, newFare: parseInt(value) || 0 } : breakRoute
         ));
     };
 
