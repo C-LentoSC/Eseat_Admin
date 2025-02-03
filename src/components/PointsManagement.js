@@ -126,6 +126,13 @@ const PointsManagement = () => {
         setPage(0);
     };
     const startIndex = page * rowsPerPage;
+
+    const handleFirstPage = () => {
+    setPage(0);
+    };
+    const handleLastPage = () => {
+        setPage(Math.max(0, Math.floor((users.length - 1) / rowsPerPage)));
+    };
     //End Pagination
 
     return (
@@ -295,7 +302,34 @@ const PointsManagement = () => {
                         rowsPerPage={rowsPerPage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                         rowsPerPageOptions={[10, 25, 50, 100]}
-                        showFirstLastButtons
+                        ActionsComponent={(props) => (
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <IconButton 
+                                    onClick={handleFirstPage} 
+                                    disabled={props.page === 0}
+                                >
+                                    <FirstPageIcon />
+                                </IconButton>
+                                <IconButton 
+                                    onClick={props.onPageChange} 
+                                    disabled={props.page === 0}
+                                >
+                                    <KeyboardArrowLeftIcon />
+                                </IconButton>
+                                <IconButton 
+                                    onClick={props.onPageChange} 
+                                    disabled={props.page >= Math.ceil(props.count / props.rowsPerPage) - 1}
+                                >
+                                    <KeyboardArrowRightIcon />
+                                </IconButton>
+                                <IconButton 
+                                    onClick={handleLastPage} 
+                                    disabled={props.page >= Math.ceil(props.count / props.rowsPerPage) - 1}
+                                >
+                                    <LastPageIcon />
+                                </IconButton>
+                            </Box>
+                     )}
                     />
                 </TableContainer>
 
