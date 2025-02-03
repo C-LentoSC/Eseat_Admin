@@ -131,6 +131,7 @@ const BusLayoutManagement = () => {
                 const seatInfo = layout.seatDetails[seatId];
                 if (seatInfo && Object.keys(seatInfo).length > 0) {
                     setSelectedViewSeat(seatInfo); 
+                    break;
                 }
             }
         }
