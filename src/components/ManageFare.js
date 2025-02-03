@@ -70,8 +70,8 @@ const ManageFare = () => {
     };
 
     const handleFareChange = (id, value) => {
-        const regex = /^(?:\d{0,2})(?:\.\d{0,2})?$/;
-
+        const regex = /^\d{0,2}(\.\d*)?$/;
+        
         if (value === "" || regex.test(value)) {
             setRoutes(routes.map(route =>
                 route.id === id ? { ...route, newFare: value } : route
@@ -328,7 +328,7 @@ const ManageFare = () => {
                                         <TableCell sx={{ py: 0 }} align="center">=</TableCell>
                                         <TableCell sx={{ py: 0 }} align="right">
                                             <TextField
-                                                value={route.newFare ? parseFloat(route.newFare).toFixed(2) : "0.00"}
+                                                value={route.newFare ? parseFloat(route.newFare).toFixed(2) : ""}
                                                 onChange={(e) => handleFareChange(route.id, e.target.value)}
                                                 size="small"
                                                 sx={{ width: 250 }}
