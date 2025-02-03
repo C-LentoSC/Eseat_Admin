@@ -65,7 +65,7 @@ const ManageFare = () => {
 
         setRoutes(routes.map(route => ({
             ...route,
-            newFare: Math.round(route.oldFare * multiplier)
+              newFare: parseFloat((route.oldFare * multiplier).toFixed(2))
         })));
     };
 
@@ -328,7 +328,7 @@ const ManageFare = () => {
                                         <TableCell sx={{ py: 0 }} align="center">=</TableCell>
                                         <TableCell sx={{ py: 0 }} align="right">
                                             <TextField
-                                                value={route.newFare ? parseFloat(route.newFare).toFixed(2) : ""}
+                                                value={route.newFare}
                                                 onChange={(e) => handleFareChange(route.id, e.target.value)}
                                                 size="small"
                                                 sx={{ width: 250 }}
