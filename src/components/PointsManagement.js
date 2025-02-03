@@ -288,7 +288,8 @@ const PointsManagement = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
-                        showFirstLastButtons
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredPoint.length}
                         page={page}
