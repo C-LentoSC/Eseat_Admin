@@ -70,16 +70,8 @@ const ManageFare = () => {
     };
 
     const handleFareChange = (id, value) => {
-        let formattedValue = value.replace(/[^0-9.]/g, '');
-        if (formattedValue.indexOf('.') !== -1) {
-            const [integerPart, decimalPart] = formattedValue.split('.');
-            formattedValue = `${integerPart}.${decimalPart.slice(0, 2)}`;
-        }
-        if (formattedValue) {
-            formattedValue = parseFloat(formattedValue).toFixed(2);
-        }
-         setRoutes(routes.map(route =>
-            route.id === id ? { ...route, newFare: formattedValue } : route
+        setRoutes(routes.map(route =>
+            route.id === id ? { ...route, newFare: parseInt(value) || 0 } : route
         ));
     };
 
