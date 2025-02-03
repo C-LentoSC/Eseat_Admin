@@ -196,6 +196,8 @@ const ActiveDepot = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredDepots.length}
                         page={page}
