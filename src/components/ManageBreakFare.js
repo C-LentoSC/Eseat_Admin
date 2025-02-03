@@ -316,7 +316,7 @@ const ManageBreakFare = () => {
                                                 disabled
                                                 value={`LKR ${breakRoute.oldFare}`}
                                                 size="small"
-                                                sx={{ width: 150 }}
+                                                sx={{ width: 250 }}
                                             />
                                         </TableCell>
                                         <TableCell sx={{ py: 0 }} align="center">=</TableCell>
@@ -325,7 +325,7 @@ const ManageBreakFare = () => {
                                                 value={breakRoute.newFare}
                                                 onChange={(e) => handleBreakFareChange(breakRoute.id, e.target.value)}
                                                 size="small"
-                                                sx={{ width: 150 }}
+                                                sx={{ width: 250 }}
                                                 InputProps={{
                                                     startAdornment: <InputAdornment position="start">LKR</InputAdornment>
                                                 }}
