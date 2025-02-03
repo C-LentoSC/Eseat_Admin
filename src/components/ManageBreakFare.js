@@ -70,9 +70,10 @@ const ManageBreakFare = () => {
     };
 
     const handleBreakFareChange = (id, value) => {
-        setBreaks(breaks.map(breakRoute =>
-            breakRoute.id === id ? { ...breakRoute, newFare: parseInt(value) || 0 } : breakRoute
-        ));
+         const formattedValue = parseFloat(value).toFixed(2); 
+         setBreaks(breaks.map(breakRoute =>
+            breakRoute.id === id ? { ...breakRoute, newFare: formattedValue } : breakRoute
+         ));
     };
 
     const handleExport = () => {
