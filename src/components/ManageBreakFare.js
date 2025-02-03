@@ -70,10 +70,17 @@ const ManageBreakFare = () => {
     };
 
     const handleBreakFareChange = (id, value) => {
-         const formattedValue = parseFloat(value).toFixed(2); 
-         setBreaks(breaks.map(breakRoute =>
+        let formattedValue = value.replace(/[^0-9.]/g, '');
+        if (formattedValue.indexOf('.') !== -1) {
+            const [integerPart, decimalPart] = formattedValue.split('.');
+            formattedValue = `${integerPart}.${decimalPart.slice(0, 2)}`; 
+        }
+        if (formattedValue) {
+            formattedValue = parseFloat(formattedValue).toFixed(2); 
+        }
+        setBreaks(breaks.map(breakRoute =>
             breakRoute.id === id ? { ...breakRoute, newFare: formattedValue } : breakRoute
-         ));
+        ));
     };
 
     const handleExport = () => {
