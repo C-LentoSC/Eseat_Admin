@@ -111,6 +111,11 @@ const RouteManagement = () => {
         setCurrentRoute(null);
         setOpen(false);
         setAddmodel(false);
+        setStartPoint(null)
+        setEndPoint(null)
+        setRouteNo("")
+        setBusFare("")
+        setDescription("")
     };
 
     // Save Edited Route

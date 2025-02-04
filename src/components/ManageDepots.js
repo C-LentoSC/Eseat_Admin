@@ -151,6 +151,15 @@ const ManageDepots = () => {
         setCurrentDepot(null);
         setOpen(false);
         setAddmodel(false);
+        setFormData({
+            region: "",
+            depotName: "",
+            address: "",
+            description: "",
+            dsName: "",
+            email: "",
+            mobile: ""
+        })
     };
 
     // Save edited depot

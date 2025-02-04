@@ -81,6 +81,7 @@ const PointsManagement = () => {
         setCurrentPoint(null);
         setOpen(false);
         setAddmodel(false);
+        setNewPointName("")
     };
 
     // Save Edited Point

@@ -102,6 +102,11 @@ const ManageRegions = () => {
         setCurrentRegion(null);
         setOpen(false);
         setAddmodel(false);
+        setRegionName("")
+        setMobile("")
+        setEmail("")
+        setAddress("")
+        setDescription("")
     };
 
     // Save Edited Region

@@ -126,6 +126,11 @@ const ManageBreakFare = () => {
 
 
     const handleSave = () => {
+        const bl=breaks.filter(f=>f.newFare<1)
+        if(bl.length>0){
+            sendAlert(`${bl.length} fare break have a negative value or zero`)
+        }
+        return console.log(bl)
         api.post('admin/bulk-fare/save-brake', {breaks})
             .then(res=>{
                 sendAlert('fare brake saved');

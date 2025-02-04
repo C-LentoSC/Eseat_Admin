@@ -990,7 +990,7 @@ function DashboardLayoutAccount({ window, onLogout }) {
         user:{
           name: r.data.username,
           email:r.data.email,
-          type: r.data.type.replace(" ","")
+          type: r.data.type.replace(" ","").replace(" ","").replace(" ","").replace(" ","")
         }
       })
     })

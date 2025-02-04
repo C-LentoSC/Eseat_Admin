@@ -13,14 +13,13 @@ const App = () => {
 
     useEffect(() => {
         const handleActivity = () => {
-            // Reset the inactivity timer on user activity
+
             clearTimeout(window.inactivityTimeout);
             window.inactivityTimeout = setTimeout(() => {
-                handleLogout(); // Logout after 45 minutes of inactivity
-            }, 45 * 60 * 1000); // 45 minutes in milliseconds
+                handleLogout();
+            }, 45 * 60 * 1000);
         };
 
-        // Add event listeners for activity
         window.addEventListener("mousemove", handleActivity);
         window.addEventListener("keydown", handleActivity);
 

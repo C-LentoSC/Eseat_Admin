@@ -93,9 +93,16 @@ const UserRegistrationPage = () => {
     };
 
     const handleClose = () => {
+
         setCurrentUser(null);
         setOpen(false);
         setAddmodel(false);
+        setName("")
+        setEmail("")
+        setMobile("")
+        setUsername("")
+        setPassword("")
+        setRole_id(null)
     };
 
     const handleSave = () => {
@@ -152,7 +159,7 @@ const UserRegistrationPage = () => {
 
 
             {/* Registration Form Section */}
-            <Modal open={addmodel} onClose={handleClose}>
+            <Modal open={addmodel}  onClose={handleClose}>
                 <Box
                     sx={{
                         position: 'absolute',
