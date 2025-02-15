@@ -56,13 +56,10 @@ const App = () => {
         localStorage.removeItem("isAuthenticated");
         localStorage.removeItem("token");
     };
-    const initialLoadingList = () => JSON.parse(localStorage.getItem("loadingList")) || [];
+    const initialLoadingList = [];
     const [loadingList, setLoadingList] = useState(initialLoadingList);
-    // const storedLoadingList = JSON.parse(localStorage.getItem("loadingList")) || [];
     const hasInterceptorsRef = useRef(false);
-    // const [loadingList, setLoadingList] = useState(storedLoadingList);
     const loading = loadingList.length !== 0;
-
     function generateUniqueId() {
         return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     }
