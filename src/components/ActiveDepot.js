@@ -21,6 +21,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { setroutval } from "./DashboardLayoutAccount";
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -28,7 +29,7 @@ const ActiveDepot = () => {
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
-
+    const {stopLoading,startLoading}=useLoading()
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
@@ -36,18 +37,28 @@ const ActiveDepot = () => {
     // Sample data
     const [depots, setDepots] = useState([]);
     const loadAllDepots = () => {
+        const L=startLoading()
         api.get('admin/bus/all-depot')
             .then(res => {
+                stopLoading(L)
                 setDepots(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     const loadAllRegions = () => {
+        const L=startLoading()
         api.get('admin/bus/all-regions')
             .then(res => {
+                stopLoading(L)
                 setRegions(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadAllDepots()

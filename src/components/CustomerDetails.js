@@ -10,12 +10,13 @@ import dayjs from 'dayjs';
 import LoadingOverlay from './Parts/LoadingOverlay';
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
+import {useLoading} from "../loading";
 
 const CustomerDetails = () => {
 
 
-    const [loadingList, setLoadingList] = useState([]);
-    const loading = false;
+
+    const {startLoading,stopLoading}=useLoading()
 
     function generateUniqueId() {
         return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -24,23 +25,22 @@ const CustomerDetails = () => {
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
-    const startLoading = (id) => setLoadingList(prevState => [...prevState, id])
-    const endLoading = (id) => setLoadingList(prevState => prevState.filter(i => i !== id))
 
 
     // Sample initial data
     const [customers, setCustomers] = useState([ ]);
     const loadAllCustomers = () => {
-        const id = generateUniqueId()
-        startLoading(id)
+        const L=startLoading()
+
         api.get('admin/customer/get-all')
             .then((response) => {
-                endLoading(id)
+                stopLoading(L)
                 setCustomers(response.data)
                 console.log(response.data)
             }).catch(err => {
+                stopLoading(L)
             handleError(err)
-            endLoading(id)
+
         })
     }
     useEffect(() => {
@@ -122,7 +122,7 @@ const CustomerDetails = () => {
         <Container component="main" maxWidth="lg">
 
             {/* <LoadingOverlay show={loading} /> */}
-            <LoadingOverlay show={loading}/>
+
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                   setOpen={setAlert}/> : <></>}
             <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>

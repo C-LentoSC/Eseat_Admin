@@ -25,6 +25,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import Draggable from 'react-draggable';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import ChairIcon from "@mui/icons-material/Chair";
 
@@ -36,15 +37,21 @@ const BusLayoutManagement = () => {
     // setLoading(true);
     // setLoading(false);
 
+    const {startLoading,stopLoading}=useLoading()
     
     // Sample data
     const [layouts, setLayouts] = useState([]);
     const loadLayOuts = () => {
+        const L=startLoading()
         api.get('admin/seat-layout/get-all')
             .then(res => {
+                stopLoading(L)
                 setLayouts(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadLayOuts()
@@ -212,8 +219,10 @@ const BusLayoutManagement = () => {
                 //         layout.id === currentLayout.id ? { ...newLayout, id: layout.id } : layout
                 //     )
                 // );
+                const L=startLoading()
                 api.post('admin/seat-layout/edit', newLayout)
                     .then(res => {
+                        stopLoading(L)
                         loadLayOuts()
                         sendAlert('layout is updated')
                         setCreateModalOpen(false);
@@ -227,15 +236,20 @@ const BusLayoutManagement = () => {
                         });
                         setCurrentStep(1);
                     })
-                    .catch(handleError)
+                    .catch(err=> {
+                        stopLoading(L)
+                        handleError(err)
+                    })
             } else {
                 const layoutToSave = {
                     ...newLayout,
                     id: layouts.length + 1,
                 };
                 // setLayouts(prev => [...prev, layoutToSave]);
+                const L=startLoading()
                 api.post('admin/seat-layout/add-new', layoutToSave)
                     .then(res => {
+                        stopLoading(L)
                         loadLayOuts()
                         sendAlert('a new layout is added')
                         setCreateModalOpen(false);
@@ -249,7 +263,10 @@ const BusLayoutManagement = () => {
                         });
                         setCurrentStep(1);
                     })
-                    .catch(handleError)
+                    .catch(err=> {
+                        stopLoading(L)
+                        handleError(err)
+                    })
             }
 
         }
@@ -708,12 +725,17 @@ const BusLayoutManagement = () => {
     };
 
     const handleDelete = (id) => {
+        const L=startLoading()
         api.post('admin/seat-layout/delete', {id})
             .then(res => {
+                stopLoading(L)
                 loadLayOuts()
                 sendAlert('deleted')
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     //Pagination

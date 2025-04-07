@@ -24,6 +24,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -33,7 +34,7 @@ const ManageBreakFare = () => {
     // setLoading(true);
     // setLoading(false);
 
-
+    const {startLoading,stopLoading}=useLoading()
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
@@ -46,11 +47,16 @@ const ManageBreakFare = () => {
 
     ]);
     const loadAll=()=>{
+        const L=startLoading()
         api.get('admin/bulk-fare/get-all-brake')
             .then(res=>{
+                stopLoading(L)
                 setBreaks(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadAll();
@@ -130,13 +136,17 @@ const ManageBreakFare = () => {
         if(bl.length>0){
             sendAlert(`${bl.length} fare break have a negative value or zero`)
         }
-        return console.log(bl)
+        const L=startLoading()
         api.post('admin/bulk-fare/save-brake', {breaks})
             .then(res=>{
+                stopLoading(L)
                 sendAlert('fare brake saved');
                 loadAll()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
         //Pagination

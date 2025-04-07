@@ -10,6 +10,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import CustomAlert from "./Parts/CustomAlert";
 
@@ -21,7 +22,7 @@ const ManageFare = () => {
     // setLoading(true);
     // setLoading(false);
 
-
+    const {startLoading,stopLoading}=useLoading()
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
@@ -33,11 +34,16 @@ const ManageFare = () => {
 
     const [routes, setRoutes] = useState([]);
     const loadAll = () => {
+        const L = startLoading()
         api.get('admin/bulk-fare/get-all')
             .then(res => {
+                stopLoading(L)
                 setRoutes(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadAll()
@@ -105,12 +111,17 @@ const ManageFare = () => {
         if(ml.length>0){
             sendAlert(`${ml.length} routes have a negative value or zero`)
         }
+        const L=startLoading()
         api.post('admin/bulk-fare/save', {routes})
             .then(() => {
+                stopLoading(L)
                 loadAll()
                 sendAlert('fare saved successfully')
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     //Pagination

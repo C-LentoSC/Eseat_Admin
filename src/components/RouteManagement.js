@@ -27,6 +27,7 @@ import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -36,7 +37,7 @@ const RouteManagement = () => {
     // setLoading(true);
     // setLoading(false);
 
-
+    const {startLoading,stopLoading}=useLoading()
     const [routes, setRoutes] = useState([]);
     const [addmodel, setAddmodel] = useState(false);
 
@@ -59,14 +60,28 @@ const RouteManagement = () => {
         loadAllRoutes()
     }, [])
     const loadAllRoutes = () => {
+        const id=startLoading()
         api.get('admin/routes/load-all')
-            .then(res => setRoutes(res.data))
-            .catch(handleError)
+            .then(res => {
+                stopLoading(id)
+                setRoutes(res.data)
+            })
+            .catch(err=> {
+                stopLoading(id)
+                handleError(err)
+            })
     }
     const loadAllPoints = () => {
+        const id=startLoading()
         api.get("admin/points/get-all")
-            .then(res => setAllPoints(res.data.map(o => o.name)))
-            .catch(handleError)
+            .then(res => {
+                stopLoading(id)
+                setAllPoints(res.data.map(o => o.name))
+            })
+            .catch(err=> {
+                stopLoading(id)
+                handleError(err)
+            })
 
     }
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
@@ -84,8 +99,10 @@ const RouteManagement = () => {
                 busFare: parseFloat(busFare),
                 active: true,
             };
+            const L=startLoading()
             api.post("admin/routes/add", newRoute)
                 .then(() => {
+                    stopLoading(L)
                     sendAlert("new route added")
                     setAddmodel(false)
                     loadAllRoutes()
@@ -95,7 +112,10 @@ const RouteManagement = () => {
                     setDescription("");
                     setBusFare("");
                 })
-                .catch(handleError)
+                .catch(err=> {
+                    stopLoading(L)
+                    handleError(err)
+                })
 
         }
     };
@@ -120,13 +140,18 @@ const RouteManagement = () => {
 
     // Save Edited Route
     const handleSave = () => {
+        const id=startLoading()
         api.post('admin/routes/edit', currentRoute)
             .then(res => {
+                stopLoading(id)
                 loadAllRoutes()
                 sendAlert("updated")
                 handleClose()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(id)
+                handleError(err)
+            })
 
     };
 
@@ -138,21 +163,31 @@ const RouteManagement = () => {
 
     // Delete Route
     const handleDelete = (id) => {
+        const L=startLoading()
         api.post('admin/routes/delete', { id })
             .then(res => {
+                stopLoading(L)
                 loadAllRoutes()
                 sendAlert("deleted")
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(id)
+                handleError(err)
+            })
     };
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
+        const L=startLoading()
         api.post("admin/routes/toggle-status", { id })
             .then(res => {
+                stopLoading(L)
                 loadAllRoutes()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Export to CSV
@@ -207,12 +242,17 @@ const RouteManagement = () => {
                 .filter((route) => route !== null);
             // setRoutes((prev) => [...prev, ...newRoutes]);
             // console.log(newRoutes)
+            const L=startLoading()
             api.post('admin/routes/import', { data: newRoutes })
                 .then(res => {
+                    stopLoading(L)
                     loadAllRoutes()
                     sendAlert('success')
                 })
-                .catch(handleError)
+                .catch(err=> {
+                    stopLoading(L)
+                    handleError(err)
+                })
         };
         reader.readAsText(file);
     };

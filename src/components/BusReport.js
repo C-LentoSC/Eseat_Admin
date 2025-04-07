@@ -34,6 +34,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -43,11 +44,13 @@ const BusReport = () => {
     // setLoading(true);
     // setLoading(false);
 
-    
+    const {startLoading,stopLoading}=useLoading()
   const [schedules, setSchedules] = useState([]);
   const loadAll=()=>{
+    const L=startLoading()
     api.get('admin/schedule-report/get-all')
         .then(res=>{
+          stopLoading(L)
           setSchedules(res.data);
           if(!isModalOpen)return
           let s=(res.data.filter(s=>s.id===selectedBus.id)[0])
@@ -55,7 +58,10 @@ const BusReport = () => {
             setSelectedBus(s)
           }
         })
-        .catch(handleError)
+        .catch(err=> {
+          stopLoading(L)
+          handleError(err)
+        })
   }
   useEffect(() => {
     loadAll()
@@ -213,15 +219,20 @@ const BusReport = () => {
 
   const handleBookingConfirm = () => {
     // Add your logic here to handle the status change
+    const L=startLoading()
     api.post("admin/schedule-report/toggle-status",{
       action: bookingAction,
       conductorMobile,
       ...selectedBus
     }).then(res=>{
+      stopLoading(L)
       sendAlert("status changed")
             loadAll()
     })
-        .catch(handleError)
+        .catch(err=> {
+          stopLoading(L)
+          handleError(err)
+        })
 
     setIsBookingStatusModalOpen(false);
   };
@@ -238,12 +249,17 @@ const BusReport = () => {
   const handleStatusChangeConfirm = () => {
     const { scheduleId, newStatus } = statusChangeDialog;
     console.log(scheduleId, newStatus);
+    const L=startLoading()
     api.post("admin/schedule-report/status-change",statusChangeDialog)
         .then(res=>{
+          stopLoading(L)
           sendAlert("status changed")
           loadAll()
         })
-    .catch(handleError)
+    .catch(err=> {
+      stopLoading(L)
+      handleError(err)
+    })
     setStatusChangeDialog({ open: false, scheduleId: null, newStatus: '', oldStatus: '' });
   };
 

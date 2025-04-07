@@ -25,6 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -49,21 +50,32 @@ const ManageDepots = () => {
         //     active: true,
         // },
     ]);
+    const {startLoading,stopLoading}=useLoading()
     const [addmodel, setAddmodel] = useState(false);
     const [regions, setRegions] = useState([])
     const loadAllDepots = () => {
+        const L=startLoading()
         api.get('admin/depots/get-all-depots')
             .then(res => {
+                stopLoading(L)
                 setDepots(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     const loadAllRegions = () => {
+        const L=startLoading()
         api.get('admin/depots/get-regions')
             .then(res => {
+                stopLoading(L)
                 setRegions(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadAllDepots()
@@ -119,8 +131,10 @@ const ManageDepots = () => {
                 active: true,
             };
             // setDepots(prev => [...prev, newDepot]);
+            const L=startLoading()
             api.post('admin/depots/add', newDepot)
                 .then(res => {
+                    stopLoading(L)
                     sendAlert('added new')
                     loadAllDepots()
                     handleClose();
@@ -134,7 +148,10 @@ const ManageDepots = () => {
                         description: "",
                     });
                 })
-                .catch(handleError)
+                .catch(err=> {
+                    stopLoading(L)
+                    handleError(err)
+                })
             // Reset form
 
         }
@@ -164,13 +181,18 @@ const ManageDepots = () => {
 
     // Save edited depot
     const handleSave = () => {
+        const L=startLoading()
         api.post('admin/depots/edit', currentDepot)
             .then(res => {
+                stopLoading(L)
                 sendAlert('updated')
                 loadAllDepots()
                 handleClose();
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Handle edit modal region change
@@ -192,21 +214,31 @@ const ManageDepots = () => {
 
     // Delete depot
     const handleDelete = (id) => {
+        const L=startLoading()
         api.post('admin/depots/delete', { id })
             .then(res => {
+                stopLoading(L)
                 loadAllDepots()
                 sendAlert('deleted')
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Toggle active status
     const handleActiveChange = (id) => {
+        const L=startLoading()
         api.post('admin/depots/toggle-status', { id })
             .then(res => {
+                stopLoading(L)
                 loadAllDepots()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
 

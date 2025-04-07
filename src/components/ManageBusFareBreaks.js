@@ -32,6 +32,7 @@ import {Reorder} from "framer-motion";
 import {Item} from "./Parts/ItemPart";
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -51,25 +52,36 @@ const ManageBusFareBreaks = () => {
     const [alert, setAlert] = useState(null)
     const [d, setD] = useState([])
     const [b, setB] = useState([])
+    const {startLoading,stopLoading}=useLoading()
     useEffect(() => {
         getInfo()
         loadPoints()
         loadAll()
     }, []);
     const getInfo = () => {
+        const L=startLoading()
         api.get('admin/routes/fare/info?id=' + RouteID)
             .then(res => {
+                stopLoading(L)
                 setDetails(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     const loadPoints = () => {
+        const L=startLoading()
         api.get('admin/routes/fare/get-points?id=' + RouteID)
             .then(res => {
+                stopLoading(L)
                 setD(res.data.d)
                 setB(res.data.b)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
 
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
@@ -77,11 +89,16 @@ const ManageBusFareBreaks = () => {
 
     const [busPoints, setBusPoints] = useState([]);
     const loadAll = () => {
+        const L=startLoading()
         api.get('admin/routes/fare/all?id=' + RouteID)
             .then(res => {
+                stopLoading(L)
                 setBusPoints(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     const [direction, setDirection] = useState("");
     const [routePoint, setRoutePoint] = useState("");
@@ -105,15 +122,20 @@ const ManageBusFareBreaks = () => {
                 active: true,
             };
             // setBusPoints((prev) => [...prev, newBusPoint]);
+            const L=startLoading()
             api.post('admin/routes/fare/add', newBusPoint)
                 .then(res => {
+                    stopLoading(L)
                     loadAll()
                     setDirection("");
                     setRoutePoint("");
                     setFare("");
                     sendAlert('new fare brake is added')
                 })
-                .catch(handleError)
+                .catch(err=> {
+                    stopLoading(L)
+                    handleError(err)
+                })
 
         }
     };
@@ -132,13 +154,18 @@ const ManageBusFareBreaks = () => {
 
     // Save Edited Bus Point
     const handleSaveBusPoint = () => {
+        const L=startLoading()
         api.post('admin/routes/fare/edit', currentBusPoint)
             .then(res => {
+                stopLoading(L)
                 loadAll()
                 handleCloseModal();
                 sendAlert('updated')
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
 
     };
 
@@ -151,20 +178,30 @@ const ManageBusFareBreaks = () => {
 
     // Delete Bus Point
     const handleDeleteBusPoint = (id) => {
+        const L=startLoading()
         api.post('admin/routes/fare/delete', {id})
             .then(res => {
+                stopLoading(L)
                 loadAll()
                 sendAlert('deleted')
-            }).catch(handleError)
+            }).catch(err=> {
+                stopLoading(L)
+            handleError(err)
+        })
     };
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
+        const L=startLoading()
         api.post('admin/routes/fare/toggle-status', {id})
             .then(res => {
+                stopLoading(L)
                 loadAll()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Export to CSV
@@ -210,12 +247,15 @@ const ManageBusFareBreaks = () => {
                 })
                 .filter((busPoint) => busPoint !== null);
             // setBusPoints((prev) => [...prev, ...newBusPoints]);
+            const L=startLoading()
             api.post('admin/routes/fare/import', {id: RouteID, data: newBusPoints})
                 .then(res => {
+                    stopLoading(L)
                     loadAll()
                     sendAlert('import success')
                 })
                 .catch(err => {
+                    stopLoading(L)
                     handleError(err)
                     loadAll()
                 })
@@ -240,11 +280,16 @@ const ManageBusFareBreaks = () => {
                 key: index
             }
         }))
+        const L=startLoading()
         api.post('admin/routes/fare/change-order', {data: nO})
             .then(res => {
+                stopLoading(L)
                 loadAll()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
         setOpenOrderModal(false);
     };
 

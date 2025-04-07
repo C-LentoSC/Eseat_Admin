@@ -6,6 +6,7 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider, DatePicker} from '@mui/x-date-pickers';
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -207,6 +208,7 @@ const SeatTransfer = () => {
         // Return the total cost for all seats
         return totalCost.toFixed(2);
     };
+    const {startLoading,stopLoading}=useLoading()
     const toPay = () => {
         if (!calTotal()) return null
         return calTotal() - (transferDetails?.oldSeatCost ?? 0)
@@ -220,8 +222,10 @@ const SeatTransfer = () => {
             sendAlert('select a valid fare break first');
             return
         }
+        const L=startLoading()
         api.post('admin/seat-transfer/transfer', transferDetails)
             .then(res => {
+                stopLoading(L)
                 setBookingDetails(null)
                 setShowSeatLayout(false)
                 setSelectedSchedule(null)
@@ -237,20 +241,27 @@ const SeatTransfer = () => {
                 sendAlert('transfer success')
 
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
 
     const handleSearch = () => {
-
+        const L=startLoading()
         api.post('admin/seat-transfer/search', searchData)
             .then(res => {
+                stopLoading(L)
                 if (!res.data) sendAlert('invalid search data')
                 setBookingDetails(res.data)
                 setTransferDetails({
                     ...transferDetails, oldSeatCost: res.data.totalCost, id: res.data.id
                 })
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
     const handleRouteChange = (data) => {
         setPoints(data?.brake)
@@ -261,11 +272,16 @@ const SeatTransfer = () => {
 
     const [schedules, setSchedules] = useState([]);
     const loadAllSchedules = () => {
+        const L=startLoading()
         api.get('admin/seat-transfer/all-schedules')
             .then(res => {
+                stopLoading(L)
                 setSchedules(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadAllSchedules()
@@ -519,7 +535,12 @@ const SeatTransfer = () => {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <Autocomplete
-                            options={schedules.filter(s => s.date === selectedNewDate?.format('YYYY-MM-DD'))}
+                            options={schedules.filter(s=>{
+                                if(bookingDetails){
+                                    if(s.id===bookingDetails.ScheduleId)return false
+                                    else return true
+                                }else return true
+                            }).filter(s => s.date === selectedNewDate?.format('YYYY-MM-DD'))}
                             getOptionLabel={(option) => `${option.date} ${option.time} - ${option.route} (${option.busNo})`}
                             onChange={(_, value) => {
                                 setSelectedSchedule(value);

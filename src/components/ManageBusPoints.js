@@ -32,6 +32,7 @@ import { Reorder } from "framer-motion";
 import { Item } from "./Parts/ItemPart";
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -50,6 +51,7 @@ const ManageBusPoints = () => {
 
     const [allPoints, setAllPoints] = useState([])
     const [alert, setAlert] = useState(null)
+    const {startLoading,stopLoading}=useLoading()
 
     useEffect(() => {
         loadAllPoints()
@@ -57,23 +59,40 @@ const ManageBusPoints = () => {
         allPointGet()
     }, [])
     const allPointGet = () => {
+        const id=startLoading()
         api.get('admin/routes/points/get-all?id=' + RouteID)
             .then(res => {
+                stopLoading(id)
                 setBusPoints(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(id)
+                handleError(err)
+            })
     }
     const getInfo = () => {
+        const L=startLoading()
         api.get('admin/routes/points/info?id=' + RouteID)
             .then(res => {
+                stopLoading(L)
                 setDetails(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     const loadAllPoints = () => {
+        const L=startLoading()
         api.get("admin/points/get-all")
-            .then(res => setAllPoints(res.data.map(o => o.name)))
-            .catch(handleError)
+            .then(res => {
+                stopLoading(L)
+                setAllPoints(res.data.map(o => o.name))
+            })
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
 
     }
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
@@ -100,15 +119,20 @@ const ManageBusPoints = () => {
                 route: RouteID,
                 timePoint
             };
+            const L=startLoading()
             api.post("admin/routes/points/add", newBusPoint)
                 .then(res => {
+                    stopLoading(L)
                     allPointGet()
                     sendAlert('new point added')
                     setDirection("");
                     setRoutePoint("");
                     setTimePoint("")
                 })
-                .catch(handleError)
+                .catch(err=> {
+                    stopLoading(L)
+                    handleError(err)
+                })
         }
     };
 
@@ -126,14 +150,19 @@ const ManageBusPoints = () => {
 
     // Save Edited Bus Point
     const handleSaveBusPoint = () => {
+        const L=startLoading()
         api.post('admin/routes/points/edit', currentBusPoint)
             .then(res => {
+                stopLoading(L)
                 sendAlert("updated")
                 allPointGet()
                 handleCloseModal();
                 setTimePoint(null)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
 
     };
 
@@ -145,21 +174,31 @@ const ManageBusPoints = () => {
 
     // Delete Bus Point
     const handleDeleteBusPoint = (id) => {
+        const L=startLoading()
         api.post('admin/routes/points/delete', { id })
             .then(res => {
+                stopLoading(L)
                 sendAlert("deleted")
                 allPointGet()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
+        const L=startLoading()
         api.post('admin/routes/points/toggle-status', { id })
             .then(res => {
+                stopLoading(L)
                 allPointGet()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Export to CSV
@@ -202,12 +241,17 @@ const ManageBusPoints = () => {
                     return null;
                 })
                 .filter((busPoint) => busPoint !== null);
+            const L=startLoading()
             api.post('admin/routes/points/import', { route: RouteID, data: newBusPoints })
                 .then(res => {
+                    stopLoading(L)
                     allPointGet()
                     sendAlert('import success')
                 })
-                .catch(handleError)
+                .catch(err=> {
+                    stopLoading(L)
+                    handleError(err)
+                })
         };
         reader.readAsText(file);
     };
@@ -229,11 +273,16 @@ const ManageBusPoints = () => {
                 order: i
             }
         })
+        const L=startLoading()
         api.post('admin/routes/points/change-order', { data: newOrder })
             .then(res => {
+                stopLoading(L)
                 allPointGet()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
         setOpenOrderModal(false);
     };
 

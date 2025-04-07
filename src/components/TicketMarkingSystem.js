@@ -10,6 +10,7 @@ import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
 
 import LoadingOverlay from './Parts/LoadingOverlay';
+import {useLoading} from "../loading";
 
 const TicketMarkingSystem = () => {
     const [loadingList,setLoadingList] = useState([]);
@@ -17,14 +18,13 @@ const TicketMarkingSystem = () => {
     // setLoading(true);
     // setLoading(false);
 
-
+    const {startLoading,stopLoading}=useLoading()
     // Sample initial data
     const [tickets, setTickets] = useState([]);
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
-    const startLoading = (id) => setLoadingList(prevState => [...prevState,id])
-    const endLoading=(id)=>setLoadingList(prevState => prevState.filter(i=>i!==id))
+
     // States for filters
     const [depot, setDepot] = useState('');
     const [scheduleNo, setScheduleNo] = useState('');
@@ -32,18 +32,18 @@ const TicketMarkingSystem = () => {
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const loadAll=()=>{
-        const id=generateUniqueId()
-        startLoading(id)
+
+        const L=startLoading()
         api.get('admin/ticket-marking/get-all')
             .then(res=>{
-                endLoading(id)
+                stopLoading(L)
                 setTickets(res.data)
                 if(selectedTicket){
                     setSelectedTicket(p=>res.data.filter(i=>i.id===p.id)[0])
                 }
             })
             .catch(err=>{
-                endLoading(id)
+                stopLoading(L)
                 handleError(err)
             })
     }
@@ -135,16 +135,15 @@ const TicketMarkingSystem = () => {
 
     const handleConfirmSeat = (ticket, seatNo) => {
 
-        const id = generateUniqueId();
-        startLoading(id)
+        const L=startLoading()
         api.post('admin/ticket-marking/confirm', {...ticket, seatNo: seatNo})
             .then(res=>{
-                endLoading(id)
+                stopLoading(L)
                 sendAlert("seat marked")
                 loadAll()
             })
             .catch(err=>{
-                endLoading(id)
+                stopLoading(L)
                 handleError(err)
             })
     
