@@ -22,6 +22,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { setroutval } from "./DashboardLayoutAccount";
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -36,20 +37,28 @@ const ActiveRouteManagement = () => {
     const [fillRouteNo, setFillRouteNo] = useState("");
     const [fillStartPoint, setFillStartPoint] = useState("");
     const [fillEndPoint, setFillEndPoint] = useState("");
+    const {startLoading,stopLoading}=useLoading()
 
     useEffect(() => {
         loadAllPoints()
         loadAllRoutes()
     }, [])
     const loadAllRoutes = () => {
+        const id=startLoading()
         api.get('admin/routes/load-all')
-            .then(res => setRoutes(res.data.filter(r => r.active)))
-            .catch(handleError)
+            .then(res => {
+                stopLoading(id)
+                setRoutes(res.data.filter(r => r.active))
+            })
+            .catch(err=> {
+                stopLoading(id)
+                handleError(err)
+            })
     }
     const loadAllPoints = () => {
-        api.get("admin/points/get-all")
+        // api.get("admin/points/get-all")
             // .then(res => setAllPoints(res.data.map(o => o.name)))
-            .catch(handleError)
+            // .catch(handleError)
 
     }
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })

@@ -1,21 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-    Box,
-    Button,
-    Container,
-    TextField,
-    Typography,
-    IconButton,
-    // Autocomplete,
-    InputAdornment,
-    Paper,
-    TableContainer,
-    Table,
-    TableHead,
-    TableBody,
-    TableRow,
-    TableCell,
-    TablePagination
+    Box, Button, Container, TextField, Typography, IconButton, // Autocomplete,
+    InputAdornment, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -24,6 +10,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import CustomAlert from "./Parts/CustomAlert";
 
@@ -35,10 +22,10 @@ const ManageFare = () => {
     // setLoading(true);
     // setLoading(false);
 
-
+    const {startLoading,stopLoading}=useLoading()
     const [alert, setAlert] = useState(null);
-    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
 
     // const [selectedBusType, setSelectedBusType] = useState(null);
@@ -47,11 +34,18 @@ const ManageFare = () => {
 
     const [routes, setRoutes] = useState([]);
     const loadAll = () => {
+
+        const L = startLoading()
         api.get('admin/bulk-fare/get-all')
             .then(res => {
+                stopLoading(L)
+
                 setRoutes(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadAll()
@@ -59,33 +53,25 @@ const ManageFare = () => {
     // const busTypes = ["Luxury", "Semi-Luxury", "Normal"];
 
     const updateAllFares = (isIncrease) => {
-        const multiplier = isIncrease ?
-            (100 + parseFloat(percentage)) / 100 :
-            (100 - parseFloat(percentage)) / 100;
+        const multiplier = isIncrease ? (100 + parseFloat(percentage)) / 100 : (100 - parseFloat(percentage)) / 100;
 
         setRoutes(routes.map(route => ({
-            ...route,
-            newFare: parseFloat((route.oldFare * multiplier).toFixed(2))
+
+            ...route, newFare: Math.round(route.oldFare * multiplier)
+
         })));
     };
 
     const handleFareChange = (id, value) => {
-        const regex = /^\d+(\.\d{0,2})?$/;
 
-        if (value === "" || regex.test(value)) {
-            setRoutes(routes.map(route =>
-                route.id === id ? { ...route, newFare: value } : route
-            ));
-        }
+        setRoutes(routes.map(route => route.id === id ? {...route, newFare: parseInt(value) || 0} : route));
+
     };
 
     const handleExport = () => {
-        const csv = [
-            ['Route', 'Current Fare', 'New Fare'],
-            ...routes.map(route => [route.name, route.oldFare, route.newFare])
-        ].map(row => row.join(',')).join('\n');
+        const csv = [['Route', 'Current Fare', 'New Fare'], ...routes.map(route => [route.name, route.oldFare, route.newFare])].map(row => row.join(',')).join('\n');
 
-        const blob = new Blob([csv], { type: 'text/csv' });
+        const blob = new Blob([csv], {type: 'text/csv'});
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -106,9 +92,7 @@ const ManageFare = () => {
                     const existingRoute = routes.find(r => r.name.trim() === name.trim());
                     if (existingRoute) {
                         return {
-                            ...existingRoute,
-                            oldFare: parseInt(oldFare),
-                            newFare: parseInt(newFare)
+                            ...existingRoute, oldFare: parseInt(oldFare), newFare: parseInt(newFare)
                         };
                     }
                     return null;
@@ -129,12 +113,23 @@ const ManageFare = () => {
 
 
     const handleSave = () => {
-        api.post('admin/bulk-fare/save', { routes })
+
+        const ml = routes.filter(r => r.newFare < 1)
+        if(ml.length>0){
+            sendAlert(`${ml.length} routes have a negative value or zero`)
+        }
+        const L=startLoading()
+        api.post('admin/bulk-fare/save', {routes})
             .then(() => {
+                stopLoading(L)
+
                 loadAll()
                 sendAlert('fare saved successfully')
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     //Pagination
@@ -150,24 +145,25 @@ const ManageFare = () => {
     const startIndex = page * rowsPerPage;
     //End Pagination
 
-    return (
-        <Container maxWidth="lg">
+
+    return (<Container maxWidth="lg">
 
             {/* <LoadingOverlay show={loading} /> */}
 
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                setOpen={setAlert} /> : <></>}
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
+                <Box sx={{display: "flex", justifyContent: "flex-start", alignItems: "center"}}>
+                    <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                        <Typography variant="h5" sx={{fontWeight: 600}}>
+
                             Bus Fare Management
                         </Typography>
                     </Box>
                 </Box>
 
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", }}>
-                    <Box sx={{ display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap", mt: 2 }}>
+                <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap",}}>
+                    <Box sx={{display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap", mt: 2}}>
                         {/* <Autocomplete
                             options={busTypes}
                             value={selectedBusType}
@@ -200,68 +196,64 @@ const ManageFare = () => {
                             onChange={(e) => setPercentage(e.target.value)}
                             sx={{
                                 '& .MuiOutlinedInput-root': {
-                                    height: '40px',
-                                    width: '200px'
+                                    height: '40px', width: '200px'
                                 }
                             }}
                             InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                    </InputAdornment>
-                                ),
-                                endAdornment: <InputAdornment position="end">%</InputAdornment>
+                                startAdornment: (<InputAdornment position="start">
+                                    </InputAdornment>), endAdornment: <InputAdornment position="end">%</InputAdornment>
                             }}
                         />
-                        <Box sx={{ display: "flex", gap: 1 }}>
+                        <Box sx={{display: "flex", gap: 1}}>
                             <IconButton
                                 color="primary"
                                 onClick={() => updateAllFares(true)}
                                 disabled={!percentage}
                                 sx={{
-                                    borderRadius: '8px', backgroundColor: "#3f51b5", color: "#fff",
-                                    "&:hover": { backgroundColor: "#303f9f" },
+                                    borderRadius: '8px',
+                                    backgroundColor: "#3f51b5",
+                                    color: "#fff",
+                                    "&:hover": {backgroundColor: "#303f9f"},
                                     "&.Mui-disabled": {
-                                        backgroundColor: "#d3d3d3",
-                                        color: "#808080"
+                                        backgroundColor: "#d3d3d3", color: "#808080"
                                     }
                                 }}
                             >
-                                <AddIcon />
+                                <AddIcon/>
                             </IconButton>
                             <IconButton
                                 color="error"
                                 onClick={() => updateAllFares(false)}
                                 disabled={!percentage}
                                 sx={{
-                                    borderRadius: '8px', backgroundColor: "#f44336", color: "#fff",
-                                    "&:hover": { backgroundColor: "#d32f2f" },
+                                    borderRadius: '8px',
+                                    backgroundColor: "#f44336",
+                                    color: "#fff",
+                                    "&:hover": {backgroundColor: "#d32f2f"},
                                     "&.Mui-disabled": {
-                                        backgroundColor: "#d3d3d3",
-                                        color: "#808080"
+                                        backgroundColor: "#d3d3d3", color: "#808080"
                                     }
                                 }}
                             >
-                                <RemoveIcon />
+                                <RemoveIcon/>
                             </IconButton>
                         </Box>
                     </Box>
 
-                    <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+                    <Box sx={{display: "flex", gap: 2, mt: 2}}>
                         <input
                             type="file"
                             accept=".csv"
                             ref={fileInputRef}
-                            style={{ display: 'none' }}
+                            style={{display: 'none'}}
                             onChange={handleImport}
                         />
                         <Button
                             variant="contained"
-                            startIcon={<FileUploadIcon />}
+                            startIcon={<FileUploadIcon/>}
                             onClick={() => fileInputRef.current.click()}
                             sx={{
-                                backgroundColor: "#3f51b5",
-                                color: "#fff",
-                                "&:hover": {
+                                backgroundColor: "#3f51b5", color: "#fff", "&:hover": {
                                     backgroundColor: "#303f9f",
                                 },
                             }}
@@ -270,12 +262,10 @@ const ManageFare = () => {
                         </Button>
                         <Button
                             variant="contained"
-                            startIcon={<FileDownloadIcon />}
+                            startIcon={<FileDownloadIcon/>}
                             onClick={handleExport}
                             sx={{
-                                backgroundColor: "#4caf50",
-                                color: "#fff",
-                                "&:hover": {
+                                backgroundColor: "#4caf50", color: "#fff", "&:hover": {
                                     backgroundColor: "#388e3c",
                                 },
                             }}
@@ -284,12 +274,10 @@ const ManageFare = () => {
                         </Button>
                         <Button
                             variant="contained"
-                            startIcon={<SaveIcon />}
+                            startIcon={<SaveIcon/>}
                             onClick={handleSave}
                             sx={{
-                                backgroundColor: "#3f51b5",
-                                color: "#fff",
-                                "&:hover": {
+                                backgroundColor: "#3f51b5", color: "#fff", "&:hover": {
                                     backgroundColor: "#303f9f",
                                 },
                             }}
@@ -304,46 +292,47 @@ const ManageFare = () => {
                     <TableContainer>
                         <Table>
                             <TableHead>
-                                <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                    <TableCell sx={{ py: 1 }}>Route</TableCell>
-                                    <TableCell sx={{ py: 1 }} align="right">Current Fare</TableCell>
-                                    <TableCell sx={{ py: 1 }} align="center">=</TableCell>
-                                    <TableCell sx={{ py: 1 }} align="right">New Fare</TableCell>
+                                <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                    <TableCell sx={{py: 1}}>Route</TableCell>
+                                    <TableCell sx={{py: 1}} align="right">Current Fare</TableCell>
+                                    <TableCell sx={{py: 1}} align="center">=</TableCell>
+                                    <TableCell sx={{py: 1}} align="right">New Fare</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {routes
                                     .slice(startIndex, startIndex + rowsPerPage)
-                                    .map((route) => (
-                                        <TableRow key={route.id}>
-                                            <TableCell sx={{ py: 0 }}>{route.name}</TableCell>
-                                            <TableCell sx={{ py: 0 }} align="right">
+
+                                    .map((route) => (<TableRow key={route.id}>
+                                            <TableCell sx={{py: 0}}>{route.name}</TableCell>
+                                            <TableCell sx={{py: 0}} align="right">
                                                 <TextField
                                                     disabled
-                                                    value={`LKR ${route.oldFare ? parseFloat(route.oldFare).toFixed(2) : "0.00"}`}
+                                                    value={`LKR ${route.oldFare}`}
                                                     size="small"
-                                                    sx={{ width: 250 }}
+                                                    sx={{width: 150}}
                                                 />
                                             </TableCell>
-                                            <TableCell sx={{ py: 0 }} align="center">=</TableCell>
-                                            <TableCell sx={{ py: 0 }} align="right">
+                                            <TableCell sx={{py: 0}} align="center">=</TableCell>
+                                            <TableCell sx={{py: 0}} align="right">
+
                                                 <TextField
                                                     value={route.newFare}
                                                     onChange={(e) => handleFareChange(route.id, e.target.value)}
                                                     size="small"
-                                                    sx={{ width: 250 }}
+
+                                                    sx={{width: 150}}
                                                     InputProps={{
-                                                        startAdornment: <InputAdornment position="start">LKR</InputAdornment>
+                                                        startAdornment: <InputAdornment
+                                                            position="start">LKR</InputAdornment>
                                                     }}
                                                 />
                                             </TableCell>
-                                        </TableRow>
-                                    ))}
+                                        </TableRow>))}
                             </TableBody>
                         </Table>
                         <TablePagination
-                            showFirstButton
-                            showLastButton
+
                             component="div"
                             count={routes.length}
                             page={page}
@@ -355,8 +344,7 @@ const ManageFare = () => {
                     </TableContainer>
                 </Paper>
             </Box>
-        </Container>
-    );
+        </Container>);
 };
 
 export default ManageFare;

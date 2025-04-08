@@ -12,6 +12,7 @@ import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -24,6 +25,8 @@ const RefundBooking = () => {
 
     // Sample initial data
     const [bookings, setBookings] = useState([]);
+
+    const {stopLoading, startLoading} = useLoading()
 
     // States
     const [selectedBookDate, setSelectedBookDate] = useState(null);
@@ -43,10 +46,15 @@ const RefundBooking = () => {
 
     const refundStatuses = ['All', 'Refunded', 'Not Refunded'];
     const loadAll = () => {
+        const L = startLoading()
         api.get('admin/refund-booking/get-all')
             .then(res => {
+                stopLoading(L)
                 setBookings(res.data);
-            }).catch(handleError);
+            }).catch(err => {
+            stopLoading(L)
+            handleError(err)
+        });
     }
     useEffect(() => {
         loadAll()
@@ -79,11 +87,16 @@ const RefundBooking = () => {
     const handleNoteSave = () => {
         if (selectedBooking) {
             selectedBooking.note = note;
+            const L = startLoading()
             api.post('admin/refund-booking/set-note', selectedBooking)
                 .then(() => {
+                    stopLoading(L)
                     loadAll()
                     sendAlert("note updated")
-                }).catch(handleError)
+                }).catch(err => {
+                stopLoading(L)
+                handleError(err)
+            })
         }
         setNoteModalOpen(false);
     };
@@ -95,11 +108,16 @@ const RefundBooking = () => {
     };
 
     const handleRefundConfirm = () => {
+        const L = startLoading()
         api.post('admin/refund-booking/mark-as-refunded', bookingToRefund)
             .then(() => {
+                stopLoading(L)
                 loadAll()
                 sendAlert("mark as refunded")
-            }).catch(handleError)
+            }).catch(err => {
+            stopLoading(L)
+            handleError(err)
+        })
         // if (bookingToRefund) {
         //     bookingToRefund.refunded = true;
         // }
@@ -192,9 +210,11 @@ const RefundBooking = () => {
             {/* <LoadingOverlay show={loading} /> */}
 
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                setOpen={setAlert} /> : <></>}
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
+                <Typography variant="h5" sx={{fontWeight: 600, mb: 3}}>
+
                     Refund Booking
                 </Typography>
 

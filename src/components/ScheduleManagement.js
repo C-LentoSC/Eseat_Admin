@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 // import DeleteIcon from '@mui/icons-material/Delete';
 
 // import CustomAlert from "./Parts/CustomAlert";
@@ -18,7 +19,7 @@ const ScheduleManagement = () => {
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
-
+const {startLoading,stopLoading}=useLoading()
 
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
@@ -29,12 +30,18 @@ const ScheduleManagement = () => {
     useEffect(() => {
         loadAll()
     }, []);
-    const loadAll = () => {
+    const loadAll=()=>{
+        const L=startLoading()
         api.get('admin/schedule-report/get-all-schedules')
-            .then(res => {
+            .then(res=>{
+                stopLoading(L)
+
                 setSchedules(res.data);
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
 
     // Filter states
@@ -67,11 +74,18 @@ const ScheduleManagement = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        api.post("admin/schedule-report/toggle-status", { id })
-            .then(res => {
+
+        const L=startLoading()
+        api.post("admin/schedule-report/toggle-status", {id})
+            .then(res=>{
+                stopLoading(L)
+
                 loadAll()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
 

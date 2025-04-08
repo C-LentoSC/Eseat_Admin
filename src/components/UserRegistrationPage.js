@@ -31,14 +31,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
-// import LoadingOverlay from './Parts/LoadingOverlay';
+
 
 const UserRegistrationPage = () => {
 
-    // const [loading, setLoading] = useState(false);
-    // setLoading(true);
-    // setLoading(false);
 
 
     const [addmodel, setAddmodel] = useState(false);
@@ -54,9 +52,12 @@ const UserRegistrationPage = () => {
     const [password, setPassword] = useState('');
     const [role_id, setRole_id] = useState()
     const [alert, setAlert] = useState(null)
+    const {startLoading,stopLoading}=useLoading()
 
     useEffect(() => {
+        const id=startLoading()
         api.get('admin/get-roles').then(r => {
+            stopLoading(id)
             setRoles(r.data)
         })
         loadAllUsers()
@@ -65,12 +66,19 @@ const UserRegistrationPage = () => {
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
     const loadAllUsers = () => {
+        const id=startLoading()
         api.get('admin/manage-admin/all').then(r => {
+            stopLoading(id)
             setUsers(r.data)
-        }).catch(handleError)
+        }).catch(err=>{
+            stopLoading(id)
+            handleError(err)
+        })
     }
     const saveNewUser = () => {
+        const id=startLoading()
         api.post('admin/manage-admin/add', { name, username, email, mobile, password, role_id }).then(r => {
+            stopLoading(id)
             if (r.data.status === "ok") {
                 handleClose();
                 sendAlert("new user added")
@@ -85,7 +93,10 @@ const UserRegistrationPage = () => {
                 console.log(r)
             }
         })
-            .catch(handleError)
+            .catch(err=>{
+                stopLoading(id)
+                handleError(err)
+            })
     }
     const handleOpen = (user) => {
         setCurrentUser(user);
@@ -93,23 +104,35 @@ const UserRegistrationPage = () => {
     };
 
     const handleClose = () => {
+
         setCurrentUser(null);
         setOpen(false);
         setAddmodel(false);
+        setName("")
+        setEmail("")
+        setMobile("")
+        setUsername("")
+        setPassword("")
+        setRole_id(null)
     };
 
     const handleSave = () => {
         // Logic to save user details
         // console.log(currentUser)
+        const id = startLoading()
         api.post('admin/manage-admin/update', currentUser)
             .then(r => {
+                stopLoading(id)
                 if (r.data.status === "ok") {
                     sendAlert(r.data.message || "user is updated")
                     loadAllUsers();
                     handleClose();
                 }
             })
-            .catch(handleError)
+            .catch(err=>{
+                stopLoading(id)
+                handleError(err)
+            })
 
     };
 
@@ -119,12 +142,17 @@ const UserRegistrationPage = () => {
 
     };
     const handleDeleteUser = (user) => {
+        const Lid = startLoading()
         api.post("admin/manage-admin/delete", { id: user.id })
             .then(res => {
+                stopLoading(Lid)
                 sendAlert(res.data.message)
                 loadAllUsers()
             })
-            .catch(handleError)
+            .catch(err=>{
+                stopLoading(Lid)
+                handleError(err)
+            })
     }
 
 
@@ -152,7 +180,7 @@ const UserRegistrationPage = () => {
 
 
             {/* Registration Form Section */}
-            <Modal open={addmodel} onClose={handleClose}>
+            <Modal open={addmodel}  onClose={handleClose}>
                 <Box
                     sx={{
                         position: 'absolute',

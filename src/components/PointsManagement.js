@@ -23,6 +23,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -43,28 +44,39 @@ const PointsManagement = () => {
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
     const [filterPointName, setFilterPointName] = useState("");
+    const {startLoading,stopLoading}=useLoading()
 
 
     useEffect(() => {
         loadAllPoints()
     }, [])
     const loadAllPoints = () => {
+        const L=startLoading()
         api.get("admin/points/get-all")
             .then(res => {
+                stopLoading(L)
                 setPoints(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     // Add New Point
     const handleAddPoint = () => {
         if (newPointName.trim()) {
+            const id=startLoading()
             api.post("admin/points/add", { name: newPointName })
                 .then(res => {
+                    stopLoading(id)
                     loadAllPoints()
                     sendAlert(res.data.message || "new point added")
                     handleClose();
                 })
-                .catch(handleError)
+                .catch(err=> {
+                    stopLoading(id)
+                    handleError(err)
+                })
 
             setNewPointName("");
         }
@@ -81,17 +93,23 @@ const PointsManagement = () => {
         setCurrentPoint(null);
         setOpen(false);
         setAddmodel(false);
+        setNewPointName("")
     };
 
     // Save Edited Point
     const handleSave = () => {
+        const id = startLoading()
         api.post('admin/points/edit', currentPoint)
             .then(res => {
+                stopLoading(id)
                 sendAlert(res.data.message || "point edited")
                 loadAllPoints()
                 handleClose();
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(err)
+                handleError(err)
+            })
     };
 
     // Handle Input Changes
@@ -102,12 +120,17 @@ const PointsManagement = () => {
 
     // Delete Point
     const handleDelete = (id) => {
+        const L=startLoading()
         api.post('admin/points/delete', { id })
             .then(res => {
+                stopLoading(L)
                 sendAlert(res.data.message || "point deleted")
                 loadAllPoints()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     const filteredPoint = points.filter(point => {

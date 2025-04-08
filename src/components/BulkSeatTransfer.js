@@ -30,24 +30,22 @@ import dayjs from 'dayjs';
 import LoadingOverlay from './Parts/LoadingOverlay';
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
+import {useLoading} from "../loading";
 
 const BulkSeatTransfer = () => {
 
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
-    const [loadingList, setLoadingList] = useState([]);
+
     const loading = false;
 
-    function generateUniqueId() {
-        return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    }
+
+    const {startLoading,stopLoading}=useLoading()
 
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
-    const startLoading = (id) => setLoadingList(prevState => [...prevState, id])
-    const endLoading = (id) => setLoadingList(prevState => prevState.filter(i => i !== id))
     const [depots, setDepots] = useState([]);
     const [schedules, setSchedules] = useState([]);
     const [points, setPoints] = useState([]);
@@ -306,28 +304,26 @@ const BulkSeatTransfer = () => {
 
     }
     const loadAllDepots = () => {
-        const id = generateUniqueId()
-        startLoading(id)
+        const L=startLoading()
         api.get('admin/bulk-seat-transfer/get-all-depots')
             .then(res => {
-                endLoading(id)
+                stopLoading(L)
                 setDepots(res.data)
             })
             .catch(err => {
-                endLoading(id)
+                stopLoading(L)
                 handleError(err)
             })
     }
     const loadAll = () => {
-        const id = generateUniqueId()
-        startLoading(id)
+        const L=startLoading()
         api.get('admin/bulk-seat-transfer/get-all')
             .then(res => {
-                endLoading(id)
+                stopLoading(L)
                 setAllSchedules(res.data)
             })
             .catch(err => {
-                endLoading(id)
+                stopLoading(L)
                 handleError(err)
             })
     }
@@ -369,17 +365,16 @@ const BulkSeatTransfer = () => {
 
     // Handle seat hold
     const handleSeatHold = () => {
-        const id = generateUniqueId()
-        startLoading(id)
+        const L=startLoading()
         api.post('admin/bulk-seat-transfer/hold', {id: selectedBooking.id})
             .then(res => {
-                endLoading(id)
+                stopLoading(L)
                 sendAlert('booking was put on hold')
                 handleSearch()
                 handleMenuClose();
             })
             .catch(err => {
-                endLoading(id)
+                stopLoading(L)
                 handleError(err)
             })
     };
@@ -395,11 +390,10 @@ const BulkSeatTransfer = () => {
     const handleRefundSubmit = () => {
         // Handle refund logic here
 
-        const id = generateUniqueId()
-        startLoading(id)
+        const L=startLoading()
         api.post('admin/bulk-seat-transfer/refund', {...refundDetails, id: selectedBooking.id})
             .then(res => {
-                endLoading(id)
+                stopLoading(L)
                 sendAlert('refund request is registered')
                 handleSearch()
                 setRefundModalOpen(false);
@@ -408,23 +402,22 @@ const BulkSeatTransfer = () => {
                 });
             })
             .catch(err => {
-                endLoading(id)
+                stopLoading(L)
                 handleError(err)
             })
     };
 
     // Handle search
     const handleSearch = () => {
-        const id = generateUniqueId()
-        startLoading(id)
+        const L=startLoading()
         api.post('admin/bulk-seat-transfer/search', {
             id: filterData.schedule?.id,
         }).then(res => {
             setScheduleDetails(res.data.schedule);
             setBookings(res.data.bookings);
-            endLoading(id)
+            stopLoading(L)
         }).catch(err => {
-            endLoading(id)
+            stopLoading(L)
             handleError(err)
         })
     };
@@ -459,15 +452,14 @@ const BulkSeatTransfer = () => {
             sendAlert('select a valid fare break first');
             return
         }
-        const id=generateUniqueId()
-        startLoading(id)
+        const L=startLoading()
         api.post('admin/bulk-seat-transfer/transfer', {
             ...transferDetails,
             id:selectedBooking.id,
             scheduleId:selectedSchedule.id,
         })
             .then(res => {
-                endLoading(id)
+                stopLoading(L)
                 handleTransferModalClose()
                 setTransferModalOpen(false);
                 setShowSeatLayout(false)
@@ -482,7 +474,7 @@ const BulkSeatTransfer = () => {
 
             })
             .catch(err=>{
-                endLoading(id)
+                stopLoading(L)
                 handleError(err)
             })
 
@@ -609,7 +601,11 @@ const BulkSeatTransfer = () => {
         });
     };
 
-    const filteredList = allschedules.filter(schedule => dayjs(schedule.date).isSame(dayjs(filterData.date), 'day') && schedule.depot === filterData.depot && schedule.forTransfer);
+    const filteredList = allschedules
+        .filter(schedule =>
+            dayjs(schedule.date)
+                .isSame(dayjs(filterData.date), 'day') &&
+            schedule.depot === filterData.depot && schedule.forTransfer);
 
     return (<LocalizationProvider dateAdapter={AdapterDayjs}>
 

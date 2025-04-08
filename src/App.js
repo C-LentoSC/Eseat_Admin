@@ -5,22 +5,28 @@ import SignInPage from "./components/SignIn";
 import OtpEntryPage from "./components/OtpEntryPage";
 import DashboardLayoutAccount from "./components/DashboardLayoutAccount";
 import api from "./model/API";
-import LoadingOverlay from "./components/Parts/LoadingOverlay";
-
+import {LoadingProvider} from "./loading";
 
 const App = () => {
+    return (
+        <LoadingProvider>
+            <AppMain/>
+        </LoadingProvider>
+    )
+}
+
+const AppMain = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated") === "true");
 
     useEffect(() => {
         const handleActivity = () => {
-            // Reset the inactivity timer on user activity
+
             clearTimeout(window.inactivityTimeout);
             window.inactivityTimeout = setTimeout(() => {
-                handleLogout(); // Logout after 45 minutes of inactivity
-            }, 45 * 60 * 1000); // 45 minutes in milliseconds
+                handleLogout();
+            }, 45 * 60 * 1000);
         };
 
-        // Add event listeners for activity
         window.addEventListener("mousemove", handleActivity);
         window.addEventListener("keydown", handleActivity);
 
@@ -57,60 +63,11 @@ const App = () => {
         localStorage.removeItem("isAuthenticated");
         localStorage.removeItem("token");
     };
-    const initialLoadingList = () => JSON.parse(localStorage.getItem("loadingList")) || [];
-    const [loadingList, setLoadingList] = useState(initialLoadingList);
-    // const storedLoadingList = JSON.parse(localStorage.getItem("loadingList")) || [];
-    const hasInterceptorsRef = useRef(false);
-    // const [loadingList, setLoadingList] = useState(storedLoadingList);
-    const loading = loadingList.length !== 0;
 
-    function generateUniqueId() {
-        return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    }
 
-    const startLoading = (id) => {
-        const updatedList = [...loadingList, id];
-        setLoadingList(updatedList);
-        localStorage.setItem("loadingList", JSON.stringify(updatedList));
-    };
-
-    const endLoading = (id) => {
-        const updatedList = loadingList.filter((i) => i !== id);
-        setLoadingList(updatedList);
-        localStorage.setItem("loadingList", JSON.stringify(updatedList));
-    };
-
-    // Set up interceptors only once on component mount
-    useEffect(() => {
-        // if (hasInterceptorsRef.current) return;
-        api.interceptors.request.use((config) => {
-            const requestId = generateUniqueId();
-            config.headers["X-Request-ID"] = requestId;
-            startLoading(requestId);
-            config.metadata = {requestId};
-            return config;
-        });
-
-        api.interceptors.response.use((response) => {
-            const requestId = response.config.metadata?.requestId;
-            if (requestId) {
-                endLoading(requestId);
-            }
-            return response;
-        }, (error) => {
-            const requestId = error.config?.metadata?.requestId;
-            if (requestId) {
-                endLoading(requestId);
-            }
-            return Promise.reject(error);
-        });
-        hasInterceptorsRef.current = true;
-
-    }, []);
     return (<>
             <CssBaseline/>
             <Router>
-                <LoadingOverlay show={loading}/>
                 <Routes>
                     {/* Sign-In Page Route */}
                     <Route

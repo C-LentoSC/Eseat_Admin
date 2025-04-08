@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -17,14 +18,20 @@ const BulkBusManagement = () => {
     // setLoading(false);
 
     // Sample initial data
+    const {startLoading,stopLoading}=useLoading()
     const [buses, setBuses] = useState([]);
     const loadAllBus = () => {
+        const L=startLoading()
         api.get('admin/bulk-bus/get-all')
             .then(res => {
+                stopLoading(L)
                 setBuses(res.data)
 
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadAllBus()
@@ -77,11 +84,16 @@ const BulkBusManagement = () => {
             default:
                 break
         }
+        const L=startLoading()
         api.post('admin/bulk-bus/change-status', obg)
             .then(res => {
+                stopLoading(L)
                 loadAllBus()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Handle individual status updates
@@ -100,11 +112,16 @@ const BulkBusManagement = () => {
             default:
                 break
         }
+        const L=startLoading()
         api.post('admin/bulk-bus/change-status', obg)
             .then(res => {
+                stopLoading(L)
                 loadAllBus()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     //Pagination

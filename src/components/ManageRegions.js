@@ -24,6 +24,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
+import {useLoading} from "../loading";
 // import UploadIcon from "@mui/icons-material/Upload";
 // import DownloadIcon from "@mui/icons-material/Download";
 
@@ -35,7 +36,7 @@ const ManageRegions = () => {
     // setLoading(true);
     // setLoading(false);
 
-
+    const {startLoading,stopLoading}=useLoading()
     const [regions, setRegions] = useState([]);//
     const [alert, setAlert] = useState(null)
     const [addmodel, setAddmodel] = useState(false);
@@ -52,11 +53,16 @@ const ManageRegions = () => {
     const [open, setOpen] = useState(false);
     const [currentRegion, setCurrentRegion] = useState(null);
     const loadRegions = () => {
+        const L=startLoading()
         api.get('admin/region/all')
             .then(res => {
+                stopLoading(L)
                 setRegions(res.data)
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadRegions()
@@ -75,8 +81,10 @@ const ManageRegions = () => {
                 description,
 
             };
+            const L=startLoading()
             api.post('admin/region/add', newRegion)
                 .then(res => {
+                    stopLoading(L)
                     handleClose();
                     loadRegions()
                     setRegionName("");
@@ -86,7 +94,10 @@ const ManageRegions = () => {
                     setDescription("");
                     sendAlert('added')
                 })
-                .catch(handleError)
+                .catch(err=> {
+                    stopLoading(L)
+                    handleError(err)
+                })
 
         }
     };
@@ -102,17 +113,27 @@ const ManageRegions = () => {
         setCurrentRegion(null);
         setOpen(false);
         setAddmodel(false);
+        setRegionName("")
+        setMobile("")
+        setEmail("")
+        setAddress("")
+        setDescription("")
     };
 
     // Save Edited Region
     const handleSave = () => {
+        const L=startLoading()
         api.post('admin/region/edit', currentRegion)
             .then(res => {
+                stopLoading(L)
                 loadRegions()
                 sendAlert('updated')
                 handleClose();
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Handle Input Changes
@@ -123,21 +144,31 @@ const ManageRegions = () => {
 
     // Delete Region
     const handleDelete = (id) => {
+        const L=startLoading()
         api.post('admin/region/delete', { id })
             .then(res => {
+                stopLoading(L)
                 loadRegions()
                 sendAlert('deleted')
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
+        const L=startLoading()
         api.post('admin/region/toggle-status', { id })
             .then(res => {
+                stopLoading(L)
                 loadRegions()
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     };
 
     // Export to CSV

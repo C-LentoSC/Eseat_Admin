@@ -34,6 +34,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -44,18 +45,25 @@ const BusReport = () => {
   // setLoading(false);
 
 
+    const {startLoading,stopLoading}=useLoading()
   const [schedules, setSchedules] = useState([]);
-  const loadAll = () => {
+  const loadAll=()=>{
+    const L=startLoading()
     api.get('admin/schedule-report/get-all')
-      .then(res => {
-        setSchedules(res.data);
-        if (!isModalOpen) return
-        let s = (res.data.filter(s => s.id === selectedBus.id)[0])
-        if (s) {
-          setSelectedBus(s)
-        }
-      })
-      .catch(handleError)
+        .then(res=>{
+          stopLoading(L)
+          setSchedules(res.data);
+          if(!isModalOpen)return
+          let s=(res.data.filter(s=>s.id===selectedBus.id)[0])
+          if(s){
+            setSelectedBus(s)
+          }
+        })
+        .catch(err=> {
+          stopLoading(L)
+          handleError(err)
+        })
+
   }
   useEffect(() => {
     loadAll()
@@ -215,15 +223,21 @@ const BusReport = () => {
 
   const handleBookingConfirm = () => {
     // Add your logic here to handle the status change
-    api.post("admin/schedule-report/toggle-status", {
+    const L=startLoading()
+    api.post("admin/schedule-report/toggle-status",{
       action: bookingAction,
       conductorMobile,
       ...selectedBus
-    }).then(res => {
+    }).then(res=>{
+      stopLoading(L)
+
       sendAlert("status changed")
       loadAll()
     })
-      .catch(handleError)
+        .catch(err=> {
+          stopLoading(L)
+          handleError(err)
+        })
 
     setIsBookingStatusModalOpen(false);
   };
@@ -240,12 +254,18 @@ const BusReport = () => {
   const handleStatusChangeConfirm = () => {
     const { scheduleId, newStatus } = statusChangeDialog;
     console.log(scheduleId, newStatus);
-    api.post("admin/schedule-report/status-change", statusChangeDialog)
-      .then(res => {
-        sendAlert("status changed")
-        loadAll()
-      })
-      .catch(handleError)
+    const L=startLoading()
+    api.post("admin/schedule-report/status-change",statusChangeDialog)
+        .then(res=>{
+          stopLoading(L)
+          sendAlert("status changed")
+          loadAll()
+        })
+    .catch(err=> {
+      stopLoading(L)
+      handleError(err)
+    })
+
     setStatusChangeDialog({ open: false, scheduleId: null, newStatus: '', oldStatus: '' });
   };
 

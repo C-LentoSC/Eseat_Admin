@@ -22,6 +22,7 @@ import { Cancel } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
+import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
@@ -34,7 +35,7 @@ const TicketCancelRequests = () => {
 
     // Sample initial data
     const [requests, setRequests] = useState([]);
-
+    const {startLoading,stopLoading}=useLoading()
     // States
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
@@ -48,11 +49,16 @@ const TicketCancelRequests = () => {
         setConfirmDialogOpen(true);
     };
     const loadAll = () => {
+        const L=startLoading()
         api.get('admin/cancel-booking/get-all')
             .then(res => {
+                stopLoading(L)
                 setRequests(res.data);
             })
-            .catch(handleError)
+            .catch(err=> {
+                stopLoading(L)
+                handleError(err)
+            })
     }
     useEffect(() => {
         loadAll()
@@ -61,12 +67,17 @@ const TicketCancelRequests = () => {
     const handleCancelConfirm = () => {
         if (selectedRequest) {
             selectedRequest.isCanceled = true;
+            const L=startLoading()
             api.post('admin/cancel-booking/confirm-request', selectedRequest)
                 .then(res => {
+                    stopLoading(L)
                     loadAll()
                     sendAlert('successfully cancelled booking')
                 })
-                .catch(handleError)
+                .catch(err=> {
+                    stopLoading(L)
+                    handleError(err)
+                })
         }
         setConfirmDialogOpen(false);
     };
