@@ -163,6 +163,8 @@ const TicketCancelRequests = () => {
                     </TableBody>
                 </Table>
                 <TablePagination
+                    showFirstButton
+                    showLastButton
                     component="div"
                     count={requests.length}
                     page={page}

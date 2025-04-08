@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
     TextField, InputAdornment, Button, TablePagination
 } from '@mui/material';
-import {FileDownload} from '@mui/icons-material';
+import { FileDownload } from '@mui/icons-material';
 import dayjs from 'dayjs';
 
 import LoadingOverlay from './Parts/LoadingOverlay';
@@ -23,12 +23,13 @@ const CustomerDetails = () => {
     }
 
     const [alert, setAlert] = useState(null);
+
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
 
     // Sample initial data
-    const [customers, setCustomers] = useState([ ]);
+    const [customers, setCustomers] = useState([]);
     const loadAllCustomers = () => {
         const L=startLoading()
 
@@ -38,10 +39,12 @@ const CustomerDetails = () => {
                 setCustomers(response.data)
                 console.log(response.data)
             }).catch(err => {
+
                 stopLoading(L)
             handleError(err)
 
         })
+
     }
     useEffect(() => {
         loadAllCustomers()
@@ -93,7 +96,7 @@ const CustomerDetails = () => {
         ].join('\n');
 
         const BOM = '\uFEFF';
-        const blob = new Blob([BOM + csvContent], {type: 'text/csv;charset=utf-8;'});
+        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.setAttribute('href', url);
@@ -124,9 +127,9 @@ const CustomerDetails = () => {
             {/* <LoadingOverlay show={loading} /> */}
 
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
-            <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
-                <Typography variant="h5" sx={{fontWeight: 600, mb: 3}}>
+                setOpen={setAlert} /> : <></>}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Customer Details
                 </Typography>
 
@@ -220,7 +223,7 @@ const CustomerDetails = () => {
                 }}>
                     <Button
                         variant="contained"
-                        startIcon={<FileDownload/>}
+                        startIcon={<FileDownload />}
                         onClick={handleExport}
                         disabled={filteredCustomers.length === 0}
                     >
@@ -232,11 +235,11 @@ const CustomerDetails = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
-                                <TableCell sx={{py: 1}}>ID</TableCell>
-                                <TableCell sx={{py: 1}}>Name</TableCell>
-                                <TableCell sx={{py: 1}}>Mobile</TableCell>
-                                <TableCell sx={{py: 1}} align="right">NIC</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>ID</TableCell>
+                                <TableCell sx={{ py: 1 }}>Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>Mobile</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">NIC</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -244,15 +247,17 @@ const CustomerDetails = () => {
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((customer) => (
                                     <TableRow key={customer.id}>
-                                        <TableCell sx={{py: 0}}>{customer.id}</TableCell>
-                                        <TableCell sx={{py: 0}}>{customer.name}</TableCell>
-                                        <TableCell sx={{py: 0}}>{customer.mobile}</TableCell>
-                                        <TableCell sx={{py: 0}} align="right">{customer.nic}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{customer.id}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{customer.name}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{customer.mobile}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">{customer.nic}</TableCell>
                                     </TableRow>
                                 ))}
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredCustomers.length}
                         page={page}

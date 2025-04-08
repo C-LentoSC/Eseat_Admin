@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
@@ -21,12 +21,12 @@ const ScheduleManagement = () => {
     // setLoading(false);
 const {startLoading,stopLoading}=useLoading()
 
-     const [alert, setAlert] = useState(null);
+    const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({ message: text, severity: "info" })
     const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     // Sample initial data
-    const [schedules,setSchedules] = useState([ ]);
+    const [schedules, setSchedules] = useState([]);
     useEffect(() => {
         loadAll()
     }, []);
@@ -35,6 +35,7 @@ const {startLoading,stopLoading}=useLoading()
         api.get('admin/schedule-report/get-all-schedules')
             .then(res=>{
                 stopLoading(L)
+
                 setSchedules(res.data);
             })
             .catch(err=> {
@@ -73,10 +74,12 @@ const {startLoading,stopLoading}=useLoading()
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
+
         const L=startLoading()
         api.post("admin/schedule-report/toggle-status", {id})
             .then(res=>{
                 stopLoading(L)
+
                 loadAll()
             })
             .catch(err=> {
@@ -113,26 +116,26 @@ const {startLoading,stopLoading}=useLoading()
         />
     );
 
-        //Pagination
-        const [page, setPage] = useState(0);
-        const [rowsPerPage, setRowsPerPage] = useState(10);
-        const handleChangePage = (event, newPage) => {
-            setPage(newPage);
-        };
-        const handleChangeRowsPerPage = (event) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        };
-        const startIndex = page * rowsPerPage;
-        //End Pagination
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const startIndex = page * rowsPerPage;
+    //End Pagination
 
     return (
         <Container component="main" maxWidth="lg">
-          
-           {/* <LoadingOverlay show={loading} /> */}
-           
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                                  setOpen={setAlert}/> : <></>}
+
+            {/* <LoadingOverlay show={loading} /> */}
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+                setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
                     Schedule Management
@@ -194,32 +197,32 @@ const {startLoading,stopLoading}=useLoading()
                         </TableHead>
                         <TableBody>
                             {filteredSchedules
-                             .slice(startIndex, startIndex + rowsPerPage)
-                             .map((schedule) => (
-                                <TableRow key={schedule.id}>
-                                    <TableCell>{schedule.scheduleNumber}</TableCell>
-                                    <TableCell>{schedule.routeNo}</TableCell>
-                                    <TableCell>{schedule.route}</TableCell>
-                                    <TableCell>{schedule.travelDate}</TableCell>
-                                    <TableCell>{schedule.startTime}</TableCell>
-                                    <TableCell>{schedule.endDate}</TableCell>
-                                    <TableCell>{schedule.endTime}</TableCell>
-                                    <TableCell>{schedule.closingDate}</TableCell>
-                                    <TableCell>{schedule.closingTime}</TableCell>
-                                    <TableCell>
-                                        {/* <Typography variant="body2" sx={{ color: schedule.status === 'Active' ? 'green' : 'red' }}>{schedule.status}</Typography> */}
+                                .slice(startIndex, startIndex + rowsPerPage)
+                                .map((schedule) => (
+                                    <TableRow key={schedule.id}>
+                                        <TableCell sx={{ py: 0 }}>{schedule.scheduleNumber}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.routeNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.route}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.travelDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.startTime}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.endDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.endTime}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.closingDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{schedule.closingTime}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>
+                                            {/* <Typography variant="body2" sx={{ color: schedule.status === 'Active' ? 'green' : 'red' }}>{schedule.status}</Typography> */}
 
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={schedule.active}
-                                                    onChange={() => handleActiveChange(schedule.id)}
-                                                />
-                                            }
-                                            label={schedule.active ? "Active" : "Inactive"}
-                                        />
-                                    </TableCell>
-                                    {/* <TableCell>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={schedule.active}
+                                                        onChange={() => handleActiveChange(schedule.id)}
+                                                    />
+                                                }
+                                                label={schedule.active ? "Active" : "Inactive"}
+                                            />
+                                        </TableCell>
+                                        {/* <TableCell>
                                         {schedule.status === 'Duplicate' ? (
                                             <IconButton
                                                 size="small"
@@ -230,19 +233,21 @@ const {startLoading,stopLoading}=useLoading()
                                             </IconButton>
                                         ) : null}
                                     </TableCell> */}
-                                </TableRow>
-                            ))}
+                                    </TableRow>
+                                ))}
                         </TableBody>
                     </Table>
-                     <TablePagination
-                                            component="div"
-                                            count={filteredSchedules.length}
-                                            page={page}
-                                            onPageChange={handleChangePage}
-                                            rowsPerPage={rowsPerPage}
-                                            onRowsPerPageChange={handleChangeRowsPerPage}
-                                            rowsPerPageOptions={[10, 25, 50, 100]}
-                                        />
+                    <TablePagination
+                        showFirstButton
+                        showLastButton
+                        component="div"
+                        count={filteredSchedules.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50, 100]}
+                    />
                 </TableContainer>
             </Box>
         </Container>

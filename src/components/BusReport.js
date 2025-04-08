@@ -40,9 +40,10 @@ import {useLoading} from "../loading";
 
 const BusReport = () => {
 
-      // const [loading, setLoading] = useState(false);
-    // setLoading(true);
-    // setLoading(false);
+  // const [loading, setLoading] = useState(false);
+  // setLoading(true);
+  // setLoading(false);
+
 
     const {startLoading,stopLoading}=useLoading()
   const [schedules, setSchedules] = useState([]);
@@ -62,13 +63,14 @@ const BusReport = () => {
           stopLoading(L)
           handleError(err)
         })
+
   }
   useEffect(() => {
     loadAll()
   }, []);
   const [alert, setAlert] = useState(null);
   const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-  const handleError = (err) => setAlert({ message: err?.response?.data?.message??"error", severity: "error" })
+  const handleError = (err) => setAlert({ message: err?.response?.data?.message ?? "error", severity: "error" })
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -90,8 +92,8 @@ const BusReport = () => {
   });
 
 
-  const [depots,setDepots] = useState([]);
-  const [routes,setRoutes] = useState([]);
+  const [depots, setDepots] = useState([]);
+  const [routes, setRoutes] = useState([]);
   const tripStatuses = ["No Action", "Trip Cancel", "Break Down", "Other", "Layout Change"];
 
   // Filter schedules based on selected filters
@@ -110,19 +112,19 @@ const BusReport = () => {
       setBusNumber(selectedBus.busNo || "");
     }
   }, [selectedBus]);
-  const loadInf=()=>{
+  const loadInf = () => {
     api('admin/schedule-report/get-all-route')
-        .then(res=>{
-          setRoutes(res.data)
-        }).catch(handleError)
+      .then(res => {
+        setRoutes(res.data)
+      }).catch(handleError)
     api('admin/schedule-report/get-all-depots')
-        .then(res=>{
-          setDepots(res.data)
-        }).catch(handleError)
+      .then(res => {
+        setDepots(res.data)
+      }).catch(handleError)
   }
-  useEffect(()=>{
+  useEffect(() => {
     loadInf()
-  },[])
+  }, [])
 
   const handleTransfer = (schedule) => {
     setSelectedTransferBus(schedule);
@@ -157,7 +159,7 @@ const BusReport = () => {
         <TableContainer component={Paper}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+              <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                 <TableCell sx={{ py: 1 }}>Ref No</TableCell>
                 <TableCell sx={{ py: 1 }}>Seat No</TableCell>
                 <TableCell sx={{ py: 1 }}>V-Code</TableCell>
@@ -170,32 +172,34 @@ const BusReport = () => {
             </TableHead>
             <TableBody>
               {selectedTransferBus?.bookings
-            .slice(startIndex, startIndex + rowsPerPage)
-          .map((row, index) => (
-                (row.seatStatus === 'transfer'&&row.isActive===true) ? (
-                  <TableRow key={index}>
-                    <TableCell sx={{ py: 0 }}>{row.refNo}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{row.seatNo}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{row.vCode}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{row.modeOfPay}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{row.route}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{row.nic}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{row.bookedBy}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{row.bookedDate}</TableCell>
-                  </TableRow>
-                ) : null
-              ))}
+                .slice(startIndex, startIndex + rowsPerPage)
+                .map((row, index) => (
+                  (row.seatStatus === 'transfer' && row.isActive === true) ? (
+                    <TableRow key={index}>
+                      <TableCell sx={{ py: 0 }}>{row.refNo}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{row.seatNo}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{row.vCode}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{row.modeOfPay}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{row.route}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{row.nic}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{row.bookedBy}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{row.bookedDate}</TableCell>
+                    </TableRow>
+                  ) : null
+                ))}
             </TableBody>
           </Table>
-              <TablePagination
-                        component="div"
-                        count={selectedTransferBus?.bookings.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                    />
+          <TablePagination
+            showFirstButton
+            showLastButton
+            component="div"
+            count={selectedTransferBus?.bookings.length}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[10, 25, 50, 100]}
+          />
         </TableContainer>
 
         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
@@ -212,7 +216,7 @@ const BusReport = () => {
     </Modal>
   );
 
-  const handleBookingToggle = React.useCallback((status,bus) => () => {
+  const handleBookingToggle = React.useCallback((status, bus) => () => {
     setBookingAction(status === "opened" ? "close" : "open");
     setIsBookingStatusModalOpen(true);
   }, []);
@@ -226,8 +230,9 @@ const BusReport = () => {
       ...selectedBus
     }).then(res=>{
       stopLoading(L)
+
       sendAlert("status changed")
-            loadAll()
+      loadAll()
     })
         .catch(err=> {
           stopLoading(L)
@@ -260,6 +265,7 @@ const BusReport = () => {
       stopLoading(L)
       handleError(err)
     })
+
     setStatusChangeDialog({ open: false, scheduleId: null, newStatus: '', oldStatus: '' });
   };
 
@@ -505,77 +511,77 @@ const BusReport = () => {
 
         // Add seat (selected or empty) to the grid
         grid.push(
-            seatInfo ? (
-                <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                    key={seatId}
-                    className="relative m-1"
+          seatInfo ? (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              key={seatId}
+              className="relative m-1"
+            >
+              <SeatIcon status={seatInfo.status || "default"} />
+              {seatInfo.seatNumber && (
+                <span
+                  style={{
+                    left: "11px",
+                    fontWeight: "bold",
+                    color: "#FFFFFF",
+                  }}
+                  className="setpadding01 absolute text-xs font-medium cursor-pointer"
                 >
-                  <SeatIcon status={seatInfo.status || "default"} />
-                  {seatInfo.seatNumber && (
-                      <span
-                          style={{
-                            left: "11px",
-                            fontWeight: "bold",
-                            color: "#FFFFFF",
-                          }}
-                          className="setpadding01 absolute text-xs font-medium cursor-pointer"
-                      >
-                {String(seatInfo.seatNumber)}
-              </span>
-                  )}
-                </div>
-            ) : (
-                <div key={seatId}>
-                  <EmpltySeatIcon />
-                </div>
-            )
+                  {String(seatInfo.seatNumber)}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div key={seatId}>
+              <EmpltySeatIcon />
+            </div>
+          )
         );
       }
     }
 
     return (
-        <div
-            style={{
-              display: 'grid',
-              gridTemplateRows: `repeat(${rows}, 1fr)`,
-              gridTemplateColumns: `repeat(${cols}, 1fr)`,
-              marginTop: '10px',
-              maxWidth: '800px',
-              maxHeight: '400px',
-            }}
-        >
-          {grid}
-        </div>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateRows: `repeat(${rows}, 1fr)`,
+          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          marginTop: '10px',
+          maxWidth: '800px',
+          maxHeight: '400px',
+        }}
+      >
+        {grid}
+      </div>
     );
   };
 
- //Pagination
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-    const startIndex = page * rowsPerPage;
-    //End Pagination
+  //Pagination
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  const startIndex = page * rowsPerPage;
+  //End Pagination
 
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container component="main" maxWidth="lg">
-            
+
         {/* <LoadingOverlay show={loading} /> */}
-        
-         {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                              setOpen={setAlert}/> : <></>}
+
+        {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+          setOpen={setAlert} /> : <></>}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
             Bus Schedule Report
@@ -683,7 +689,7 @@ const BusReport = () => {
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
-                <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                   <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
                   <TableCell sx={{ py: 1 }}>Start date</TableCell>
                   <TableCell sx={{ py: 1 }}>Start Time</TableCell>
@@ -700,63 +706,65 @@ const BusReport = () => {
               </TableHead>
               <TableBody>
                 {filteredSchedules
-                   .slice(startIndex, startIndex + rowsPerPage)
+                  .slice(startIndex, startIndex + rowsPerPage)
                   .map((schedule) => (
-                  <TableRow key={schedule.id}>
-                    <TableCell sx={{ py: 0 }}>{schedule.scheduleNo}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{schedule.startDate}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{schedule.startTime}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{schedule.startPoint}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{schedule.endPoint}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{schedule.routeNo}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{schedule.busType}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{schedule.busNo}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{schedule.conductorNo}</TableCell>
-                    <TableCell sx={{ py: 0 }}>{schedule.depot}</TableCell>
-                    <TableCell sx={{ py: 0 }} align="center">
-                      <Select
-                        size="small"
-                        value={schedule.tripStatus}
-                        onChange={(e) => handleStatusChangeClick(
-                          schedule.id,
-                          e.target.value,
-                          schedule.tripStatus
-                        )}
-                        sx={{ height : 30 }}
-                      >
-                        {tripStatuses.map((status) => (
-                          <MenuItem key={status} value={status}>
-                            {status}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </TableCell>
-                    <TableCell sx={{ py: 0 }} align="right">
-                      <IconButton onClick={() => handleView(schedule)}>
-                        <VisibilityIcon />
-                      </IconButton>
-                      {schedule?.bookings.filter(booking => {
-                        const matchingBookings = schedule.bookings.filter(b => b.refNo === booking.refNo);
-                        return matchingBookings.length >= 2;
-                      }).length > 0 && (
-                        <Button size="small" variant="contained" sx={{ ml: 1, height: 25 }} onClick={() => handleTransfer(schedule)}>
-                          Transfer
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                    <TableRow key={schedule.id}>
+                      <TableCell sx={{ py: 0 }}>{schedule.scheduleNo}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{schedule.startDate}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{schedule.startTime}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{schedule.startPoint}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{schedule.endPoint}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{schedule.routeNo}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{schedule.busType}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{schedule.busNo}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{schedule.conductorNo}</TableCell>
+                      <TableCell sx={{ py: 0 }}>{schedule.depot}</TableCell>
+                      <TableCell sx={{ py: 0 }} align="center">
+                        <Select
+                          size="small"
+                          value={schedule.tripStatus}
+                          onChange={(e) => handleStatusChangeClick(
+                            schedule.id,
+                            e.target.value,
+                            schedule.tripStatus
+                          )}
+                          sx={{ height: 30 }}
+                        >
+                          {tripStatuses.map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {status}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </TableCell>
+                      <TableCell sx={{ py: 0 }} align="right">
+                        <IconButton onClick={() => handleView(schedule)}>
+                          <VisibilityIcon />
+                        </IconButton>
+                        {schedule?.bookings.filter(booking => {
+                          const matchingBookings = schedule.bookings.filter(b => b.refNo === booking.refNo);
+                          return matchingBookings.length >= 2;
+                        }).length > 0 && (
+                            <Button size="small" variant="contained" sx={{ ml: 1, height: 25 }} onClick={() => handleTransfer(schedule)}>
+                              Transfer
+                            </Button>
+                          )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
-                   <TablePagination
-                        component="div"
-                        count={filteredSchedules.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                    />
+            <TablePagination
+              showFirstButton
+              showLastButton
+              component="div"
+              count={filteredSchedules.length}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[10, 25, 50, 100]}
+            />
           </TableContainer>
 
           <Modal
@@ -811,7 +819,7 @@ const BusReport = () => {
                   <Button
                     variant="contained"
                     color={selectedBus?.status === "opened" ? "secondary" : "primary"}
-                    onClick={handleBookingToggle(selectedBus?.status,selectedBus)}
+                    onClick={handleBookingToggle(selectedBus?.status, selectedBus)}
                   >
                     <span className="setpadding01">{selectedBus?.status === "opened" ? 'Close Booking' : 'Open Booking'}</span>
                   </Button>
@@ -869,7 +877,7 @@ const BusReport = () => {
                   <TableContainer component={Paper}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                        <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                           <TableCell sx={{ py: 1 }} className="setpadding01">Ref No</TableCell>
                           <TableCell sx={{ py: 1 }} className="setpadding01">Seat no</TableCell>
                           <TableCell sx={{ py: 1 }} className="setpadding01">V-Code</TableCell>
@@ -882,18 +890,18 @@ const BusReport = () => {
                       </TableHead>
                       <TableBody>
                         {selectedBus?.bookings
-                      .map((booking, index) => (
-                          <TableRow key={index}>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.refNo}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.seatNo}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.vCode}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.modeOfPay}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.route}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.nic}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedBy}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedDate}</TableCell>
-                          </TableRow>
-                        ))}
+                          .map((booking, index) => (
+                            <TableRow key={index}>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.refNo}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.seatNo}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.vCode}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.modeOfPay}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.route}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.nic}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedBy}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedDate}</TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
 
@@ -906,7 +914,7 @@ const BusReport = () => {
                   <TableContainer component={Paper}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                        <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                           <TableCell sx={{ py: 1 }} className="setpadding01">Booked By</TableCell>
                           <TableCell sx={{ py: 1 }} className="setpadding01">Mode of Pay</TableCell>
                           <TableCell sx={{ py: 1 }} className="setpadding01">Route</TableCell>
@@ -917,16 +925,16 @@ const BusReport = () => {
                       </TableHead>
                       <TableBody>
                         {selectedBus?.summary
-                        .map((summary, index) => (
-                          <TableRow key={index}>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.bookedBy}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.modeOfPay}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.route}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.busFare}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01">{summary.noOfSeate}</TableCell>
-                            <TableCell sx={{ py: 0 }} className="setpadding01" align="right">{summary.totalBusFare}</TableCell>
-                          </TableRow>
-                        ))}
+                          .map((summary, index) => (
+                            <TableRow key={index}>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.bookedBy}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.modeOfPay}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.route}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.busFare}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.noOfSeate}</TableCell>
+                              <TableCell sx={{ py: 0 }} className="setpadding01" align="right">{summary.totalBusFare}</TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
 

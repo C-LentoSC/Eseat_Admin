@@ -962,6 +962,7 @@ const BusManagement = () => {
             <Box sx={{display: "flex", alignItems: "center", mb: 3}}>
                 <IconButton onClick={handleBackClick} sx={{marginRight: "10px", padding: '0'}}>
                     <ArrowBackIcon/>
+
                 </IconButton>
                 <Typography variant="h5" sx={{fontWeight: 600}}>
                     Bus Management ({details.DepotName} Depot)
@@ -1103,6 +1104,8 @@ const BusManagement = () => {
                     </TableBody>
                 </Table>
                 <TablePagination
+                    showFirstButton
+                    showLastButton
                     component="div"
                     count={filteredBuses.length}
                     page={page}

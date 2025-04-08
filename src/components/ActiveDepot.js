@@ -25,6 +25,7 @@ import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
+
 const ActiveDepot = () => {
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
@@ -207,6 +208,8 @@ const ActiveDepot = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredDepots.length}
                         page={page}

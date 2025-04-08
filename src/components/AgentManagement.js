@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
     Box,
     Container,
@@ -118,6 +118,7 @@ const AgentManagement = () => {
         api.post('admin/agent/delete', agent)
             .then(res => {
                 stopLoading(L)
+
                 loadAllAgents()
             })
             .catch(err => {
@@ -166,7 +167,7 @@ const AgentManagement = () => {
     };
 
     const handleBusAssignment = useCallback((agent) => {
-        setSelectedAgent({...agent});
+        setSelectedAgent({ ...agent });
         setBusModalOpen(true);
     }, []);
 
@@ -201,6 +202,7 @@ const AgentManagement = () => {
         api.post('admin/agent/remove-bus', updatedAgent)
             .then(res => {
                 stopLoading(L)
+
                 loadAllAgents()
             })
             .catch(err=> {
@@ -221,8 +223,8 @@ const AgentManagement = () => {
         return availableBuses.filter(bus => !assignedBusIds.includes(bus.id));
     };
     const [alert, setAlert] = useState(null)
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
 
     //Pagination
@@ -284,6 +286,7 @@ const AgentManagement = () => {
                             startAdornment: (<InputAdornment position="start">
                             </InputAdornment>),
                         }}
+
                         sx={{
                             width: 200, '& .MuiOutlinedInput-root': {
                                 height: '40px',
@@ -406,6 +409,7 @@ const AgentManagement = () => {
                     <Typography variant="h6" gutterBottom>
                         {newAgent.id ? 'Edit Agent' : 'Add New Agent'}
                     </Typography>
+
 
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6}>
@@ -570,6 +574,7 @@ const AgentManagement = () => {
                                     disabled={!selectedBus}
                                     sx={{height: '40px'}}
                                     startIcon={<BusIcon/>}
+
                                 >
                                     Assign Bus
                                 </Button>
@@ -643,6 +648,7 @@ const AgentManagement = () => {
 
         </Box>
     </Container>);
+
 };
 
 export default AgentManagement;

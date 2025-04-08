@@ -174,7 +174,9 @@ const ManageBusFacilities = () => {
     const startIndex = page * rowsPerPage;
     //End Pagination
     return (
+
         <Container component="main" maxWidth="lg" sx={{py: 0}}>
+
 
             {/* <LoadingOverlay show={loading} /> */}
 
@@ -358,6 +360,8 @@ const ManageBusFacilities = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={facilities.length}
                         page={page}

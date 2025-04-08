@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     Box, Button, Container, TextField, Typography, IconButton, // Autocomplete,
     InputAdornment, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination
@@ -34,10 +34,12 @@ const ManageFare = () => {
 
     const [routes, setRoutes] = useState([]);
     const loadAll = () => {
+
         const L = startLoading()
         api.get('admin/bulk-fare/get-all')
             .then(res => {
                 stopLoading(L)
+
                 setRoutes(res.data)
             })
             .catch(err=> {
@@ -54,12 +56,16 @@ const ManageFare = () => {
         const multiplier = isIncrease ? (100 + parseFloat(percentage)) / 100 : (100 - parseFloat(percentage)) / 100;
 
         setRoutes(routes.map(route => ({
+
             ...route, newFare: Math.round(route.oldFare * multiplier)
+
         })));
     };
 
     const handleFareChange = (id, value) => {
+
         setRoutes(routes.map(route => route.id === id ? {...route, newFare: parseInt(value) || 0} : route));
+
     };
 
     const handleExport = () => {
@@ -107,6 +113,7 @@ const ManageFare = () => {
 
 
     const handleSave = () => {
+
         const ml = routes.filter(r => r.newFare < 1)
         if(ml.length>0){
             sendAlert(`${ml.length} routes have a negative value or zero`)
@@ -115,6 +122,7 @@ const ManageFare = () => {
         api.post('admin/bulk-fare/save', {routes})
             .then(() => {
                 stopLoading(L)
+
                 loadAll()
                 sendAlert('fare saved successfully')
             })
@@ -137,6 +145,7 @@ const ManageFare = () => {
     const startIndex = page * rowsPerPage;
     //End Pagination
 
+
     return (<Container maxWidth="lg">
 
             {/* <LoadingOverlay show={loading} /> */}
@@ -147,6 +156,7 @@ const ManageFare = () => {
                 <Box sx={{display: "flex", justifyContent: "flex-start", alignItems: "center"}}>
                     <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                         <Typography variant="h5" sx={{fontWeight: 600}}>
+
                             Bus Fare Management
                         </Typography>
                     </Box>
@@ -292,6 +302,7 @@ const ManageFare = () => {
                             <TableBody>
                                 {routes
                                     .slice(startIndex, startIndex + rowsPerPage)
+
                                     .map((route) => (<TableRow key={route.id}>
                                             <TableCell sx={{py: 0}}>{route.name}</TableCell>
                                             <TableCell sx={{py: 0}} align="right">
@@ -304,10 +315,12 @@ const ManageFare = () => {
                                             </TableCell>
                                             <TableCell sx={{py: 0}} align="center">=</TableCell>
                                             <TableCell sx={{py: 0}} align="right">
+
                                                 <TextField
                                                     value={route.newFare}
                                                     onChange={(e) => handleFareChange(route.id, e.target.value)}
                                                     size="small"
+
                                                     sx={{width: 150}}
                                                     InputProps={{
                                                         startAdornment: <InputAdornment
@@ -319,6 +332,7 @@ const ManageFare = () => {
                             </TableBody>
                         </Table>
                         <TablePagination
+
                             component="div"
                             count={routes.length}
                             page={page}

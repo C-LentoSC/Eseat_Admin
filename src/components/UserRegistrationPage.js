@@ -411,6 +411,8 @@ const UserRegistrationPage = () => {
                     </TableBody>
                 </Table>
                 <TablePagination
+                    showFirstButton
+                    showLastButton
                     component="div"
                     count={users.length}
                     page={page}
@@ -418,8 +420,10 @@ const UserRegistrationPage = () => {
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     rowsPerPageOptions={[10, 25, 50, 100]}
+                    showFirstLastButtons
                 />
             </TableContainer>
+
 
             {/* Edit User Modal */}
             <Modal open={open} onClose={handleClose}>

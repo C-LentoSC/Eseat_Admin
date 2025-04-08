@@ -41,6 +41,7 @@ const CrewManagement = () => {
     // setLoading(false);
 
 
+
     const BusID = sessionStorage.getItem('currentValueID');
     const {startLoading, stopLoading} = useLoading()
     const [alert, setAlert] = useState(null);
@@ -231,6 +232,7 @@ const CrewManagement = () => {
                         }}>
                             <IconButton onClick={handleBackClick} sx={{marginRight: "10px", padding: '0'}}>
                                 <ArrowBackIcon/>
+
                             </IconButton>
                             <Typography variant="h5" sx={{fontWeight: 600, display: 'flex'}}>
                                 Manage Crew (
@@ -299,6 +301,8 @@ const CrewManagement = () => {
                             </TableBody>
                         </Table>
                         <TablePagination
+                            showFirstButton
+                            showLastButton
                             component="div"
                             count={crew.length}
                             page={page}

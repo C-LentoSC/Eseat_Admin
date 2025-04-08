@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
@@ -6,9 +6,9 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     Modal, Autocomplete, TablePagination
 } from '@mui/material';
-import {NoteAdd, CheckCircle, FileDownload} from '@mui/icons-material';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import {LocalizationProvider, DatePicker} from '@mui/x-date-pickers';
+import { NoteAdd, CheckCircle, FileDownload } from '@mui/icons-material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
@@ -25,7 +25,9 @@ const RefundBooking = () => {
 
     // Sample initial data
     const [bookings, setBookings] = useState([]);
+
     const {stopLoading, startLoading} = useLoading()
+
     // States
     const [selectedBookDate, setSelectedBookDate] = useState(null);
     const [refVCode, setRefVCode] = useState('');
@@ -39,8 +41,8 @@ const RefundBooking = () => {
     const [bookingToRefund, setBookingToRefund] = useState(null);
 
     const [alert, setAlert] = useState(null);
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
 
     const refundStatuses = ['All', 'Refunded', 'Not Refunded'];
     const loadAll = () => {
@@ -178,7 +180,7 @@ const RefundBooking = () => {
         ].join('\n');
 
         const BOM = '\uFEFF';
-        const blob = new Blob([BOM + csvContent], {type: 'text/csv;charset=utf-8;'});
+        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.setAttribute('href', url);
@@ -208,9 +210,11 @@ const RefundBooking = () => {
             {/* <LoadingOverlay show={loading} /> */}
 
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+
                                   setOpen={setAlert}/> : <></>}
             <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
                 <Typography variant="h5" sx={{fontWeight: 600, mb: 3}}>
+
                     Refund Booking
                 </Typography>
 
@@ -336,7 +340,7 @@ const RefundBooking = () => {
                 }}>
                     <Button
                         variant="contained"
-                        startIcon={<FileDownload/>}
+                        startIcon={<FileDownload />}
                         onClick={handleExport}
                         disabled={filteredBookings.length === 0}
                     >
@@ -348,20 +352,20 @@ const RefundBooking = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
-                                <TableCell sx={{py: 1}}>Ref.</TableCell>
-                                <TableCell sx={{py: 1}}>V-Code</TableCell>
-                                <TableCell sx={{py: 1}}>Book Date</TableCell>
-                                <TableCell sx={{py: 1}}>Travel Date</TableCell>
-                                <TableCell sx={{py: 1}}>Schedule No</TableCell>
-                                <TableCell sx={{py: 1}}>Depot</TableCell>
-                                <TableCell sx={{py: 1}}>Route</TableCell>
-                                <TableCell sx={{py: 1}}>Seats No</TableCell>
-                                <TableCell sx={{py: 1}}>Name</TableCell>
-                                <TableCell sx={{py: 1}}>Mobile No</TableCell>
-                                <TableCell sx={{py: 1}}>Net Amount</TableCell>
-                                <TableCell sx={{py: 1}}>Bank Details</TableCell>
-                                <TableCell sx={{py: 1}} align="right">Actions</TableCell>
+                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
+                                <TableCell sx={{ py: 1 }}>Ref.</TableCell>
+                                <TableCell sx={{ py: 1 }}>V-Code</TableCell>
+                                <TableCell sx={{ py: 1 }}>Book Date</TableCell>
+                                <TableCell sx={{ py: 1 }}>Travel Date</TableCell>
+                                <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
+                                <TableCell sx={{ py: 1 }}>Depot</TableCell>
+                                <TableCell sx={{ py: 1 }}>Route</TableCell>
+                                <TableCell sx={{ py: 1 }}>Seats No</TableCell>
+                                <TableCell sx={{ py: 1 }}>Name</TableCell>
+                                <TableCell sx={{ py: 1 }}>Mobile No</TableCell>
+                                <TableCell sx={{ py: 1 }}>Net Amount</TableCell>
+                                <TableCell sx={{ py: 1 }}>Bank Details</TableCell>
+                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -369,31 +373,31 @@ const RefundBooking = () => {
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((booking) => (
                                     <TableRow key={booking.id}>
-                                        <TableCell sx={{py: 0}}>{booking.refNo}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.vCode}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.bookDate}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.travelDate}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.scheduleNo}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.depot}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.route}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.seatNo}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.name}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.mobileNo}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.netAmount}</TableCell>
-                                        <TableCell sx={{py: 0}}>{booking.bankDetails}</TableCell>
-                                        <TableCell sx={{py: 0}} align="right">
+                                        <TableCell sx={{ py: 0 }}>{booking.refNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.vCode}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.bookDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.travelDate}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.scheduleNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.depot}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.route}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.seatNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.name}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.mobileNo}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.netAmount}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{booking.bankDetails}</TableCell>
+                                        <TableCell sx={{ py: 0 }} align="right">
                                             <IconButton
                                                 onClick={() => handleNoteClick(booking)}
                                                 color="primary"
                                             >
-                                                <NoteAdd/>
+                                                <NoteAdd />
                                             </IconButton>
                                             <IconButton
                                                 onClick={() => handleRefundClick(booking)}
                                                 color="success"
                                                 disabled={booking.refunded}
                                             >
-                                                <CheckCircle/>
+                                                <CheckCircle />
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
@@ -401,6 +405,8 @@ const RefundBooking = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredBookings.length}
                         page={page}
@@ -428,7 +434,7 @@ const RefundBooking = () => {
                         borderRadius: "10px",
                         border: "2px solid gray",
                     }}>
-                        <Typography variant="h6" sx={{mb: 2}}>
+                        <Typography variant="h6" sx={{ mb: 2 }}>
                             Add Note
                         </Typography>
                         <TextField
@@ -437,9 +443,9 @@ const RefundBooking = () => {
                             rows={4}
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
-                            sx={{mb: 2}}
+                            sx={{ mb: 2 }}
                         />
-                        <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                             <Button
                                 variant="contained"
                                 onClick={handleNoteSave}
@@ -449,7 +455,7 @@ const RefundBooking = () => {
                             <Button
                                 variant="contained"
                                 onClick={() => setNoteModalOpen(false)}
-                                sx={{backgroundColor: 'gray'}}
+                                sx={{ backgroundColor: 'gray' }}
                             >
                                 Cancel
                             </Button>

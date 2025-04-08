@@ -32,7 +32,7 @@ import {useLoading} from "../loading";
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const RouteManagement = () => {
-    
+
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
@@ -192,7 +192,7 @@ const RouteManagement = () => {
 
     // Export to CSV
     const handleExport = () => {
-        const csvData = routes.map((route) =>
+        const csvData = filteredRoute.map((route) =>
             [
                 route.routeNo,
                 route.startPoint,
@@ -279,10 +279,10 @@ const RouteManagement = () => {
 
     return (
         <Container component="main" maxWidth="lg">
-           
+
             {/* <LoadingOverlay show={loading} /> */}
-            
-             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
+
+            {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                 {/* Title Section */}
@@ -594,7 +594,7 @@ const RouteManagement = () => {
                                             <IconButton
                                                 color="primary"
                                                 onClick={() => handleOpen(route)}
-                                                sx={{ marginRight: "8px" }}
+
                                             >
                                                 <EditIcon />
                                             </IconButton>
@@ -610,6 +610,8 @@ const RouteManagement = () => {
                         </TableBody>
                     </Table>
                     <TablePagination
+                        showFirstButton
+                        showLastButton
                         component="div"
                         count={filteredRoute.length}
                         page={page}
