@@ -339,9 +339,26 @@ const TicketMarkingSystem = () => {
                         <DialogContent>
 
                             {selectedTicket.seatNoDetails.map(s => (
-                                <div key={s.seatNo} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                                    <Typography>{s.seatNo}</Typography>
+                                <div key={s.seatNo} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginTop:"10px" }}>
+                                    <Typography sx={{ marginTop:"4px" }}>{s.seatNo}</Typography>
                                     <Typography>{s.confirmed}</Typography>
+                                    {!s.confirmed && (
+                                        <TextField
+                                          size="small"
+                                          label="V Code"
+                                          value={""}
+                                          sx={{
+                                            // width: 80,
+                                            "& .MuiInputBase-input": {
+                                              padding: "6px 8px",
+                                              fontSize: "0.75rem",
+                                            },
+                                            "& .MuiInputLabel-root": {
+                                              fontSize: "0.75rem",
+                                            },
+                                          }}
+                                        />
+                                      )}
                                     <IconButton
                                         onClick={() => handleConfirmSeat(selectedTicket, s.seatNo)}
                                         sx={{ color: s.confirmed ? "success" : "primary" }}
