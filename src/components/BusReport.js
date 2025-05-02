@@ -391,7 +391,7 @@ const BusReport = () => {
       pdf.save(`bus-report-${selectedBus.scheduleNo}.pdf`);
 
       // remove consistent padding
-      const elements2 = document.querySelectorAll(".setpadding01");
+      const elements2 = document.querySelectorAll(".setpadding011");
       elements2.forEach((element) => {
         element.style.paddingBottom = "0px";
       });
@@ -400,7 +400,7 @@ const BusReport = () => {
       console.error('Error generating PDF:', error);
 
       // remove consistent padding
-      const elements2 = document.querySelectorAll(".setpadding01");
+      const elements2 = document.querySelectorAll(".setpadding011");
       elements2.forEach((element) => {
         element.style.paddingBottom = "0px";
       });
