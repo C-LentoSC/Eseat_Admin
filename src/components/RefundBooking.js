@@ -6,7 +6,7 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     Modal, Autocomplete, TablePagination
 } from '@mui/material';
-import { NoteAdd, CheckCircle, FileDownload } from '@mui/icons-material';
+import { NoteAdd, CheckCircle, FileDownload, TransferWithinAStation } from '@mui/icons-material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
@@ -399,6 +399,13 @@ const RefundBooking = () => {
                                             >
                                                 <CheckCircle />
                                             </IconButton>
+                                            <IconButton
+                                              onClick={() => handleRefundClick(booking)}
+                                              color="success"
+                                              disabled={booking.refunded}
+                                            >
+                                              <TransferWithinAStation  />
+                                            </IconButton>        
                                         </TableCell>
                                     </TableRow>
                                 ))}
