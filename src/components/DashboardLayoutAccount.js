@@ -34,6 +34,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 
 import { AppProvider } from '@toolpad/core/AppProvider';
@@ -76,6 +77,8 @@ import TicketCancelRequests from './TicketCancelRequests';
 import TicketMarkingSystem from './TicketMarkingSystem';
 import CustomerDetails from './CustomerDetails';
 import BulkSeatTransfer from './BulkSeatTransfer';
+import TryToBook from './TryToBook';
+
 
 import CustomAlert from './Parts/CustomAlert';
 
@@ -215,6 +218,11 @@ const NAVIGATION = {
           segment: 'bookingHistory',
           title: 'Booking History',
           icon: <DateRangeIcon />,
+        },
+        {
+          segment: 'tryToBook',
+          title: 'Try To Book',
+          icon: <PlayArrowIcon />,
         },
       ],
     },
@@ -376,6 +384,9 @@ function DemoPageContent({ pathname }) {
       break;
     case '/allBookings/bookingHistory':
       content = <BookingHistory />;
+      break;
+    case '/allBookings/tryToBook':
+      content = <TryToBook />;
       break;
     case '/scheduleManagement':
       content = <ScheduleManagement />;
