@@ -405,22 +405,7 @@ const ManageBusPoints = () => {
                             />
                         </Grid>
 
-                        // <Grid item xs={12} sm={4}>
-                        //     <TextField
-                        //         type="time"
-                        //         label="Time"
-                        //         value={timePoint}
-                        //         onChange={(e) => setTimePoint(e.target.value)}
-                        //         InputLabelProps={{ shrink: true }}
-                        //         sx={{
-                        //             width: "100%",
-                        //             '& .MuiOutlinedInput-root': {
-                        //                 height: '45px',
-                        //             }
-                        //         }}
-                        //     />
-
-                        // </Grid>
+                        
 
                     </Grid>
 
