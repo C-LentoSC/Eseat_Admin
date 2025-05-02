@@ -5,7 +5,7 @@ import {
     Autocomplete, TextField, InputAdornment, Modal, Button,
     IconButton, Checkbox, Chip, TablePagination
 } from '@mui/material';
-import { Visibility, CheckCircle, FileDownload } from '@mui/icons-material';
+import { Visibility, CheckCircle, FileDownload, Cancel } from '@mui/icons-material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
@@ -248,7 +248,7 @@ const PendingBookings = () => {
                 setOpen={setAlert} /> : <></>}
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-                    Pending Bookings (Live Updates)
+                    Try To Book (Live Updates)
                 </Typography>
 
                 {/* Filters */}
@@ -502,8 +502,8 @@ const PendingBookings = () => {
                                             </IconButton>
                                         )} */}
                                             {booking.bookingStatus === 'Pending' && (
-                                                <IconButton onClick={() => handleViewPayment(booking)}>
-                                                    <Visibility />
+                                                <IconButton color="error">
+                                                    <Cancel />
                                                 </IconButton>
                                             )}
                                             {/* {booking.bookingStatus === 'Deleted' && (
