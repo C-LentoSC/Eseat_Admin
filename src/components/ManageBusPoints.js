@@ -537,7 +537,6 @@ const ManageBusPoints = () => {
                             <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                                 <TableCell sx={{ py: 1 }}>Direction</TableCell>
                                 <TableCell sx={{ py: 1 }}>Route Point</TableCell>
-                                <TableCell sx={{ py: 1 }}>Time</TableCell>
                                 <TableCell sx={{ py: 1 }}>Status</TableCell>
                                 <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
@@ -549,7 +548,6 @@ const ManageBusPoints = () => {
                                     <TableRow key={busPoint.key}>
                                         <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{busPoint.timePoint}</TableCell>
                                         <TableCell sx={{ py: 0 }}>
                                             <FormControlLabel
                                                 control={

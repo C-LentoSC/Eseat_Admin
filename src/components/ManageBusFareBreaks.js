@@ -574,6 +574,7 @@ const ManageBusFareBreaks = () => {
                             <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                                 <TableCell sx={{ py: 1 }}>Boarding Point</TableCell>
                                 <TableCell sx={{ py: 1 }}>Dropping Point</TableCell>
+                                <TableCell sx={{ py: 1 }}>Time</TableCell>
                                 <TableCell sx={{ py: 1 }}>Fare</TableCell>
                                 <TableCell sx={{ py: 1 }}>Status</TableCell>
                                 <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
@@ -586,6 +587,7 @@ const ManageBusFareBreaks = () => {
                                     <TableRow key={busPoint.key}>
                                         <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}></TableCell>
                                         <TableCell sx={{ py: 0 }}>{busPoint.fare}</TableCell>
                                         <TableCell sx={{ py: 0 }}>
                                             <FormControlLabel
