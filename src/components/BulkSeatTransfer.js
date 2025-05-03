@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
     Box,
     Container,
@@ -24,13 +24,14 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider, DatePicker} from '@mui/x-date-pickers';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 
 
 import LoadingOverlay from './Parts/LoadingOverlay';
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
 import {useLoading} from "../loading";
+import Alert from "@mui/material/Alert";
 
 const BulkSeatTransfer = () => {
 
@@ -321,12 +322,43 @@ const BulkSeatTransfer = () => {
             .then(res => {
                 stopLoading(L)
                 setAllSchedules(res.data)
+                let id=(sessionStorage.getItem("toBeChanged"))
+                console.log(id)
+                if(id){
+                    id=Number.parseInt(id)
+                    console.log(res.data)
+                    let fl= res.data.filter(s=>
+                        s.id===id
+                    )
+                    console.log(fl)
+                    if(fl[0]){
+                        let s=fl[0]
+
+
+                        setFilterData(prevState => {
+                            return {
+                                ...prevState,
+                                depot: s.depot,
+                                schedule: s,
+                                data:dayjs(s.date)
+                            }
+                        })
+
+                        setTimeout(()=>{
+                            search.current.click()
+
+                        },500)
+                        sessionStorage.removeItem("toBeChanged")
+                    }
+
+                }
             })
             .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
     }
+    const [, forceUpdate] = useState();
     useEffect(() => {
         loadAll()
         loadAllDepots()
@@ -406,10 +438,12 @@ const BulkSeatTransfer = () => {
                 handleError(err)
             })
     };
+    const search=useRef()
 
     // Handle search
     const handleSearch = () => {
         const L=startLoading()
+        console.error(filterData)
         api.post('admin/bulk-seat-transfer/search', {
             id: filterData.schedule?.id,
         }).then(res => {
@@ -600,6 +634,7 @@ const BulkSeatTransfer = () => {
             boardingPoint: '', newSeatNumber: '', seatCost: '', oldSeatCost: '', balanceToPay: ''
         });
     };
+    const dateInput=useRef()
 
     const filteredList = allschedules
         .filter(schedule =>
@@ -635,6 +670,7 @@ const BulkSeatTransfer = () => {
                             <DatePicker
                                 label="Date"
                                 value={filterData.date}
+                                ref={dateInput}
                                 onChange={(newValue) => setFilterData({
                                     ...filterData, date: newValue, schedule: null
                                 })}
@@ -717,7 +753,7 @@ const BulkSeatTransfer = () => {
                 <Button
                     variant="contained"
                     onClick={handleSearch}
-
+                    ref={search}
                     sx={{
                         padding: "6px 24px",
                         fontWeight: "bold",
