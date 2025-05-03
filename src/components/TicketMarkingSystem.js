@@ -138,12 +138,22 @@ const TicketMarkingSystem = () => {
         setSelectedTicket(ticket);
         setDialogOpen(true);
     };
+    const [vCodes, setVCodes] = useState({});
 
-    const handleConfirmSeat = (ticket, seatNo) => {
+    const handleVCodeChange = (seatNo, value) => {
+        setVCodes(prev => ({
+            ...prev,
+            [seatNo]: value
+        }));
+    };
 
-
+    const handleConfirmSeat = (ticket, seatNo,vCode) => {
         const L=startLoading()
-        api.post('admin/ticket-marking/confirm', {...ticket, seatNo: seatNo})
+        api.post('admin/ticket-marking/confirm', {
+            ...ticket,
+            seatNo: seatNo,
+            vCode
+        })
             .then(res=>{
                 stopLoading(L)
                 sendAlert("seat marked")
@@ -346,7 +356,8 @@ const TicketMarkingSystem = () => {
                                         <TextField
                                           size="small"
                                           label="V Code"
-                                          value={""}
+                                          value={vCodes[s.seatNo] || ""}
+                                          onChange={(e) => handleVCodeChange(s.seatNo, e.target.value)}
                                           sx={{
                                             // width: 80,
                                             "& .MuiInputBase-input": {
@@ -360,7 +371,7 @@ const TicketMarkingSystem = () => {
                                         />
                                       )}
                                     <IconButton
-                                        onClick={() => handleConfirmSeat(selectedTicket, s.seatNo)}
+                                        onClick={() => handleConfirmSeat(selectedTicket, s.seatNo,vCodes[s.seatNo])}
                                         sx={{ color: s.confirmed ? "success" : "primary" }}
                                         disabled={s.confirmed}
                                     >
