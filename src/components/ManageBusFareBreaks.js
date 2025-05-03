@@ -357,7 +357,7 @@ const ManageBusFareBreaks = () => {
                 {/* Form Section */}
                 <Box component="form" sx={{ width: "100%", display: "flex", justifyContent: "center", height: "45px" }}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={3}>
                             <Autocomplete
                                 value={direction}
                                 onChange={(event, newValue) => setDirection(newValue)}
@@ -385,7 +385,7 @@ const ManageBusFareBreaks = () => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={3}>
                             <Autocomplete
                                 value={routePoint}
                                 onChange={(event, newValue) => setRoutePoint(newValue)}
@@ -412,8 +412,24 @@ const ManageBusFareBreaks = () => {
                                 )}
                             />
                         </Grid>
+                                            
+                        <Grid item xs={12} sm={3}>
+                            <TextField
+                                type="time"
+                                label="Time"
+                                // value={timePoint}
+                                // onChange={(e) => setTimePoint(e.target.value)}
+                                InputLabelProps={{ shrink: true }}
+                                sx={{
+                                    width: "100%",
+                                    '& .MuiOutlinedInput-root': {
+                                        height: '45px',
+                                    }
+                                }}
+                            />
+                        </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={3}>
                             <TextField
                                 fullWidth
                                 label="Fare"
@@ -558,6 +574,7 @@ const ManageBusFareBreaks = () => {
                             <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                                 <TableCell sx={{ py: 1 }}>Boarding Point</TableCell>
                                 <TableCell sx={{ py: 1 }}>Dropping Point</TableCell>
+                                <TableCell sx={{ py: 1 }}>Time</TableCell>
                                 <TableCell sx={{ py: 1 }}>Fare</TableCell>
                                 <TableCell sx={{ py: 1 }}>Status</TableCell>
                                 <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
@@ -570,6 +587,7 @@ const ManageBusFareBreaks = () => {
                                     <TableRow key={busPoint.key}>
                                         <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
+                                        <TableCell sx={{ py: 0 }}></TableCell>
                                         <TableCell sx={{ py: 0 }}>{busPoint.fare}</TableCell>
                                         <TableCell sx={{ py: 0 }}>
                                             <FormControlLabel

@@ -315,7 +315,12 @@ const BusReport = () => {
 
       const element = document.querySelector('.modal-content');
       if (!element) return;
-
+      
+      const elementsBT = document.querySelectorAll(".remButton");
+      elementsBT.forEach((element) => {
+        element.style.visibility = "hidden";
+      });
+      
       // Add consistent padding
       const elements = document.querySelectorAll(".setpadding01");
       elements.forEach((element) => {
@@ -390,7 +395,7 @@ const BusReport = () => {
       pdf.save(`bus-report-${selectedBus.scheduleNo}.pdf`);
 
       // remove consistent padding
-      const elements2 = document.querySelectorAll(".setpadding01");
+      const elements2 = document.querySelectorAll(".setpadding011");
       elements2.forEach((element) => {
         element.style.paddingBottom = "0px";
       });
@@ -399,7 +404,7 @@ const BusReport = () => {
       console.error('Error generating PDF:', error);
 
       // remove consistent padding
-      const elements2 = document.querySelectorAll(".setpadding01");
+      const elements2 = document.querySelectorAll(".setpadding011");
       elements2.forEach((element) => {
         element.style.paddingBottom = "0px";
       });
@@ -815,6 +820,7 @@ const BusReport = () => {
                   </Box>
                 </div>
 
+                <div className="remButton">    
                 <Box sx={{ mt: 2, display: "flex", gap: 2, justifyContent: "center" }}>
                   <Button variant="contained" onClick={handleSendSMS()}>
                     <span className="setpadding01">Send SMS to Conductor</span>
@@ -828,6 +834,7 @@ const BusReport = () => {
                     <span className="setpadding01">{selectedBus?.status === "opened" ? 'Close Booking' : 'Open Booking'}</span>
                   </Button>
                 </Box>
+                </div>
 
                 <div sx={{ mt: 2, mr: 2, ml: 2, mb: 4 }}>
                   <Box sx={{ pb: 4, mt: 3 }}>
@@ -881,29 +888,29 @@ const BusReport = () => {
                   <TableContainer component={Paper}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Ref No</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Seat no</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">V-Code</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Mode of Pay</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Route</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">NIC</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked By</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked Date</TableCell>
+                        <TableRow>
+                          <TableCell className="setpadding01">Ref No</TableCell>
+                          <TableCell className="setpadding01">Seat no</TableCell>
+                          <TableCell className="setpadding01">V-Code</TableCell>
+                          <TableCell className="setpadding01">Mode of Pay</TableCell>
+                          <TableCell className="setpadding01">Route</TableCell>
+                          <TableCell className="setpadding01">NIC</TableCell>
+                          <TableCell className="setpadding01">Booked By</TableCell>
+                          <TableCell className="setpadding01">Booked Date</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {selectedBus?.bookings
                           .map((booking, index) => (
                             <TableRow key={index}>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.refNo}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.seatNo}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.vCode}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.modeOfPay}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.route}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.nic}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedBy}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{booking.bookedDate}</TableCell>
+                              <TableCell className="setpadding01">{booking.refNo}</TableCell>
+                              <TableCell className="setpadding01">{booking.seatNo}</TableCell>
+                              <TableCell className="setpadding01">{booking.vCode}</TableCell>
+                              <TableCell className="setpadding01">{booking.modeOfPay}</TableCell>
+                              <TableCell className="setpadding01">{booking.route}</TableCell>
+                              <TableCell className="setpadding01">{booking.nic}</TableCell>
+                              <TableCell className="setpadding01">{booking.bookedBy}</TableCell>
+                              <TableCell className="setpadding01">{booking.bookedDate}</TableCell>
                             </TableRow>
                           ))}
                       </TableBody>
@@ -918,25 +925,25 @@ const BusReport = () => {
                   <TableContainer component={Paper}>
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Booked By</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Mode of Pay</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Route</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">Bus Fare</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01">No of Seats</TableCell>
-                          <TableCell sx={{ py: 1 }} className="setpadding01" align="right">Total Bus Fare</TableCell>
+                        <TableRow>
+                          <TableCell className="setpadding01">Booked By</TableCell>
+                          <TableCell className="setpadding01">Mode of Pay</TableCell>
+                          <TableCell className="setpadding01">Route</TableCell>
+                          <TableCell className="setpadding01">Bus Fare</TableCell>
+                          <TableCell className="setpadding01">No of Seats</TableCell>
+                          <TableCell className="setpadding01" align="right">Total Bus Fare</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {selectedBus?.summary
                           .map((summary, index) => (
                             <TableRow key={index}>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.bookedBy}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.modeOfPay}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.route}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.busFare}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01">{summary.noOfSeate}</TableCell>
-                              <TableCell sx={{ py: 0 }} className="setpadding01" align="right">{summary.totalBusFare}</TableCell>
+                              <TableCell className="setpadding01">{summary.bookedBy}</TableCell>
+                              <TableCell className="setpadding01">{summary.modeOfPay}</TableCell>
+                              <TableCell className="setpadding01">{summary.route}</TableCell>
+                              <TableCell className="setpadding01">{summary.busFare}</TableCell>
+                              <TableCell className="setpadding01">{summary.noOfSeate}</TableCell>
+                              <TableCell className="setpadding01" align="right">{summary.totalBusFare}</TableCell>
                             </TableRow>
                           ))}
                       </TableBody>
