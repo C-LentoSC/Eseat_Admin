@@ -33,7 +33,7 @@ const RefundBooking = () => {
     const [refVCode, setRefVCode] = useState('');
     const [scheduleNo, setScheduleNo] = useState('');
     const [mobileNo, setMobileNo] = useState('');
-    const [selectedRefundStatus, setSelectedRefundStatus] = useState('All');
+    const [selectedRefundStatus, setSelectedRefundStatus] = useState('Not Refunded');
     const [noteModalOpen, setNoteModalOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [note, setNote] = useState('');

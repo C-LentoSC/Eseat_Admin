@@ -120,6 +120,7 @@ const ManageBusFareBreaks = () => {
                 routePoint,
                 fare,
                 active: true,
+                time:timePoint
             };
             // setBusPoints((prev) => [...prev, newBusPoint]);
             const L=startLoading()
@@ -130,6 +131,7 @@ const ManageBusFareBreaks = () => {
                     setDirection("");
                     setRoutePoint("");
                     setFare("");
+                    setTimePoint("")
                     sendAlert('new fare brake is added')
                 })
                 .catch(err=> {
@@ -310,6 +312,7 @@ const ManageBusFareBreaks = () => {
         setBusPoints([...newOrder]);
     };
 
+    const [timePoint,setTimePoint]=useState()
 
     const filteredOption = busPoints.filter(option => {
         const nameMatch = !filterBoarding || option.direction.toLowerCase().includes(filterBoarding.toLowerCase());
@@ -417,8 +420,8 @@ const ManageBusFareBreaks = () => {
                             <TextField
                                 type="time"
                                 label="Time"
-                                // value={timePoint}
-                                // onChange={(e) => setTimePoint(e.target.value)}
+                                value={timePoint}
+                                onChange={(e) => setTimePoint(e.target.value)}
                                 InputLabelProps={{ shrink: true }}
                                 sx={{
                                     width: "100%",
@@ -587,7 +590,7 @@ const ManageBusFareBreaks = () => {
                                     <TableRow key={busPoint.key}>
                                         <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
-                                        <TableCell sx={{ py: 0 }}></TableCell>
+                                        <TableCell sx={{ py: 0 }}>{busPoint.time??""}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{busPoint.fare}</TableCell>
                                         <TableCell sx={{ py: 0 }}>
                                             <FormControlLabel
