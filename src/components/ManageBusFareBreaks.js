@@ -222,7 +222,7 @@ const ManageBusFareBreaks = () => {
                         <ArrowBackIcon />
                     </IconButton>
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        Manage Bus Fare Breaks ({details.CityName})
+                        Manage Bus Fare Breaks ({details.CityName}) 
                     </Typography>
                 </Box>
 

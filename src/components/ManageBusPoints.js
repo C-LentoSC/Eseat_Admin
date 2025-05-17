@@ -240,7 +240,7 @@ const ManageBusPoints = () => {
                         <ArrowBackIcon />
                     </IconButton>
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                        Manage Bus Points ({details.CityName})
+                        Manage Bus Points ({details.CityName}) 
                     </Typography>
                 </Box>
 

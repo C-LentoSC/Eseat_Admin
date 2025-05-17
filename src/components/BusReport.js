@@ -541,6 +541,11 @@ const BusReport = () => {
       const element = document.querySelector('.modal-content');
       if (!element) return;
 
+      const elementsBT = document.querySelectorAll(".remButton");
+      elementsBT.forEach((element) => {
+        element.style.visibility = "hidden";
+      });
+
       // Add consistent padding
       const elements = document.querySelectorAll(".setpadding01");
       elements.forEach((element) => {
@@ -945,6 +950,7 @@ const BusReport = () => {
                   </Box>
                 </div>
 
+                <div className="remButton">
                 <Box sx={{ mt: 2, display: "flex", gap: 2, justifyContent: "center" }}>
                   <Button variant="contained" onClick={handleSendSMS()}>
                     <span className="setpadding01">Send SMS to Conductor</span>
@@ -958,6 +964,7 @@ const BusReport = () => {
                     <span className="setpadding01">{selectedBus?.status === "opened" ? 'Close Booking' : 'Open Booking'}</span>
                   </Button>
                 </Box>
+                </div>
 
                 <div sx={{ mt: 2, mr: 2, ml: 2, mb: 4 }}>
                   <Box sx={{ pb: 4, mt: 3 }}>
