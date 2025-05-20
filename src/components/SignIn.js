@@ -7,13 +7,111 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import favicon from "../resources/favicon.ico";
+import Link from "@mui/material/Link";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 import CustomAlert from './Parts/CustomAlert';
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
+const ForgotPasswordDialog = ({ open, handleClose }) => {
+  const [step, setStep] = useState(1);
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
+  const handleNext = () => {
+    if (step < 3) {
+      setStep(step + 1);
+    }
+  };
+
+  const handleReset = () => {
+    // Simulate reset logic
+    console.log("Email:", email);
+    console.log("OTP:", otp);
+    console.log("New Password:", newPassword);
+
+    handleClose();
+    setStep(1);
+    setEmail("");
+    setOtp("");
+    setNewPassword("");
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
+      <DialogTitle>
+        Forgot Password
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{ position: "absolute", right: 8, top: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        {step === 1 && (
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Email Address"
+            type="email"
+            fullWidth
+            variant="outlined"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        )}
+        {step === 2 && (
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Enter OTP"
+            type="text"
+            fullWidth
+            variant="outlined"
+            inputProps={{ maxLength: 6 }}
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+        )}
+        {step === 3 && (
+          <TextField
+            autoFocus
+            margin="dense"
+            label="New Password"
+            type="password"
+            fullWidth
+            variant="outlined"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        )}
+      </DialogContent>
+      <DialogActions>
+        {step < 3 ? (
+          <Button onClick={handleNext} disabled={step === 1 && !email}>
+            Next
+          </Button>
+        ) : (
+          <Button onClick={handleReset} disabled={!newPassword}>
+            Reset Password
+          </Button>
+        )}
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const SignInPage = ({ onSignIn }) => {
-    
+     const [forgotOpen, setForgotOpen] = useState(false);
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
@@ -81,9 +179,22 @@ const SignInPage = ({ onSignIn }) => {
                     >
                         Sign In
                     </Button>
+                    <Box sx={{ textAlign: "center" }}>
+              <Link
+                href="#"
+                variant="body2"
+                onClick={() => setForgotOpen(true)}
+              >
+                Forgot password?
+              </Link>
+            </Box>
                 </Box>
             </Box>
         </Container>
+<ForgotPasswordDialog
+        open={forgotOpen}
+        handleClose={() => setForgotOpen(false)}
+      />
     );
 };
 
