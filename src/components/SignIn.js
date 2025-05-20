@@ -111,7 +111,7 @@ const ForgotPasswordDialog = ({ open, handleClose }) => {
 };
 
 const SignInPage = ({ onSignIn }) => {
-     const [forgotOpen, setForgotOpen] = useState(false);
+    const [forgotOpen, setForgotOpen] = useState(false);
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
@@ -127,6 +127,7 @@ const SignInPage = ({ onSignIn }) => {
 
 
     return (
+        <>
         <Container component="main" maxWidth="xs" sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "90vh" }}>
            
             {/* <LoadingOverlay show={loading} /> */}
@@ -191,10 +192,11 @@ const SignInPage = ({ onSignIn }) => {
                 </Box>
             </Box>
         </Container>
-<ForgotPasswordDialog
-        open={forgotOpen}
-        handleClose={() => setForgotOpen(false)}
-      />
+        <ForgotPasswordDialog
+         open={forgotOpen}
+         handleClose={() => setForgotOpen(false)}
+        />
+      </>   
     );
 };
 
