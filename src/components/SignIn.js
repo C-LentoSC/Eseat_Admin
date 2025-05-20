@@ -155,7 +155,7 @@ const OTPLoginDialog = ({ open, handleClose, handleConfirm }) => {
 
 const SignInPage = ({ onSignIn }) => {
     const [forgotOpen, setForgotOpen] = useState(false);
-    const [otpLoginOpen, setOtpLoginOpen] = useState(true);
+    const [otpLoginOpen, setOtpLoginOpen] = useState(false);
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
