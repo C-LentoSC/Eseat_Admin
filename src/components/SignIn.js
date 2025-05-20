@@ -110,13 +110,61 @@ const ForgotPasswordDialog = ({ open, handleClose }) => {
   );
 };
 
+const OTPLoginDialog = ({ open, handleClose, handleConfirm }) => {
+  const [otp, setOtp] = useState("");
+
+  const handleLogin = () => {
+    console.log("Logging in with OTP:", otp);
+    handleConfirm(); // simulate login
+    setOtp("");
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
+      <DialogTitle>
+        Enter OTP
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{ position: "absolute", right: 8, top: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        <TextField
+          autoFocus
+          margin="dense"
+          label="6-digit OTP"
+          type="text"
+          fullWidth
+          variant="outlined"
+          inputProps={{ maxLength: 6 }}
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleLogin} disabled={otp.length !== 6}>
+          Login
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const SignInPage = ({ onSignIn }) => {
     const [forgotOpen, setForgotOpen] = useState(false);
+    const [otpLoginOpen, setOtpLoginOpen] = useState(true);
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
 
-
+   const handleOtpConfirm = () => {
+        setOtpLoginOpen(false);
+        // onSignIn(); 
+    };
+  
     const [username,setUsername]=useState("")
     const [password,setPassword]=useState("")
     const [alert,setAlert]=useState(null)
@@ -196,6 +244,11 @@ const SignInPage = ({ onSignIn }) => {
          open={forgotOpen}
          handleClose={() => setForgotOpen(false)}
         />
+      <OTPLoginDialog
+        open={otpLoginOpen}
+        handleClose={() => setOtpLoginOpen(false)}
+        handleConfirm={handleOtpConfirm}
+      />
       </>   
     );
 };
