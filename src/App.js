@@ -48,8 +48,10 @@ const AppMain = () => {
                     }
                     setAlert({severity: "info", message: "done"})
                     localStorage.setItem('token', d.token)
-                    setIsAuthenticated(true)
-                    localStorage.setItem('isAuthenticated', 'true')
+                    localStorage.setItem('otp', "0")
+                    window.location.reload()
+                    // setIsAuthenticated(true)
+                    // localStorage.setItem('isAuthenticated', 'true')
                 } else {
                     console.log(d)
                 }
