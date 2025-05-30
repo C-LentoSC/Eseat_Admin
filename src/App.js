@@ -16,7 +16,7 @@ const App = () => {
 }
 
 const AppMain = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated") === "true");
+    const [isAuthenticated, setIsAuthenticated] = useState(sessionStorage.getItem("isAuthenticated") === "true");
 
     useEffect(() => {
         const handleActivity = () => {
@@ -47,11 +47,11 @@ const AppMain = () => {
                         return
                     }
                     setAlert({severity: "info", message: "done"})
-                    localStorage.setItem('token', d.token)
-                    localStorage.setItem('otp', "0")
+                    sessionStorage.setItem('token', d.token)
+                    sessionStorage.setItem('otp', "0")
                     window.location.reload()
                     // setIsAuthenticated(true)
-                    // localStorage.setItem('isAuthenticated', 'true')
+                    // sessionStorage.setItem('isAuthenticated', 'true')
                 } else {
                     console.log(d)
                 }
@@ -62,8 +62,8 @@ const AppMain = () => {
     // Function to handle logout
     const handleLogout = () => {
         setIsAuthenticated(false);
-        localStorage.removeItem("isAuthenticated");
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("isAuthenticated");
+        sessionStorage.removeItem("token");
     };
 
 

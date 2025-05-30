@@ -65,8 +65,8 @@ const ForgotPasswordDialog = ({open, handleClose,handleError}) => {
                 stopLoading(id)
                 window.alert("Password Reset Successfully")
                 let token=res.data.token
-                localStorage.setItem('isAuthenticated', 'true')
-                localStorage.setItem('token', token)
+                sessionStorage.setItem('isAuthenticated', 'true')
+                sessionStorage.setItem('token', token)
                 window.location.reload()
             })
             .catch(er=>{
@@ -166,8 +166,8 @@ const OTPLoginDialog = ({open, handleClose, handleConfirm,handleError}) => {
         api.post("admin/otp-check", {otp:otp})
             .then(res=>{
                 stopLoading(id)
-                localStorage.removeItem('otp')
-                localStorage.setItem('isAuthenticated', 'true')
+                sessionStorage.removeItem('otp')
+                sessionStorage.setItem('isAuthenticated', 'true')
                 window.location.reload()
             })
             .catch(err=>{
@@ -215,7 +215,7 @@ const OTPLoginDialog = ({open, handleClose, handleConfirm,handleError}) => {
 
 const SignInPage = ({onSignIn}) => {
     const [forgotOpen, setForgotOpen] = useState(false);
-    const [otpLoginOpen, setOtpLoginOpen] = useState((localStorage.getItem("otp") === "0"));
+    const [otpLoginOpen, setOtpLoginOpen] = useState((sessionStorage.getItem("otp") === "0"));
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
@@ -322,8 +322,8 @@ const SignInPage = ({onSignIn}) => {
                 open={otpLoginOpen}
                 handleClose={() => {
                     setOtpLoginOpen(false)
-                    localStorage.removeItem('otp')
-                    localStorage.setItem('isAuthenticated', 'false')
+                    sessionStorage.removeItem('otp')
+                    sessionStorage.setItem('isAuthenticated', 'false')
                 }}
                 handleConfirm={handleOtpConfirm}
                 handleError={handleError}
