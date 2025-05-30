@@ -153,9 +153,8 @@ const BusSchedule = () => {
                 closingDate: dayjs(formData.closingDate).format('YYYY-MM-DD')
             });
         }
-        arr.forEach(i => {
-            const L =startLoading()
-            api.post('admin/bus/schedule/add', i)
+        const L =startLoading()
+            api.post('admin/bus/schedule/add-new', {schedules:arr})
                 .then(res => {
                     stopLoading(L)
                     loadInfo()
@@ -166,7 +165,20 @@ const BusSchedule = () => {
                     stopLoading(L)
                     handleError(err)
                 })
-        })
+        // arr.forEach(i => {
+        //     const L =startLoading()
+        //     api.post('admin/bus/schedule/add', i)
+        //         .then(res => {
+        //             stopLoading(L)
+        //             loadInfo()
+        //             handleCloseAdd();
+        //             sendAlert("new schedule added")
+        //         })
+        //         .catch(err=> {
+        //             stopLoading(L)
+        //             handleError(err)
+        //         })
+        // })
 
     };
 
