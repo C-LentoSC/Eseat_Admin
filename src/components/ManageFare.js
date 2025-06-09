@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     Box, Button, Container, TextField, Typography, IconButton, // Autocomplete,
-    InputAdornment, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination
+    InputAdornment, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination,  Grid,
+  Modal,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -27,6 +28,7 @@ const ManageFare = () => {
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
   const [showVerificationBox, setShowVerificationBox] = useState(false);
+  const [seatModalOpen, setSeatModalOpen] = useState(false);
 
 
     // const [selectedBusType, setSelectedBusType] = useState(null);
@@ -148,7 +150,10 @@ const ManageFare = () => {
     const startIndex = page * rowsPerPage;
     //End Pagination
 
-
+  const handleClose = () => {
+    setSeatModalOpen(false);
+  };
+    
     return (<Container maxWidth="lg">
 
             {/* <LoadingOverlay show={loading} /> */}
@@ -156,14 +161,46 @@ const ManageFare = () => {
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                   setOpen={setAlert}/> : <></>}
             <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
-                <Box sx={{display: "flex", justifyContent: "flex-start", alignItems: "center"}}>
-                    <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
-                        <Typography variant="h5" sx={{fontWeight: 600}}>
-
-                            Bus Fare Management
-                        </Typography>
-                    </Box>
-                </Box>
+                   <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              Bus Fare Management
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={() => setSeatModalOpen(true)}
+              sx={{
+                backgroundColor: "#3f51b5",
+                color: "#fff",
+                "&:hover": {
+                  backgroundColor: "#303f9f",
+                },
+              }}
+            >
+              Service Changes
+            </Button>
+          </Box>
+        </Box>
 
                 <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap",}}>
                     <Box sx={{display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap", mt: 2}}>
@@ -382,6 +419,218 @@ const ManageFare = () => {
                         />
                     </TableContainer>
                 </Paper>
+
+       
+        <Modal
+          open={seatModalOpen}
+          onClose={handleClose}
+          aria-labelledby="seat-details-modal"
+        >
+          <Box
+            sx={{
+              position: "fixed",
+              width: "100%",
+              height: "100%",
+              bgcolor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Paper
+              sx={{
+                width: 600,
+                bgcolor: "background.paper",
+                boxShadow: 24,
+                border: "2px solid gray",
+                borderRadius: "10px",
+                maxHeight: "90vh",
+                overflow: "auto",
+              }}
+            >
+              <div
+                id="draggable-modal-header"
+                style={{
+                  padding: "16px",
+                  backgroundColor: "#f5f5f5",
+                  borderBottom: "1px solid #ddd",
+                  borderRadius: "8px 8px 0 0",
+                }}
+              >
+                <Box
+                  sx={{
+                    p: 4,
+                  }}
+                >
+                  <Typography variant="h6" gutterBottom sx={{ marginBottom: 2 }}>
+                    Service Changes Details
+                  </Typography>
+
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Service Charge CTB"
+                        name="serviceChargeCTB"
+                        type="number"
+                        // value={seatDetails.serviceChargeCTB}
+                        // onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <InputAdornment position="start">
+                                LKR
+                              </InputAdornment>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Service Charge HGH"
+                        name="serviceChargeHGH"
+                        type="number"
+                        // value={seatDetails.serviceChargeHGH}
+                        // onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <InputAdornment position="start">
+                                LKR
+                              </InputAdornment>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="VAT"
+                        name="vat"
+                        type="number"
+                        // value={seatDetails.vat}
+                        // onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start"></InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">%</InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Discount"
+                        name="discount"
+                        type="number"
+                        // value={seatDetails.discount}
+                        // onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start"></InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">%</InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Bank Charges"
+                        name="bankCharges"
+                        type="number"
+                        // value={seatDetails.bankCharges}
+                        // onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start"></InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">%</InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Service Charge 01"
+                        name="serviceCharge01"
+                        type="number"
+                        // value={seatDetails.serviceCharge01}
+                        // onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <InputAdornment position="start">
+                                LKR
+                              </InputAdornment>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Service Charge 02"
+                        name="serviceCharge02"
+                        type="number"
+                        // value={seatDetails.serviceCharge02}
+                        // onChange={handleInputChange}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <InputAdornment position="start">
+                                LKR
+                              </InputAdornment>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      mt: 2,
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      // onClick={handleSaveSeatDetails}
+                      sx={{ marginRight: "8px" }}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={handleClose}
+                      sx={{ backgroundColor: "gray" }}
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                </Box>
+              </div>
+            </Paper>
+          </Box>
+        </Modal>
             </Box>
         </Container>);
 };
