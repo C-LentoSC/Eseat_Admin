@@ -390,7 +390,7 @@ const SeatTransfer = () => {
             }}>
                 <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={4}>
                             <TextField
                                 fullWidth
                                 label="Reference Number"
@@ -407,10 +407,27 @@ const SeatTransfer = () => {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={4}>
                             <TextField
                                 fullWidth
                                 label="Mobile Number"
+                                value={searchData.mobileNumber}
+                                onChange={(e) => setSearchData({...searchData, mobileNumber: e.target.value})}
+                                InputProps={{
+                                    startAdornment: (<InputAdornment position="start">
+                                    </InputAdornment>),
+                                }}
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        height: '40px',
+                                    }
+                                }}
+                            />
+                        </Grid>
+                                 <Grid item xs={12} md={4}>
+                            <TextField
+                                fullWidth
+                                label="V-Code"
                                 value={searchData.mobileNumber}
                                 onChange={(e) => setSearchData({...searchData, mobileNumber: e.target.value})}
                                 InputProps={{
