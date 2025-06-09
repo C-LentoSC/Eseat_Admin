@@ -942,7 +942,7 @@ const BusLayoutManagement = () => {
                         >
                             <Paper sx={{
                                 position: 'absolute',
-                                width: 600,
+                                width: 500,
                                 bgcolor: 'background.paper',
                                 boxShadow: 24,
                                 border: "2px solid gray",
@@ -964,7 +964,7 @@ const BusLayoutManagement = () => {
                                         </Typography>
 
                                         <Grid container spacing={2}>
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={12}>
                                                 <TextField
                                                     fullWidth
                                                     label="Seat Number"
@@ -973,7 +973,7 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
                                                 <TextField
                                                     fullWidth
                                                     label="Service Charge CTB"
@@ -990,7 +990,7 @@ const BusLayoutManagement = () => {
                                                     }}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
                                                 <TextField
                                                     fullWidth
                                                     label="Service Charge HGH"
@@ -1018,7 +1018,7 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid> */}
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
                                                 <TextField
                                                     fullWidth
                                                     label="VAT"
@@ -1035,7 +1035,7 @@ const BusLayoutManagement = () => {
                                                     }}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
                                                 <TextField
                                                     fullWidth
                                                     label="Discount"
@@ -1063,7 +1063,7 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid> */}
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
                                                 <TextField
                                                     fullWidth
                                                     label="Bank Charges"
@@ -1080,7 +1080,7 @@ const BusLayoutManagement = () => {
                                                     }}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
                                                 <TextField
                                                     fullWidth
                                                     label="Service Charge 01"
@@ -1098,7 +1098,7 @@ const BusLayoutManagement = () => {
                                                 />
                                             </Grid>
 
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
                                                 <TextField
                                                     fullWidth
                                                     label="Service Charge 02"
