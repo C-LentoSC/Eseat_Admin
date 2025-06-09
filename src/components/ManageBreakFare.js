@@ -29,6 +29,7 @@ import {useLoading} from "../loading";
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const ManageBreakFare = () => {
+  const [showVerificationBox, setShowVerificationBox] = useState(false);
 
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
@@ -150,6 +151,7 @@ const ManageBreakFare = () => {
                 stopLoading(L)
                 handleError(err)
             })
+         setShowVerificationBox(false);
     };
 
     //Pagination
@@ -298,7 +300,7 @@ const ManageBreakFare = () => {
                         <Button
                             variant="contained"
                             startIcon={<SaveIcon />}
-                            onClick={handleSave}
+                            onClick={() => setShowVerificationBox(true)}
                             sx={{
                                 backgroundColor: "#3f51b5",
                                 color: "#fff",
@@ -312,6 +314,41 @@ const ManageBreakFare = () => {
                     </Box>
                 </Box>
 
+                {showVerificationBox && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+              padding: 2,
+              border: "2px solid rgb(210, 25, 25)",
+              borderRadius: "8px",
+              backgroundColor: "rgb(255, 228, 228)",
+            }}
+          >
+            <TextField
+              label="Confirm Code 01"
+              size="small"
+              sx={{ minWidth: 200, backgroundColor: "white" }}
+            />
+            <TextField
+              label="Confirm Code 02"
+              size="small"
+              sx={{ minWidth: 200, backgroundColor: "white" }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ height: "40px" }}
+              onClick={handleSave}
+            >
+              Confirm
+            </Button>
+          </Box>
+        )}
+                                
                 <Paper>
                     <TableContainer>
                         <Table>
