@@ -405,6 +405,9 @@ const AgentManagement = () => {
                     p: 4,
                     borderRadius: "10px",
                     border: "2px solid gray"
+                      maxHeight: "90vh",
+                overflow: "auto",
+                    
                 }}>
                     <Typography variant="h6" gutterBottom>
                         {newAgent.id ? 'Edit Agent' : 'Add New Agent'}
