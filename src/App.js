@@ -46,7 +46,7 @@ const AppMain = () => {
                         setAlert({severity: "error", message: "wrong password"})
                         return
                     }
-                    setAlert({severity: "info", message: "done"})
+
                     sessionStorage.setItem('token', d.token)
                     sessionStorage.setItem('otp', "0")
                     window.location.reload()

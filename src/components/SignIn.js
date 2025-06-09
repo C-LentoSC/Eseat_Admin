@@ -23,7 +23,7 @@ import {unstable_resetCleanupTracking} from "@mui/x-data-grid";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
-const ForgotPasswordDialog = ({open, handleClose,handleError}) => {
+const ForgotPasswordDialog = ({open, handleClose,handleError,sendAlert}) => {
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
@@ -38,7 +38,8 @@ const ForgotPasswordDialog = ({open, handleClose,handleError}) => {
 
                 .then(res => {
                     stopLoading(id)
-                    window.alert("The Otp Has Been Sent To Your Mobile")
+                    // window.alert("The Otp Has Been Sent To Your Mobile")
+                    sendAlert("The Otp Has Been Sent To Your Mobile")
                     if (step < 3) {
                         setStep(step + 1);
                     }
@@ -317,6 +318,7 @@ const SignInPage = ({onSignIn}) => {
                 open={forgotOpen}
                 handleClose={() => setForgotOpen(false)}
                 handleError={handleError}
+                sendAlert={sendAlert}
             />
             <OTPLoginDialog
                 open={otpLoginOpen}
