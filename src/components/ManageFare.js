@@ -161,27 +161,46 @@ const ManageFare = () => {
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
                                   setOpen={setAlert}/> : <></>}
             <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
-                <Box sx={{display: "flex", justifyContent: "flex-start", alignItems: "center"}}>
-                    <Box sx={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                        <Typography variant="h5" sx={{fontWeight: 600}}>
-
-                            Bus Fare Management
-                        </Typography>
-
-                        <Button
-                            variant="contained"
-                            startIcon={<SaveIcon/>}
-                            onClick={() => setSeatModalOpen(true)}
-                            sx={{
-                                backgroundColor: "#3f51b5", color: "#fff", "&:hover": {
-                                    backgroundColor: "#303f9f",
-                                },
-                            }}
-                        >
-                            Service Changes
-                        </Button>  
-                    </Box>
-                </Box>
+                   <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              Bus Fare Management
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={() => setSeatModalOpen(true)}
+              sx={{
+                backgroundColor: "#3f51b5",
+                color: "#fff",
+                "&:hover": {
+                  backgroundColor: "#303f9f",
+                },
+              }}
+            >
+              Service Changes
+            </Button>
+          </Box>
+        </Box>
 
                 <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap",}}>
                     <Box sx={{display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap", mt: 2}}>
@@ -401,6 +420,7 @@ const ManageFare = () => {
                     </TableContainer>
                 </Paper>
 
+       
         <Modal
           open={seatModalOpen}
           onClose={handleClose}
@@ -412,12 +432,14 @@ const ManageFare = () => {
               width: "100%",
               height: "100%",
               bgcolor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <Paper
               sx={{
-                position: "absolute",
-                width: 500,
+                width: 600,
                 bgcolor: "background.paper",
                 boxShadow: 24,
                 border: "2px solid gray",
@@ -429,7 +451,6 @@ const ManageFare = () => {
               <div
                 id="draggable-modal-header"
                 style={{
-                  cursor: "move",
                   padding: "16px",
                   backgroundColor: "#f5f5f5",
                   borderBottom: "1px solid #ddd",
@@ -441,8 +462,8 @@ const ManageFare = () => {
                     p: 4,
                   }}
                 >
-                  <Typography variant="h6" gutterBottom>
-                    Service Details
+                  <Typography variant="h6" gutterBottom sx={{ marginBottom: 2 }}>
+                    Service Changes Details
                   </Typography>
 
                   <Grid container spacing={2}>
@@ -594,7 +615,7 @@ const ManageFare = () => {
                       // onClick={handleSaveSeatDetails}
                       sx={{ marginRight: "8px" }}
                     >
-                      Save Seat
+                      Save
                     </Button>
                     <Button
                       variant="contained"
@@ -609,7 +630,6 @@ const ManageFare = () => {
               </div>
             </Paper>
           </Box>
-                          
         </Modal>
             </Box>
         </Container>);
