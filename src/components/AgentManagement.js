@@ -486,6 +486,14 @@ const AgentManagement = () => {
                                 renderInput={(params) => <TextField {...params} label="Payment Methods"/>}
                             />
                         </Grid>
+                          <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Manager Mobile Number"
+                                // value={newAgent.mobile}
+                                // onChange={(e) => setNewAgent(prev => ({...prev, mobile: e.target.value}))}
+                            />
+                        </Grid>
                     </Grid>
 
 
