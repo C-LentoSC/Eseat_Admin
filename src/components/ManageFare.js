@@ -26,6 +26,7 @@ const ManageFare = () => {
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
     const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+  const [showVerificationBox, setShowVerificationBox] = useState(false);
 
 
     // const [selectedBusType, setSelectedBusType] = useState(null);
@@ -130,6 +131,8 @@ const ManageFare = () => {
                 stopLoading(L)
                 handleError(err)
             })
+
+        setShowVerificationBox(false);
     };
 
     //Pagination
@@ -275,7 +278,7 @@ const ManageFare = () => {
                         <Button
                             variant="contained"
                             startIcon={<SaveIcon/>}
-                            onClick={handleSave}
+                            onClick={() => setShowVerificationBox(true)}
                             sx={{
                                 backgroundColor: "#3f51b5", color: "#fff", "&:hover": {
                                     backgroundColor: "#303f9f",
@@ -287,6 +290,42 @@ const ManageFare = () => {
                     </Box>
                 </Box>
 
+
+               {showVerificationBox && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: 2,
+                      padding: 2,
+                      border: "2px solid rgb(210, 25, 25)",
+                      borderRadius: "8px",
+                      backgroundColor: "rgb(255, 228, 228)",
+                    }}
+                  >
+                    <TextField
+                      label="Confirm Code 01"
+                      size="small"
+                      sx={{ minWidth: 200, backgroundColor: "white" }}
+                    />
+                    <TextField
+                      label="Confirm Code 02"
+                      size="small"
+                      sx={{ minWidth: 200, backgroundColor: "white" }}
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={{ height: "40px" }}
+                      onClick={handleSave}
+                    >
+                      Confirm
+                    </Button>
+                  </Box>
+                )}                
+                                        
 
                 <Paper>
                     <TableContainer>
