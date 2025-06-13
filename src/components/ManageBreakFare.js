@@ -133,6 +133,10 @@ const ManageBreakFare = () => {
         event.target.value = '';
     };
 
+    const [code1, setCode1] = useState("")
+    const [code2, setCode2] = useState("")
+
+
 
     const handleSave = () => {
         const bl=breaks.filter(f=>f.newFare<1)
@@ -140,18 +144,19 @@ const ManageBreakFare = () => {
             sendAlert(`${bl.length} fare break have a negative value or zero`)
         }
         const L=startLoading()
-        api.post('admin/bulk-fare/save-brake', {breaks})
+        api.post('admin/bulk-fare/save-brake', {breaks,code1,code2})
             .then(res=>{
                 stopLoading(L)
-
+                setShowVerificationBox(false);
                 sendAlert('fare brake saved');
+                setCode1("")
+                setCode2("")
                 loadAll()
             })
             .catch(err=> {
                 stopLoading(L)
                 handleError(err)
             })
-         setShowVerificationBox(false);
     };
 
     //Pagination
@@ -300,7 +305,17 @@ const ManageBreakFare = () => {
                         <Button
                             variant="contained"
                             startIcon={<SaveIcon />}
-                            onClick={() => setShowVerificationBox(true)}
+                            onClick={() => {
+                                const id = startLoading()
+                                api.get("admin/bulk-fare/otp-request")
+                                    .then(res => {
+                                        stopLoading(id)
+                                        setShowVerificationBox(true)
+                                    }).catch(err => {
+                                    handleError(err)
+                                    stopLoading(id)
+                                })
+                            }}
                             sx={{
                                 backgroundColor: "#3f51b5",
                                 color: "#fff",
@@ -330,12 +345,16 @@ const ManageBreakFare = () => {
           >
             <TextField
               label="Confirm Code 01"
+              value={code1}
+              onChange={(e) => setCode1(e.target.value)}
               size="small"
               sx={{ minWidth: 200, backgroundColor: "white" }}
             />
             <TextField
               label="Confirm Code 02"
               size="small"
+              value={code2}
+              onChange={(e) => setCode2(e.target.value)}
               sx={{ minWidth: 200, backgroundColor: "white" }}
             />
             <Button

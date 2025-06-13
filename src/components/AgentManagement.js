@@ -54,7 +54,8 @@ const AgentManagement = () => {
         agentType: "",
         paymentMethods: [],
         status: true,
-        assignedBuses: []
+        assignedBuses: [],
+        managerMobile: "",
     };
 
     const [selectedName, setSelectedName] = useState("");
@@ -138,6 +139,7 @@ const AgentManagement = () => {
     };
 
     const handleSaveAgent = () => {
+
         const L = startLoading()
         if (newAgent.id) {
             api.post('admin/agent/edit', newAgent)
@@ -493,8 +495,8 @@ const AgentManagement = () => {
                             <TextField
                                 fullWidth
                                 label="Manager Mobile Number"
-                                // value={newAgent.mobile}
-                                // onChange={(e) => setNewAgent(prev => ({...prev, mobile: e.target.value}))}
+                                value={newAgent.managerMobile}
+                                onChange={(e) => setNewAgent(prev => ({...prev, managerMobile: e.target.value}))}
                             />
                         </Grid>
                     </Grid>
