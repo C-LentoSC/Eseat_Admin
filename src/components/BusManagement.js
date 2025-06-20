@@ -1113,69 +1113,68 @@ const BusManagement = () => {
                                 <TableCell sx={{py: 0}}>{bus.route}</TableCell>
                                 <TableCell sx={{py: 0}}>{bus.routeNo}</TableCell>
                                 <TableCell sx={{py: 0}} align="center">{bus.seats}</TableCell>
-                                // <TableCell sx={{py: 0}} align="center">
-                                //     <FormControlLabel
-                                //         control={
-                                //             <Switch
-                                //                 checked={bus.status}
-                                //                 onChange={() => {
-                                //                     const L = startLoading()
-                                //                     api.post("admin/bus/toggle-status", {id: bus.id})
-                                //                         .then(res => {
-                                //                             stopLoading(L)
-                                //                             loadInfo()
-                                //                         }).catch(err => {
-                                //                         stopLoading(L)
-                                //                         handleError(err)
-                                //                     })
-                                //                 }}
-                                //             />
-                                //         }
-                                //         label={bus.status ? "Active" : "Inactive"}
-                                //     />
-                                // </TableCell>
-                                         <TableCell align="center">
-                                            <FormControlLabel
+                                <TableCell sx={{py: 0}} align="center">
+                                    <FormControlLabel
                                         control={
-                    <Switch
-                      checked={bus.status}
-                      onChange={() => handleToggle(bus)}
-                    />
-                            }
+                                            <Switch
+                                                checked={bus.status}
+                                                onChange={() => {
+                                                    const L = startLoading()
+                                                    api.post("admin/bus/toggle-status", {id: bus.id})
+                                                        .then(res => {
+                                                            stopLoading(L)
+                                                            loadInfo()
+                                                        }).catch(err => {
+                                                        stopLoading(L)
+                                                        handleError(err)
+                                                    })
+                                                }}
+                                            />
+                                        }
                                         label={bus.status ? "Active" : "Inactive"}
                                     />
-                  </TableCell>
+                            
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                              checked={bus.status}
+                                              onChange={() => handleToggle(bus)}
+                                            />
+                                        }
+                                        label={bus.status ? "Active" : "Inactive"}
+                                    />
+                                </TableCell>
 
-                  {/* Popup Modal */}
-                  <Dialog
-                    open={openDialog}
-                    onClose={() => setOpenDialog(false)}
-                    style={{padding: "10px"}}
-                  >
-                    <DialogTitle>Deactivate Bus</DialogTitle>
-                    <DialogContent>
-                      <TextField
-                        type="date"
-                        label="Select Date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        fullWidth
-                        InputLabelProps={{ shrink: true }}
-                        sx={{ mt: 2 }}
-                      />
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={() => setOpenDialog(false)}>
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={handleConfirmDeactivate}
-                      >
-                        Confirm
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
+                                
+                                  <Dialog
+                                    open={openDialog}
+                                    onClose={() => setOpenDialog(false)}
+                                    style={{padding: "10px"}}
+                                  >
+                                    <DialogTitle>Deactivate Bus</DialogTitle>
+                                    <DialogContent>
+                                      <TextField
+                                        type="date"
+                                        label="Select Date"
+                                        value={selectedDate}
+                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                        fullWidth
+                                        InputLabelProps={{ shrink: true }}
+                                        sx={{ mt: 2 }}
+                                      />
+                                    </DialogContent>
+                                    <DialogActions>
+                                      <Button onClick={() => setOpenDialog(false)}>
+                                        Cancel
+                                      </Button>
+                                      <Button
+                                        variant="contained"
+                                        onClick={handleConfirmDeactivate}
+                                      >
+                                        Confirm
+                                      </Button>
+                                    </DialogActions>
+                                  </Dialog>
                             
                                 <TableCell sx={{py: 0}} align="right">
                                     <IconButton onClick={(e) => handleMenuOpen(e, bus)}>
