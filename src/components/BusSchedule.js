@@ -473,7 +473,7 @@ const BusSchedule = () => {
                                 },
                             }}>
 
-                        Add Schedule
+                        Add Schedule Time
                     </Button>
                 </Box>
 
@@ -562,7 +562,7 @@ const BusSchedule = () => {
                         border: "2px solid gray",
                     }}>
 
-                        <Typography variant="h6" sx={{mb: 3}}>Add New Schedule</Typography>
+                        <Typography variant="h6" sx={{mb: 3}}>Add New Schedule Time</Typography>
 
 
                         <Stack spacing={3}>
