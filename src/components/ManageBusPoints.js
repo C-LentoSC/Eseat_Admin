@@ -431,6 +431,17 @@ const ManageBusPoints = () => {
                     </Box>
                 </Box>
 
+<Box
+  sx={{
+    height: "2px",
+    backgroundColor: "#000000",
+    width: "100%",
+    marginTop: "20px",
+    marginBottom: "20px",
+    borderRadius: "4px"
+  }}
+/>
+
                 {/* Bus Points Table Section */}
                 <Box sx={{
                     width: "100%",
