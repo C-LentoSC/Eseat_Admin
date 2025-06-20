@@ -497,7 +497,7 @@ const BusSchedule = () => {
                         <TableBody>
                             {schedule
                                 .slice(startIndex, startIndex + rowsPerPage)
-                                .map((item) => (<TableRow key={item.id}>
+                                .map((item) => (<TableRow key={item.id} style={{ backgroundColor: "#ffafaf" }}>
 
                                     <TableCell sx={{py: 0}}>{item.from} - {item.to}</TableCell>
                                     <TableCell sx={{py: 0}}>{item.travelDate}</TableCell>
