@@ -21,7 +21,8 @@ import {
     InputAdornment,
     Divider,
     Stack,
-    TablePagination
+    TablePagination,
+    Checkbox
 } from '@mui/material';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -54,7 +55,8 @@ const AgentManagement = () => {
         agentType: "",
         paymentMethods: [],
         status: true,
-        assignedBuses: []
+        assignedBuses: [],
+        managerMobile: "",
     };
 
     const [selectedName, setSelectedName] = useState("");
@@ -138,6 +140,7 @@ const AgentManagement = () => {
     };
 
     const handleSaveAgent = () => {
+
         const L = startLoading()
         if (newAgent.id) {
             api.post('admin/agent/edit', newAgent)
@@ -493,8 +496,8 @@ const AgentManagement = () => {
                             <TextField
                                 fullWidth
                                 label="Manager Mobile Number"
-                                // value={newAgent.mobile}
-                                // onChange={(e) => setNewAgent(prev => ({...prev, mobile: e.target.value}))}
+                                value={newAgent.managerMobile}
+                                onChange={(e) => setNewAgent(prev => ({...prev, managerMobile: e.target.value}))}
                             />
                         </Grid>
                     </Grid>
@@ -579,6 +582,21 @@ const AgentManagement = () => {
                                     />)}
                                     sx={{flex: 1}}
                                 />
+                                     <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={false}
+                                                // onChange={(e) => setNewBus(prev => ({
+                                                //     ...prev,
+                                                //     paymentMethods: {
+                                                //         ...prev.paymentMethods,
+                                                //         card: e.target.checked
+                                                //     }
+                                                // }))}
+                                            />
+                                        }
+                                        label="Schedule Close Permission"
+                                    />
                                 <Button
                                     variant="contained"
                                     onClick={() => assignBus(selectedBus)}
@@ -629,6 +647,9 @@ const AgentManagement = () => {
                                             </Box>
                                             <Typography variant="body2" color="text.secondary">
                                                 Bus ID: {bus.id}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                    Schedule Close Permission: Yes
                                             </Typography>
                                         </Stack>
                                     </Paper>

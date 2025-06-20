@@ -23,7 +23,7 @@ const SeatTransfer = () => {
 
 
     const [searchData, setSearchData] = useState({
-        refNo: '', mobileNumber: ''
+        refNo: '', mobileNumber: '',vCode:""
     });
 
     const [bookingDetails, setBookingDetails] = useState(null);
@@ -428,8 +428,8 @@ const SeatTransfer = () => {
                             <TextField
                                 fullWidth
                                 label="V-Code"
-                                value={searchData.mobileNumber}
-                                onChange={(e) => setSearchData({...searchData, mobileNumber: e.target.value})}
+                                value={searchData.vCode}
+                                onChange={(e) => setSearchData({...searchData, vCode: e.target.value})}
                                 InputProps={{
                                     startAdornment: (<InputAdornment position="start">
                                     </InputAdornment>),
