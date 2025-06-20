@@ -349,7 +349,7 @@ const ManageBusPoints = () => {
                 {/* Form Section */}
                 <Box component="form" sx={{ width: "100%", display: "flex", justifyContent: "center", height: "45px" }}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={4}>
                             <Autocomplete
                                 value={direction}
                                 onChange={(event, newValue) => setDirection(newValue)}
@@ -377,7 +377,7 @@ const ManageBusPoints = () => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={4}>
                             <Autocomplete
                                 value={routePoint}
                                 onChange={(event, newValue) => setRoutePoint(newValue)}
@@ -402,6 +402,19 @@ const ManageBusPoints = () => {
                                         }}
                                     />
                                 )}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                type="time"
+                                label="Time"
+                                InputLabelProps={{ shrink: true }}
+                                sx={{
+                                    width: "100%",
+                                    '& .MuiOutlinedInput-root': {
+                                        height: '45px',
+                                    }
+                                }}
                             />
                         </Grid>
 
@@ -547,6 +560,7 @@ const ManageBusPoints = () => {
                             <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
                                 <TableCell sx={{ py: 1 }}>Direction</TableCell>
                                 <TableCell sx={{ py: 1 }}>Route Point</TableCell>
+                                 <TableCell sx={{ py: 1 }}>Time</TableCell>
                                 <TableCell sx={{ py: 1 }}>Status</TableCell>
                                 <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
                             </TableRow>
@@ -558,6 +572,7 @@ const ManageBusPoints = () => {
                                     <TableRow key={busPoint.key}>
                                         <TableCell sx={{ py: 0 }}>{busPoint.direction}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{busPoint.routePoint}</TableCell>
+                                     <TableCell sx={{ py: 0 }}></TableCell>
                                         <TableCell sx={{ py: 0 }}>
                                             <FormControlLabel
                                                 control={
