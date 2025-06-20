@@ -1146,11 +1146,19 @@ const BusManagement = () => {
                                 </TableCell>
 
                                 
-                                  <Dialog
-                                    open={openDialog}
-                                    onClose={() => setOpenDialog(false)}
-                                    style={{padding: "10px"}}
-                                  >
+                                <Dialog
+  open={openDialog}
+  onClose={() => setOpenDialog(false)}
+  PaperProps={{
+    sx: { borderRadius: 3, padding: 2, minWidth: 400 }
+  }}
+  BackdropProps={{
+    sx: {
+      backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+    }
+  }}
+>
+
                                     <DialogTitle>Deactivate Bus</DialogTitle>
                                     <DialogContent>
                                       <TextField
