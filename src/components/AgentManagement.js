@@ -21,7 +21,8 @@ import {
     InputAdornment,
     Divider,
     Stack,
-    TablePagination
+    TablePagination,
+    Checkbox
 } from '@mui/material';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -581,6 +582,21 @@ const AgentManagement = () => {
                                     />)}
                                     sx={{flex: 1}}
                                 />
+                                     <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={false}
+                                                // onChange={(e) => setNewBus(prev => ({
+                                                //     ...prev,
+                                                //     paymentMethods: {
+                                                //         ...prev.paymentMethods,
+                                                //         card: e.target.checked
+                                                //     }
+                                                // }))}
+                                            />
+                                        }
+                                        label="Schedule Close Permission"
+                                    />
                                 <Button
                                     variant="contained"
                                     onClick={() => assignBus(selectedBus)}
