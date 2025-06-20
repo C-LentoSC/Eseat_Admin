@@ -41,7 +41,8 @@ const BusManagement = () => {
     // setLoading(true);
     // setLoading(false);
 
-
+ const [isHidden, setIsHidden] = useState(true);
+    
     const DepotID = sessionStorage.getItem('currentValueID');
     const {startLoading, stopLoading} = useLoading()
     // const DepotID = 2;
@@ -1122,7 +1123,9 @@ const BusManagement = () => {
                 onClose={handleMenuClose}
             >
                 <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                     {!isHidden && (
                 <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                       )}
                 <MenuItem onClick={handleManageSchedules}>Manage Bus Schedules</MenuItem>
                 <MenuItem onClick={handleManageCrew}>Manage Crew</MenuItem>
             </Menu>
