@@ -42,6 +42,7 @@ const BusSchedule = () => {
     // setLoading(true);
     // setLoading(false);
     const {startLoading, stopLoading} = useLoading()
+    const [isHidden, setIsHidden] = useState(true);
 
 
 
@@ -519,6 +520,7 @@ const BusSchedule = () => {
                                             <EditIcon/>
 
                                         </IconButton>
+                                            {!isHidden && (
                                         <IconButton
                                             color="error"
                                             onClick={() => handleDelete(item.id)}
@@ -527,6 +529,7 @@ const BusSchedule = () => {
                                             <DeleteIcon/>
 
                                         </IconButton>
+                                                   )}
                                     </TableCell>
                                 </TableRow>))}
                         </TableBody>
