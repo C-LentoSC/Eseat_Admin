@@ -102,6 +102,16 @@ const NAVIGATION = {
       title: 'Bus Facilities',
       icon: <AddCircleIcon />,
     },
+        {
+      segment: 'manage-regions',
+      title: 'Manage Regions',
+      icon: <LocationOnIcon />,
+    },
+    {
+      segment: 'manage_depots',
+      title: 'Manage Depots',
+      icon: <WarehouseIcon />,
+    },
     {
       segment: 'points-management',
       title: 'Points Management',
@@ -123,16 +133,6 @@ const NAVIGATION = {
           icon: <DirectionsRunIcon />,
         },
       ],
-    },
-    {
-      segment: 'manage-regions',
-      title: 'Manage Regions',
-      icon: <LocationOnIcon />,
-    },
-    {
-      segment: 'manage_depots',
-      title: 'Manage Depots',
-      icon: <WarehouseIcon />,
     },
     {
       segment: 'busLayoutManagement',
@@ -271,6 +271,16 @@ const NAVIGATION = {
       icon: <AddCircleIcon />,
     },
     {
+      segment: 'manage-regions',
+      title: 'Manage Regions',
+      icon: <LocationOnIcon />,
+    },
+    {
+      segment: 'manage_depots',
+      title: 'Manage Depots',
+      icon: <WarehouseIcon />,
+    },
+    {
       segment: 'points-management',
       title: 'Points Management',
       icon: <LoyaltyIcon />,
@@ -291,16 +301,6 @@ const NAVIGATION = {
           icon: <DirectionsRunIcon />,
         },
       ],
-    },
-    {
-      segment: 'manage-regions',
-      title: 'Manage Regions',
-      icon: <LocationOnIcon />,
-    },
-    {
-      segment: 'manage_depots',
-      title: 'Manage Depots',
-      icon: <WarehouseIcon />,
     },
     {
       segment: 'busLayoutManagement',
@@ -438,6 +438,16 @@ const NAVIGATION = {
       title: 'Bus Facilities',
       icon: <AddCircleIcon />,
     },
+     {
+      segment: 'manage-regions',
+      title: 'Manage Regions',
+      icon: <LocationOnIcon />,
+    },
+    {
+      segment: 'manage_depots',
+      title: 'Manage Depots',
+      icon: <WarehouseIcon />,
+    },
     {
       segment: 'points-management',
       title: 'Points Management',
@@ -459,16 +469,6 @@ const NAVIGATION = {
           icon: <DirectionsRunIcon />,
         },
       ],
-    },
-    {
-      segment: 'manage-regions',
-      title: 'Manage Regions',
-      icon: <LocationOnIcon />,
-    },
-    {
-      segment: 'manage_depots',
-      title: 'Manage Depots',
-      icon: <WarehouseIcon />,
     },
     {
       segment: 'busLayoutManagement',
