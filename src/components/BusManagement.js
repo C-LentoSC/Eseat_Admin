@@ -1161,7 +1161,7 @@ const BusManagement = () => {
                         boxShadow: 24,
                         p: 4,
                         borderRadius: "12px",
-                        border: "2px solid #1976d2",
+                        border: "2px solid gray",
                         overflow: "auto",
                       }}
                     >
