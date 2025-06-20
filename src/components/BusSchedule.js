@@ -444,7 +444,7 @@ const BusSchedule = () => {
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
 
                                   setOpen={setAlert}/> : <></>}
-            <Box sx={{display: "flex", flexDirection: "column", gap: 3, py: 2}}>
+            <Box sx={{display: "flex", flexDirection: "column"}}>
                 <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                     <Box sx={{
                         display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center"
@@ -480,12 +480,14 @@ const BusSchedule = () => {
                     </Button>
                 </Box>
 
-                               <Box sx={{
+             <Box sx={{
                 width: "100%",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 flexWrap: "wrap",
+                mb: 2,
+              mt: 5,
                 gap: 2
             }}>
                 <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
