@@ -571,42 +571,6 @@ const BusManagement = () => {
             </Grid>
         </Box>
 
-       
-
-        <Divider sx={{my: 3}}/>
-
-
-        <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.bookactivity.online || false}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, bookactivity: {
-                                ...prev.bookactivity, online: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Online Active"
-                />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.bookactivity.counter || false}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, bookactivity: {
-                                ...prev.bookactivity, counter: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Agent Counter"
-                />
-            </Grid>
-
-        </Grid>
-
-
         <Divider sx={{my: 3}}/>
 
         {/* Bus Close  Section */}
@@ -937,6 +901,40 @@ const BusManagement = () => {
                 />
             </Grid>))}
         </Grid>
+
+             <Divider sx={{my: 3}}/>
+
+
+        <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={newBus.bookactivity.online || false}
+                        onChange={(e) => setNewBus(prev => ({
+                            ...prev, bookactivity: {
+                                ...prev.bookactivity, online: e.target.checked
+                            }
+                        }))}
+                    />}
+                    label="Online Active"
+                />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={newBus.bookactivity.counter || false}
+                        onChange={(e) => setNewBus(prev => ({
+                            ...prev, bookactivity: {
+                                ...prev.bookactivity, counter: e.target.checked
+                            }
+                        }))}
+                    />}
+                    label="Agent Counter"
+                />
+            </Grid>
+
+        </Grid>
+
         </div>
     </Box>);
 
