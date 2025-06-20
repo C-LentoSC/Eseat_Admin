@@ -648,6 +648,9 @@ const AgentManagement = () => {
                                             <Typography variant="body2" color="text.secondary">
                                                 Bus ID: {bus.id}
                                             </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                    Schedule Close Permission: Yes
+                                            </Typography>
                                         </Stack>
                                     </Paper>
                                 </Grid>))}
