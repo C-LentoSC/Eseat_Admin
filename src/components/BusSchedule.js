@@ -36,8 +36,89 @@ import api from "../model/API";
 import {useLoading} from "../loading";
 
 // import LoadingOverlay from './Parts/LoadingOverlay';
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 const BusSchedule = () => {
+     // Sample passed/DB dates - can be dynamic
+  const dbDates = ["2025-06-13", "2025-06-15", "2025-06-17", "2025-06-19"];
+  const [currentYear, setCurrentYear] = useState(dayjs().year());
+  const [currentMonth, setCurrentMonth] = useState(dayjs().month()); // 0-indexed
+
+  // Calculate days for calendar
+  const currentMonthDayjs = dayjs().year(currentYear).month(currentMonth);
+  const daysInMonth = currentMonthDayjs.daysInMonth();
+  const firstDayIndex = currentMonthDayjs.startOf("month").day(); // Sun = 0
+
+  // Build day array with blanks for offset
+  const calendarDays = [];
+  for (let i = 0; i < firstDayIndex; i++) calendarDays.push(null);
+  for (let d = 1; d <= daysInMonth; d++)
+    calendarDays.push(dayjs(currentMonthDayjs).date(d));
+
+  const today = dayjs().startOf("day");
+
+  // Toggle select date (multi-select)
+  const toggleDate = (date) => {
+    const formatted = date.format("YYYY-MM-DD");
+
+    if (isPast(date) || isDbDate(date)) return; // disabled dates cannot be selected
+
+    if (selectedDates.includes(formatted)) {
+      setSelectedDates((prev) => prev.filter((d) => d !== formatted));
+    } else {
+      setSelectedDates((prev) => [...prev, formatted]);
+    }
+  };
+
+  const isDbDate = (date) => {
+    return dbDates.includes(date.format("YYYY-MM-DD"));
+  };
+
+  const isSelected = (date) => {
+    return selectedDates.includes(date.format("YYYY-MM-DD"));
+  };
+
+  const isPast = (date) => {
+    return date.isBefore(today, "day");
+  };
+
+  // Change month and year handlers
+  const prevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentYear((y) => y - 1);
+      setCurrentMonth(11);
+    } else {
+      setCurrentMonth((m) => m - 1);
+    }
+  };
+
+  const nextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentYear((y) => y + 1);
+      setCurrentMonth(0);
+    } else {
+      setCurrentMonth((m) => m + 1);
+    }
+  };
+
+  const onYearChange = (e) => {
+    const val = parseInt(e.target.value);
+    if (!isNaN(val)) setCurrentYear(val);
+  };
+
 
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
@@ -303,22 +384,98 @@ const BusSchedule = () => {
                 onChange={(date) => setFormData({...formData, closingDate: date})}
             />
         </Box>
-        {enableMultiDates && (<Box sx={{border: 1, borderColor: 'divider', p: 2, borderRadius: 1}}>
-            <Typography sx={{mb: 1}}>Selected Additional Dates:</Typography>
-            <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2}}>
+        {enableMultiDates && (
+            <div className="calendar-container">
+          <h2 className="mb-5">Bus Schedule Calendar</h2>
 
-                {selectedDates.map(date => (<Chip
-                    key={date}
-                    label={date}
-                    onDelete={() => setSelectedDates(prev => prev.filter(d => d !== date))}
-                />))}
-            </Box>
-            <DateCalendar
-                value={null}
-                onChange={handleDateSelect}
-                minDate={dayjs()}
+          {/* Year & Month selectors */}
+          <div className="calendar-nav">
+            <button onClick={prevMonth} className="nav-btn">
+              ◀
+            </button>
+
+            <select
+              value={currentMonth}
+              onChange={(e) => setCurrentMonth(parseInt(e.target.value))}
+            >
+              {months.map((m, i) => (
+                <option key={i} value={i}>
+                  {m}
+                </option>
+              ))}
+            </select>
+            <input
+              type="number"
+              value={currentYear}
+              onChange={onYearChange}
+              min={1900}
+              max={2100}
+              className="year-input"
+              onKeyDown={(e) => e.preventDefault()}
             />
-        </Box>)}
+
+            <button onClick={nextMonth} className="nav-btn">
+              ▶
+            </button>
+          </div>
+
+          {/* Days of week */}
+          <div className="calendar-grid">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div key={day} className="day-name">
+                {day}
+              </div>
+            ))}
+
+            {/* Calendar days */}
+            {calendarDays.map((date, i) => {
+              if (!date) return <div key={i} className="empty-day" />;
+
+              const classes = ["calendar-day"];
+              if (isPast(date)) classes.push("past-date");
+              if (isDbDate(date)) classes.push("db-date");
+              if (isSelected(date)) classes.push("selected-date");
+
+              return (
+                <div
+                  key={i}
+                  className={classes.join(" ")}
+                  onClick={() => toggleDate(date)}
+                  title={date.format("YYYY-MM-DD")}
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  {date.date()}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Selected Dates chips */}
+          <div className="selected-chip-list">
+            {selectedDates.length === 0 && <p>No dates selected</p>}
+            {selectedDates.map((date) => (
+              <span key={date} className="chip">
+                {date}
+                <button
+                  onClick={() =>
+                    setSelectedDates((prev) => prev.filter((d) => d !== date))
+                  }
+                  className="close-btns"
+                >
+                  ✖
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+       
+          )}
     </Box>);
 
     const handleBackClick = () => {
