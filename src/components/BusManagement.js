@@ -1114,25 +1114,7 @@ const BusManagement = () => {
                                 <TableCell sx={{py: 0}}>{bus.routeNo}</TableCell>
                                 <TableCell sx={{py: 0}} align="center">{bus.seats}</TableCell>
                                 <TableCell sx={{py: 0}} align="center">
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={bus.status}
-                                                onChange={() => {
-                                                    const L = startLoading()
-                                                    api.post("admin/bus/toggle-status", {id: bus.id})
-                                                        .then(res => {
-                                                            stopLoading(L)
-                                                            loadInfo()
-                                                        }).catch(err => {
-                                                        stopLoading(L)
-                                                        handleError(err)
-                                                    })
-                                                }}
-                                            />
-                                        }
-                                        label={bus.status ? "Active" : "Inactive"}
-                                    />
+                                  
                             
                                     <FormControlLabel
                                         control={
