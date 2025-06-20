@@ -23,7 +23,11 @@ import {
     TableRow,
     TextField,
     Typography,
-    TablePagination
+    TablePagination,
+      Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -108,6 +112,40 @@ const BusManagement = () => {
 
 
     const [routesData, setRoutesData] = useState();
+
+    const [openDialog, setOpenDialog] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [busToDeactivate, setBusToDeactivate] = useState(null);
+
+  const handleToggle = (bus) => {
+    if (bus.status) {
+      // Active → Inactive: Show popup
+      setBusToDeactivate(bus);
+      setOpenDialog(true);
+    } else {
+      // Inactive → Active: Just toggle
+      setBuses((prev) =>
+        prev.map((b) => (b.id === bus.id ? { ...b, status: true } : b))
+      );
+    }
+  };
+
+  const handleConfirmDeactivate = () => {
+    if (!selectedDate) return alert("Please select a date!");
+
+    // Do something with selectedDate if needed
+    setBuses((prev) =>
+      prev.map((b) =>
+        b.id === busToDeactivate.id
+          ? { ...b, status: false, inactiveDate: selectedDate }
+          : b
+      )
+    );
+    setOpenDialog(false);
+    setSelectedDate("");
+    setBusToDeactivate(null);
+  };
+
 
 
     const [routes, setR] = useState([]);
@@ -1096,6 +1134,49 @@ const BusManagement = () => {
                                         label={bus.status ? "Active" : "Inactive"}
                                     />
                                 </TableCell>
+                                         <TableCell align="center">
+                                            <FormControlLabel
+                                        control={
+                    <Switch
+                      checked={bus.status}
+                      onChange={() => handleToggle(bus)}
+                    />
+                            }
+                                        label={bus.status ? "Active" : "Inactive"}
+                                    />
+                  </TableCell>
+
+                  {/* Popup Modal */}
+                  <Dialog
+                    open={openDialog}
+                    onClose={() => setOpenDialog(false)}
+                    style={{padding: "10px"}}
+                  >
+                    <DialogTitle>Deactivate Bus</DialogTitle>
+                    <DialogContent>
+                      <TextField
+                        type="date"
+                        label="Select Date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ mt: 2 }}
+                      />
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={() => setOpenDialog(false)}>
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={handleConfirmDeactivate}
+                      >
+                        Confirm
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                            
                                 <TableCell sx={{py: 0}} align="right">
                                     <IconButton onClick={(e) => handleMenuOpen(e, bus)}>
                                         <MoreVertIcon/>
