@@ -114,12 +114,12 @@ const NAVIGATION = {
       children: [
         {
           segment: 'all-route',
-          title: 'All Routes',
+          title: 'View-Add Routes',
           icon: <AllInboxIcon />,
         },
         {
           segment: 'active-route',
-          title: 'Active Routes',
+          title: 'B-D-P & Fare Breake',
           icon: <DirectionsRunIcon />,
         },
       ],
@@ -280,14 +280,14 @@ const NAVIGATION = {
       title: 'Route Management',
       icon: <MapIcon />,
       children: [
-        {
+       {
           segment: 'all-route',
-          title: 'All Routes',
+          title: 'View-Add Routes',
           icon: <AllInboxIcon />,
         },
         {
           segment: 'active-route',
-          title: 'Active Routes',
+          title: 'B-D-P & Fare Breake',
           icon: <DirectionsRunIcon />,
         },
       ],
@@ -450,12 +450,12 @@ const NAVIGATION = {
       children: [
         {
           segment: 'all-route',
-          title: 'All Routes',
+          title: 'View-Add Routes',
           icon: <AllInboxIcon />,
         },
         {
           segment: 'active-route',
-          title: 'Active Routes',
+          title: 'B-D-P & Fare Breake',
           icon: <DirectionsRunIcon />,
         },
       ],
@@ -594,14 +594,14 @@ const NAVIGATION = {
       title: 'Route Management',
       icon: <MapIcon />,
       children: [
-        {
+       {
           segment: 'all-route',
-          title: 'All Routes',
+          title: 'View-Add Routes',
           icon: <AllInboxIcon />,
         },
         {
           segment: 'active-route',
-          title: 'Active Routes',
+          title: 'B-D-P & Fare Breake',
           icon: <DirectionsRunIcon />,
         },
       ],
