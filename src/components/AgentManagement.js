@@ -483,6 +483,22 @@ const AgentManagement = () => {
                                 renderInput={(params) => <TextField {...params} label="Agent Type"/>}
                             />
                         </Grid>
+                    {newAgent.agentType === "Private" && (
+                      <>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Booking Fee"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Agent Code"
+                            />
+                        </Grid>
+                        </>
+                    )}
                         <Grid item xs={12} sm={6}>
                             <Autocomplete
                                 multiple
