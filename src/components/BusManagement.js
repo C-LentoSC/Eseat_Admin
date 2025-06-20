@@ -571,93 +571,7 @@ const BusManagement = () => {
             </Grid>
         </Box>
 
-        <Divider sx={{my: 3}}/>
-
-        {/* Payment Methods Section */}
-        <Typography variant="h6" sx={{mb: 2}}>Payment Methods</Typography>
-        <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.card}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, card: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Credit/Debit Card"
-                />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.cash}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, cash: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Pay on Bus"
-                />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.bank}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, bank: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Pay to Bank"
-                />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.ezcash}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, ezcash: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="eZCash"
-                />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.reload}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, reload: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Reload"
-                />
-            </Grid>
-        </Grid>
-
-        <Divider sx={{my: 3}}/>
-
-        {/* Facilities Section */}
-        <Typography variant="h6" sx={{mb: 2}}>Facilities</Typography>
-        <Grid container spacing={2}>
-            {facilities.map((facility) => (<Grid item xs={12} sm={3} key={facility.id}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={selectedFacilities[facility.id] || false}
-                        onChange={() => handleFacilityChange(facility.id)}
-                    />}
-                    label={facility.name}
-                />
-            </Grid>))}
-        </Grid>
+       
 
         <Divider sx={{my: 3}}/>
 
@@ -747,7 +661,7 @@ const BusManagement = () => {
         <Divider sx={{my: 3}}/>
 
         {/* Route Section */}
-        <Typography variant="h6" sx={{mb: 2}}>Select Free defined Route</Typography>
+        <Typography variant="h6" sx={{mb: 2}}>Select Pre-defined Route</Typography>
         <Grid container spacing={2}>
 
             <Grid item xs={12} sm={4}>
@@ -935,6 +849,94 @@ const BusManagement = () => {
                     </label>
                 </div>
             </div>
+
+                                 <Divider sx={{my: 3}}/>
+
+        {/* Payment Methods Section */}
+        <Typography variant="h6" sx={{mb: 2}}>Payment Methods</Typography>
+        <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={newBus.paymentMethods.card}
+                        onChange={(e) => setNewBus(prev => ({
+                            ...prev, paymentMethods: {
+                                ...prev.paymentMethods, card: e.target.checked
+                            }
+                        }))}
+                    />}
+                    label="Credit/Debit Card"
+                />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={newBus.paymentMethods.cash}
+                        onChange={(e) => setNewBus(prev => ({
+                            ...prev, paymentMethods: {
+                                ...prev.paymentMethods, cash: e.target.checked
+                            }
+                        }))}
+                    />}
+                    label="Pay on Bus"
+                />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={newBus.paymentMethods.bank}
+                        onChange={(e) => setNewBus(prev => ({
+                            ...prev, paymentMethods: {
+                                ...prev.paymentMethods, bank: e.target.checked
+                            }
+                        }))}
+                    />}
+                    label="Pay to Bank"
+                />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={newBus.paymentMethods.ezcash}
+                        onChange={(e) => setNewBus(prev => ({
+                            ...prev, paymentMethods: {
+                                ...prev.paymentMethods, ezcash: e.target.checked
+                            }
+                        }))}
+                    />}
+                    label="eZCash"
+                />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={newBus.paymentMethods.reload}
+                        onChange={(e) => setNewBus(prev => ({
+                            ...prev, paymentMethods: {
+                                ...prev.paymentMethods, reload: e.target.checked
+                            }
+                        }))}
+                    />}
+                    label="Reload"
+                />
+            </Grid>
+        </Grid>
+
+        <Divider sx={{my: 3}}/>
+
+        {/* Facilities Section */}
+        <Typography variant="h6" sx={{mb: 2}}>Facilities</Typography>
+        <Grid container spacing={2}>
+            {facilities.map((facility) => (<Grid item xs={12} sm={3} key={facility.id}>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={selectedFacilities[facility.id] || false}
+                        onChange={() => handleFacilityChange(facility.id)}
+                    />}
+                    label={facility.name}
+                />
+            </Grid>))}
+        </Grid>
         </div>
     </Box>);
 
@@ -1048,7 +1050,7 @@ const BusManagement = () => {
                         },
                     }}
                 >
-                    Add New Bus
+                    Add New Schedule
                 </Button>
             </Box>
 
@@ -1177,7 +1179,7 @@ const BusManagement = () => {
                     overflow: "auto"
                 }}>
                     <Typography variant="h6" gutterBottom>
-                        {newBus.id ? 'Edit Bus' : 'Add New Bus'}
+                        {newBus.id ? 'Edit Schedule' : 'Add New Schedule'}
                     </Typography>
 
                     {/* Form Content */}
