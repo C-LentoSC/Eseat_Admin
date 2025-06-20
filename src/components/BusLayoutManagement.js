@@ -797,7 +797,9 @@ const BusLayoutManagement = () => {
                     mb: 2,
                     mt: 3,
                 }}>
-                    <Box sx={{ width: "300px" }}>
+                    <Box>
+                    <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
                         <Autocomplete
                             value={selectedBusType}
                             onChange={handleBusTypeChange}
@@ -821,6 +823,38 @@ const BusLayoutManagement = () => {
                                 />
                             )}
                         />
+                             </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Layout Name"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start"></InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: "40px",
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="Seats Count"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start"></InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      height: "40px",
+                    },
+                  }}
+                />
+              </Grid>
+            </Grid>
                     </Box>
 
                     <Button
