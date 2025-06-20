@@ -351,11 +351,26 @@ const ManageRegions = () => {
                                     }}
                                 />
                             </Grid>
+                                     <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label="RM Name"
+                                    variant="outlined"
+                                    required
+                                  
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
 
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="Mobile"
+                                    label="RM Mobile"
                                     variant="outlined"
                                     required
                                     value={mobile}
@@ -372,9 +387,9 @@ const ManageRegions = () => {
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="Email"
+                                    label="RM Email"
                                     variant="outlined"
-                                    required
+                                   
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -387,22 +402,7 @@ const ManageRegions = () => {
                                 />
                             </Grid>
 
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Address"
-                                    variant="outlined"
-                                    required
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Grid>
+                           
 
                             <Grid item xs={12}>
                                 <TextField
