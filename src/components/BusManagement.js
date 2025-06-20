@@ -1048,7 +1048,7 @@ const BusManagement = () => {
                         },
                     }}
                 >
-                    Add New Bus
+                    Add New Schedule
                 </Button>
             </Box>
 
@@ -1177,7 +1177,7 @@ const BusManagement = () => {
                     overflow: "auto"
                 }}>
                     <Typography variant="h6" gutterBottom>
-                        {newBus.id ? 'Edit Bus' : 'Add New Bus'}
+                        {newBus.id ? 'Edit Schedule' : 'Add New Schedule'}
                     </Typography>
 
                     {/* Form Content */}
