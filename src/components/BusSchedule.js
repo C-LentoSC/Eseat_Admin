@@ -44,7 +44,8 @@ const BusSchedule = () => {
     const {startLoading, stopLoading} = useLoading()
     const [isHidden, setIsHidden] = useState(true);
 
-
+    const typeOptions = ["This Month", "3 Month", "1 Year", "All"];
+  const [selectedType, setSelectedType] = useState(typeOptions[0]);
 
     const BusID = sessionStorage.getItem('currentValueID');
 
@@ -477,6 +478,41 @@ const BusSchedule = () => {
                         Add Schedule Time
                     </Button>
                 </Box>
+
+                               <Box sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+                mt: 3,
+                flexWrap: "wrap",
+                gap: 2
+            }}>
+                <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
+                   
+                    <Autocomplete
+                        value={selectedType}
+                        onChange={(_, value) => setSelectedType(value)}
+                        options={typeOptions}
+                        renderInput={(params) => (<TextField
+                            {...params}
+                            label="Type"
+                            InputProps={{
+                                ...params.InputProps, startAdornment: (<InputAdornment position="start">
+                                </InputAdornment>),
+                            }}
+                            sx={{
+                                width: 200, '& .MuiOutlinedInput-root': {
+                                    height: '40px',
+                                }
+                            }}
+                        />)}
+                    />
+                   
+                </Box>
+               
+            </Box>
 
                 <TableContainer component={Paper}>
                     <Table>
