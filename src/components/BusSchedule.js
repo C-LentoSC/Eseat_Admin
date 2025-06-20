@@ -474,14 +474,8 @@ const BusSchedule = () => {
             ))}
           </div>
         </div>
-        )}
-            </Box>
-            <DateCalendar
-                value={null}
-                onChange={handleDateSelect}
-                minDate={dayjs()}
-            />
-        </Box>)}
+       
+          )}
     </Box>);
 
     const handleBackClick = () => {
