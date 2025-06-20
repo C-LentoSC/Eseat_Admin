@@ -24,10 +24,7 @@ import {
     TextField,
     Typography,
     TablePagination,
-      Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -1114,7 +1111,27 @@ const BusManagement = () => {
                                 <TableCell sx={{py: 0}}>{bus.routeNo}</TableCell>
                                 <TableCell sx={{py: 0}} align="center">{bus.seats}</TableCell>
                                 <TableCell sx={{py: 0}} align="center">
-                                  
+
+                          <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={bus.status}
+                                                onChange={() => {
+                                                    const L = startLoading()
+                                                    api.post("admin/bus/toggle-status", {id: bus.id})
+                                                        .then(res => {
+                                                            stopLoading(L)
+                                                            loadInfo()
+                                                        }).catch(err => {
+                                                        stopLoading(L)
+                                                        handleError(err)
+                                                    })
+                                                }}
+                                            />
+                                        }
+                                        label={bus.status ? "Active" : "Inactive"}
+                                    />
+                                        
                             
                                     <FormControlLabel
                                         control={
@@ -1127,44 +1144,47 @@ const BusManagement = () => {
                                     />
                                 </TableCell>
 
-                                
-                                <Dialog
-  open={openDialog}
-  onClose={() => setOpenDialog(false)}
-  PaperProps={{
-    sx: { borderRadius: 3, padding: 2, minWidth: 400 }
-  }}
-  BackdropProps={{
-    sx: {
-      backgroundColor: 'rgba(0, 0, 0, 0.4)', 
-    }
-  }}
->
-
-                                    <DialogTitle>Deactivate Bus</DialogTitle>
-                                    <DialogContent>
-                                      <TextField
-                                        type="date"
-                                        label="Select Date"
-                                        value={selectedDate}
-                                        onChange={(e) => setSelectedDate(e.target.value)}
-                                        fullWidth
-                                        InputLabelProps={{ shrink: true }}
-                                        sx={{ mt: 2 }}
-                                      />
-                                    </DialogContent>
-                                    <DialogActions>
-                                      <Button onClick={() => setOpenDialog(false)}>
-                                        Cancel
-                                      </Button>
-                                      <Button
-                                        variant="contained"
-                                        onClick={handleConfirmDeactivate}
-                                      >
-                                        Confirm
-                                      </Button>
-                                    </DialogActions>
-                                  </Dialog>
+                               <Modal
+                    open={openDialog}
+                    onClose={() => setOpenDialog(false)}
+                  >
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "70%",
+                        maxWidth: "600px",
+                        maxHeight: "90vh",
+                        bgcolor: "background.paper",
+                        boxShadow: 24,
+                        p: 4,
+                        borderRadius: "12px",
+                        border: "2px solid #1976d2",
+                        overflow: "auto",
+                      }}
+                    >
+                      <Typography id="modal-title" variant="h6" sx={{ mb: 2 }}>
+                        Deactivate Bus
+                      </Typography>
+                      <TextField
+                        type="date"
+                        label="Select Date"
+                          value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ mb: 3 }}
+                      />
+                      <Box display="flex" justifyContent="flex-end" gap={2}>
+                        <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+                        <Button variant="contained" onClick={handleConfirmDeactivate}>
+                          Confirm
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Modal>
                             
                                 <TableCell sx={{py: 0}} align="right">
                                     <IconButton onClick={(e) => handleMenuOpen(e, bus)}>
