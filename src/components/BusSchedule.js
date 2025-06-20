@@ -425,12 +425,12 @@ const BusSchedule = () => {
 
     //Pagination
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(30);
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        setRowsPerPage(parseInt(event.target.value, 30));
         setPage(0);
     };
     const startIndex = page * rowsPerPage;
@@ -584,7 +584,7 @@ const BusSchedule = () => {
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
+                        rowsPerPageOptions={[30, 90, 365]}
                     />
                 </TableContainer>
 
