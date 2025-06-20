@@ -17,3 +17,125 @@ code {
     monospace;
 } */
 
+.calendar-container {
+  max-width: 500px;
+  margin: auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgb(0 0 0 / 0.1);
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 16px;
+}
+
+.nav-btn {
+  background: #1976d2;
+  border: none;
+  color: white;
+  font-size: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 10px;
+  transition: background-color 0.3s ease;
+}
+.nav-btn:hover {
+  background: #155a9a;
+}
+
+select, .year-input {
+  padding: 6px 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+  width: 140px;
+}
+
+.year-input {
+  width: 80px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day-name {
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 0;
+  color: #555;
+}
+
+.empty-day {
+  height: 40px;
+}
+
+.calendar-day {
+  text-align: center;
+  padding: 10px 0;
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.25s ease;
+  font-weight: 500;
+}
+
+.calendar-day:hover {
+  background-color: #e0e0e0;
+}
+
+.past-date {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.db-date {
+  background-color: #fff176;
+  color: black;
+  cursor: not-allowed;
+}
+
+.selected-date {
+  background-color: #64b5f6;
+  color: white;
+}
+
+.selected-chip-list {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.close-btns{
+  color: red !important;
+}
+.chip {
+  background-color: #1976d2;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.chip button {
+  margin-left: 8px;
+  border: none;
+  background: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
