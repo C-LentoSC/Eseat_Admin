@@ -397,10 +397,9 @@ const ManageDepots = () => {
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="Address"
+                                    label="Mobile 02"
                                     name="address"
-                                    value={formData.address}
-                                    onChange={handleInputChange}
+                                 
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
