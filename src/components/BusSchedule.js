@@ -485,8 +485,6 @@ const BusSchedule = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                mb: 2,
-                mt: 3,
                 flexWrap: "wrap",
                 gap: 2
             }}>
