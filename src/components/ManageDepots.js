@@ -91,9 +91,9 @@ const ManageDepots = () => {
         depotName: "",
         dsName: "",
         mobile: "",
-        address: "",
         email: "",
         description: "",
+        mobile2:""
     });
 
     // Modal states
@@ -125,7 +125,8 @@ const ManageDepots = () => {
 
     // Add new depot
     const handleAddDepot = () => {
-        if (formData.region && formData.depotName && formData.dsName) {
+
+        if (formData.region && formData.depotName && formData.dsName && formData.mobile) {
             const newDepot = {
                 ...formData,
                 active: true,
@@ -398,8 +399,9 @@ const ManageDepots = () => {
                                 <TextField
                                     fullWidth
                                     label="Mobile 02"
-                                    name="address"
-                                 
+                                    name="mobile2"
+                                    value={formData.mobile2}
+                                    onChange={handleInputChange}
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
@@ -565,7 +567,7 @@ const ManageDepots = () => {
                                 <TableCell sx={{ py: 1 }}>DS Name</TableCell>
                                 <TableCell sx={{ py: 1 }}>Mobile</TableCell>
                                 <TableCell sx={{ py: 1 }}>Email</TableCell>
-                                <TableCell sx={{ py: 1 }}>Address</TableCell>
+                                <TableCell sx={{ py: 1 }}>Mobile 2</TableCell>
                                 <TableCell sx={{ py: 1 }}>Description</TableCell>
                                 <TableCell sx={{ py: 1 }}>Status</TableCell>
                                 <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
@@ -581,7 +583,7 @@ const ManageDepots = () => {
                                         <TableCell sx={{ py: 0 }}>{depot.dsName}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{depot.mobile}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{depot.email}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{depot.address}</TableCell>
+                                        <TableCell sx={{ py: 0 }}>{depot.mobile2}</TableCell>
                                         <TableCell sx={{ py: 0 }}>{depot.description}</TableCell>
                                         <TableCell sx={{ py: 0 }}>
                                             <FormControlLabel
@@ -714,9 +716,9 @@ const ManageDepots = () => {
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
-                                    label="Address"
-                                    name="address"
-                                    value={currentDepot?.address || ""}
+                                    label="Mobile 2"
+                                    name="mobile2"
+                                    value={currentDepot?.mobile2 || ""}
                                     onChange={handleEditChange}
                                 />
                             </Grid>

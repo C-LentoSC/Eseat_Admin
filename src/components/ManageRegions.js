@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -36,7 +36,7 @@ const ManageRegions = () => {
     // setLoading(true);
     // setLoading(false);
 
-    const {startLoading,stopLoading}=useLoading()
+    const {startLoading, stopLoading} = useLoading()
     const [regions, setRegions] = useState([]);//
     const [alert, setAlert] = useState(null)
     const [addmodel, setAddmodel] = useState(false);
@@ -46,6 +46,7 @@ const ManageRegions = () => {
     const [filterEmail, setFilterEmail] = useState("");
 
     const [regionName, setRegionName] = useState("");
+    const [rmName, setRMName] = useState("");
     const [mobile, setMobile] = useState("");
     const [address, setAddress] = useState("");
     const [email, setEmail] = useState("");
@@ -53,13 +54,13 @@ const ManageRegions = () => {
     const [open, setOpen] = useState(false);
     const [currentRegion, setCurrentRegion] = useState(null);
     const loadRegions = () => {
-        const L=startLoading()
+        const L = startLoading()
         api.get('admin/region/all')
             .then(res => {
                 stopLoading(L)
                 setRegions(res.data)
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -67,21 +68,22 @@ const ManageRegions = () => {
     useEffect(() => {
         loadRegions()
     }, []);
-    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
     // Add new region
     const handleAddRegion = () => {
-        if (regionName && mobile && address && email) {
+        if (regionName && mobile && rmName) {
             const newRegion = {
                 regionName,
                 mobile,
                 address,
                 email,
                 description,
+                rmName
 
             };
-            const L=startLoading()
+            const L = startLoading()
             api.post('admin/region/add', newRegion)
                 .then(res => {
                     stopLoading(L)
@@ -94,7 +96,7 @@ const ManageRegions = () => {
                     setDescription("");
                     sendAlert('added')
                 })
-                .catch(err=> {
+                .catch(err => {
                     stopLoading(L)
                     handleError(err)
                 })
@@ -122,7 +124,7 @@ const ManageRegions = () => {
 
     // Save Edited Region
     const handleSave = () => {
-        const L=startLoading()
+        const L = startLoading()
         api.post('admin/region/edit', currentRegion)
             .then(res => {
                 stopLoading(L)
@@ -130,7 +132,7 @@ const ManageRegions = () => {
                 sendAlert('updated')
                 handleClose();
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -138,20 +140,20 @@ const ManageRegions = () => {
 
     // Handle Input Changes
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setCurrentRegion({ ...currentRegion, [name]: value });
+        const {name, value} = e.target;
+        setCurrentRegion({...currentRegion, [name]: value});
     };
 
     // Delete Region
     const handleDelete = (id) => {
-        const L=startLoading()
-        api.post('admin/region/delete', { id })
+        const L = startLoading()
+        api.post('admin/region/delete', {id})
             .then(res => {
                 stopLoading(L)
                 loadRegions()
                 sendAlert('deleted')
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -159,13 +161,13 @@ const ManageRegions = () => {
 
     // Toggle Active/Inactive
     const handleActiveChange = (id) => {
-        const L=startLoading()
-        api.post('admin/region/toggle-status', { id })
+        const L = startLoading()
+        api.post('admin/region/toggle-status', {id})
             .then(res => {
                 stopLoading(L)
                 loadRegions()
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -301,13 +303,13 @@ const ManageRegions = () => {
             {/* <LoadingOverlay show={loading} /> */}
 
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                setOpen={setAlert} /> : <></>}
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
                 {/* Title Section */}
                 {/* <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
                     Manage Regions
                 </Typography> */}
-                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: '20px' }}>
+                <Typography variant="h5" sx={{fontWeight: 600, marginBottom: '20px'}}>
                     Manage Regions
                 </Typography>
 
@@ -351,13 +353,15 @@ const ManageRegions = () => {
                                     }}
                                 />
                             </Grid>
-                                     <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
                                     label="RM Name"
                                     variant="outlined"
                                     required
-                                  
+                                    value={rmName}
+                                    onChange={evt => setRMName(evt.target.value)}
+
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
@@ -389,7 +393,7 @@ const ManageRegions = () => {
                                     fullWidth
                                     label="RM Email"
                                     variant="outlined"
-                                   
+
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -402,7 +406,6 @@ const ManageRegions = () => {
                                 />
                             </Grid>
 
-                           
 
                             <Grid item xs={12}>
                                 <TextField
@@ -418,12 +421,12 @@ const ManageRegions = () => {
                         </Grid>
 
 
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end', marginTop: '20px'}}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleAddRegion}
-                                sx={{ marginRight: '8px' }}
+                                sx={{marginRight: '8px'}}
                             >
                                 Save
                             </Button>
@@ -431,7 +434,7 @@ const ManageRegions = () => {
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleClose}
-                                sx={{ backgroundColor: 'gray' }}
+                                sx={{backgroundColor: 'gray'}}
                             >
                                 Cancel
                             </Button>
@@ -449,7 +452,7 @@ const ManageRegions = () => {
                     flexWrap: "wrap",
                     gap: 2
                 }}>
-                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
+                    <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
                         <TextField
                             label="Region Name"
                             value={filterRegionName}
@@ -578,14 +581,14 @@ const ManageRegions = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                <TableCell sx={{ py: 1 }}>Region Name</TableCell>
-                                <TableCell sx={{ py: 1 }}>Mobile</TableCell>
-                                <TableCell sx={{ py: 1 }}>Email</TableCell>
-                                <TableCell sx={{ py: 1 }}>Address</TableCell>
-                                <TableCell sx={{ py: 1 }}>Description</TableCell>
-                                <TableCell sx={{ py: 1 }}>Status</TableCell>
-                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{py: 1}}>Region Name</TableCell>
+                                <TableCell sx={{py: 1}}>RM Name</TableCell>
+                                <TableCell sx={{py: 1}}>Mobile</TableCell>
+                                <TableCell sx={{py: 1}}>Email</TableCell>
+                                <TableCell sx={{py: 1}}>Description</TableCell>
+                                <TableCell sx={{py: 1}}>Status</TableCell>
+                                <TableCell sx={{py: 1}} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -593,12 +596,12 @@ const ManageRegions = () => {
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((region) => (
                                     <TableRow key={region.id}>
-                                        <TableCell sx={{ py: 0 }}>{region.regionName}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{region.mobile}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{region.email}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{region.address}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{region.description}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>
+                                        <TableCell sx={{py: 0}}>{region.regionName}</TableCell>
+                                        <TableCell sx={{py: 0}}>{region.rmName}</TableCell>
+                                        <TableCell sx={{py: 0}}>{region.mobile}</TableCell>
+                                        <TableCell sx={{py: 0}}>{region.email}</TableCell>
+                                        <TableCell sx={{py: 0}}>{region.description}</TableCell>
+                                        <TableCell sx={{py: 0}}>
                                             <FormControlLabel
                                                 control={
                                                     <Switch
@@ -609,18 +612,18 @@ const ManageRegions = () => {
                                                 label={region.active ? "Active" : "Inactive"}
                                             />
                                         </TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
+                                        <TableCell sx={{py: 0}} align="right">
                                             <IconButton
                                                 color="primary"
                                                 onClick={() => handleOpen(region)}
                                             >
-                                                <EditIcon />
+                                                <EditIcon/>
                                             </IconButton>
                                             <IconButton
                                                 color="error"
                                                 onClick={() => handleDelete(region.id)}
                                             >
-                                                <DeleteIcon />
+                                                <DeleteIcon/>
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
@@ -666,7 +669,22 @@ const ManageRegions = () => {
                             name="regionName"
                             value={currentRegion?.regionName || ""}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="RM Name"
+                            variant="outlined"
+                            name="rmName"
+                            value={currentRegion?.rmName || ""}
+                            onChange={handleInputChange}
+                            sx={{marginBottom: "16px"}}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -681,7 +699,7 @@ const ManageRegions = () => {
                             name="mobile"
                             value={currentRegion?.mobile || ""}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -697,22 +715,7 @@ const ManageRegions = () => {
                             type="email"
                             value={currentRegion?.email || ""}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        <TextField
-                            fullWidth
-                            label="Address"
-                            variant="outlined"
-                            name="address"
-                            value={currentRegion?.address || ""}
-                            onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -729,14 +732,14 @@ const ManageRegions = () => {
                             rows={4}
                             value={currentRegion?.description || ""}
                             onChange={handleInputChange}
-                            sx={{ marginBottom: "16px" }}
+                            sx={{marginBottom: "16px"}}
                         />
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSave}
-                                sx={{ marginRight: "8px" }}
+                                sx={{marginRight: "8px"}}
                             >
                                 Save
                             </Button>
