@@ -174,16 +174,21 @@ const AgentManagement = () => {
         setBusModalOpen(true);
     }, []);
 
+    const [closePermission,setClosePermission]=useState(false)
     const assignBus = useCallback((bus) => {
         if (!bus) return;
 
 
         const updatedAgent = {
-            id: selectedAgent.id, assignedBuses: [...selectedAgent.assignedBuses, bus]
+            id: selectedAgent.id,
+            assignedBuses: [...selectedAgent.assignedBuses, bus],
+            closePermission:closePermission,
+
         };
         const L = startLoading()
         api.post('admin/agent/assign-bus', updatedAgent)
             .then(res => {
+                setClosePermission(false)
                 stopLoading(L)
                 loadAllAgents()
             })
@@ -601,14 +606,11 @@ const AgentManagement = () => {
                                      <FormControlLabel
                                         control={
                                             <Checkbox
-                                                checked={false}
-                                                // onChange={(e) => setNewBus(prev => ({
-                                                //     ...prev,
-                                                //     paymentMethods: {
-                                                //         ...prev.paymentMethods,
-                                                //         card: e.target.checked
-                                                //     }
-                                                // }))}
+                                                checked={closePermission}
+                                                onChange={(e) => {
+                                                    console.log(closePermission)
+                                                    setClosePermission(e.target.checked)
+                                                }}
                                             />
                                         }
                                         label="Schedule Close Permission"
@@ -665,7 +667,7 @@ const AgentManagement = () => {
                                                 Bus ID: {bus.id}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                    Schedule Close Permission: Yes
+                                                   Has Schedule Close Permission: {bus.close_permission?"Yes":"No"}
                                             </Typography>
                                         </Stack>
                                     </Paper>
