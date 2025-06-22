@@ -41,9 +41,9 @@ const BusManagement = () => {
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
+    const type = sessionStorage.getItem('user_type') ?? "";
+    const [isHidden, setIsHidden] = useState((!(type === "Admin" || type === "Super Admin")));
 
- const [isHidden, setIsHidden] = useState(true);
-    
     const DepotID = sessionStorage.getItem('currentValueID');
     const {startLoading, stopLoading} = useLoading()
     // const DepotID = 2;
@@ -76,16 +76,16 @@ const BusManagement = () => {
         busModel: "",
         status: true,
         paymentMethods: {
-            card: false, cash: false, bank: false, ezcash: false, reload: false
+            card: true, cash: false, bank: false, ezcash: false, reload: false
         },
         facilities: {
             wifi: false, usb: false, seatBelt: false, phoneCharger: false
         },
         bookactivity: {
-            online: false, counter: false
+            online: true, counter: true
         },
         settings: {
-            onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
+            onlineActive: true, agentCounter: true, autoClose: true, manualClose: true
         }
     });
 
@@ -111,38 +111,48 @@ const BusManagement = () => {
     const [routesData, setRoutesData] = useState();
 
     const [openDialog, setOpenDialog] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [busToDeactivate, setBusToDeactivate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState("");
+    const [busToDeactivate, setBusToDeactivate] = useState(null);
 
-  const handleToggle = (bus) => {
-    if (bus.status) {
-      // Active → Inactive: Show popup
-      setBusToDeactivate(bus);
-      setOpenDialog(true);
-    } else {
-      // Inactive → Active: Just toggle
-      setBuses((prev) =>
-        prev.map((b) => (b.id === bus.id ? { ...b, status: true } : b))
-      );
-    }
-  };
+    const handleToggle = (bus) => {
+        if (bus.status) {
+            // Active → Inactive: Show popup
+            setBusToDeactivate(bus);
+            setOpenDialog(true);
+        } else {
+            // Inactive → Active: Just toggle
+            const L = startLoading()
+            api.post("admin/bus/toggle-status", {id: bus.id})
+                .then(res => {
+                    stopLoading(L)
+                    loadInfo()
+                }).catch(err => {
+                stopLoading(L)
+                handleError(err)
+            })
 
-  const handleConfirmDeactivate = () => {
-    if (!selectedDate) return alert("Please select a date!");
+        }
+    };
 
-    // Do something with selectedDate if needed
-    setBuses((prev) =>
-      prev.map((b) =>
-        b.id === busToDeactivate.id
-          ? { ...b, status: false, inactiveDate: selectedDate }
-          : b
-      )
-    );
-    setOpenDialog(false);
-    setSelectedDate("");
-    setBusToDeactivate(null);
-  };
-
+    const handleConfirmDeactivate = () => {
+        if (!selectedDate) return sendAlert("Please select a date!");
+        let bus = busToDeactivate
+        const L = startLoading()
+        api.post("admin/bus/toggle-status", {
+            id: bus.id,
+            date: selectedDate
+        })
+            .then(res => {
+                stopLoading(L)
+                loadInfo()
+                setOpenDialog(false);
+                setSelectedDate("");
+                setBusToDeactivate(null);
+            }).catch(err => {
+            stopLoading(L)
+            handleError(err)
+        })
+    };
 
 
     const [routes, setR] = useState([]);
@@ -850,126 +860,126 @@ const BusManagement = () => {
                 </div>
             </div>
 
-                                 <Divider sx={{my: 3}}/>
+            <Divider sx={{my: 3}}/>
 
-        {/* Payment Methods Section */}
-        <Typography variant="h6" sx={{mb: 2}}>Payment Methods</Typography>
-        <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.card}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, card: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Credit/Debit Card"
-                />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.cash}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, cash: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Pay on Bus"
-                />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.bank}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, bank: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Pay to Bank"
-                />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.ezcash}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, ezcash: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="eZCash"
-                />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.paymentMethods.reload}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, paymentMethods: {
-                                ...prev.paymentMethods, reload: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Reload"
-                />
-            </Grid>
-        </Grid>
-
-        <Divider sx={{my: 3}}/>
-
-        {/* Facilities Section */}
-        <Typography variant="h6" sx={{mb: 2}}>Facilities</Typography>
-        <Grid container spacing={2}>
-            {facilities.map((facility) => (<Grid item xs={12} sm={3} key={facility.id}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={selectedFacilities[facility.id] || false}
-                        onChange={() => handleFacilityChange(facility.id)}
-                    />}
-                    label={facility.name}
-                />
-            </Grid>))}
-        </Grid>
-
-             <Divider sx={{my: 3}}/>
-
-
-        <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.bookactivity.online || false}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, bookactivity: {
-                                ...prev.bookactivity, online: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Online Active"
-                />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={newBus.bookactivity.counter || false}
-                        onChange={(e) => setNewBus(prev => ({
-                            ...prev, bookactivity: {
-                                ...prev.bookactivity, counter: e.target.checked
-                            }
-                        }))}
-                    />}
-                    label="Agent Counter"
-                />
+            {/* Payment Methods Section */}
+            <Typography variant="h6" sx={{mb: 2}}>Payment Methods</Typography>
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={newBus.paymentMethods.card}
+                            onChange={(e) => setNewBus(prev => ({
+                                ...prev, paymentMethods: {
+                                    ...prev.paymentMethods, card: e.target.checked
+                                }
+                            }))}
+                        />}
+                        label="Credit/Debit Card"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={newBus.paymentMethods.cash}
+                            onChange={(e) => setNewBus(prev => ({
+                                ...prev, paymentMethods: {
+                                    ...prev.paymentMethods, cash: e.target.checked
+                                }
+                            }))}
+                        />}
+                        label="Pay on Bus"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={newBus.paymentMethods.bank}
+                            onChange={(e) => setNewBus(prev => ({
+                                ...prev, paymentMethods: {
+                                    ...prev.paymentMethods, bank: e.target.checked
+                                }
+                            }))}
+                        />}
+                        label="Pay to Bank"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={newBus.paymentMethods.ezcash}
+                            onChange={(e) => setNewBus(prev => ({
+                                ...prev, paymentMethods: {
+                                    ...prev.paymentMethods, ezcash: e.target.checked
+                                }
+                            }))}
+                        />}
+                        label="eZCash"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={newBus.paymentMethods.reload}
+                            onChange={(e) => setNewBus(prev => ({
+                                ...prev, paymentMethods: {
+                                    ...prev.paymentMethods, reload: e.target.checked
+                                }
+                            }))}
+                        />}
+                        label="Reload"
+                    />
+                </Grid>
             </Grid>
 
-        </Grid>
+            <Divider sx={{my: 3}}/>
+
+            {/* Facilities Section */}
+            <Typography variant="h6" sx={{mb: 2}}>Facilities</Typography>
+            <Grid container spacing={2}>
+                {facilities.map((facility) => (<Grid item xs={12} sm={3} key={facility.id}>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={selectedFacilities[facility.id] || false}
+                            onChange={() => handleFacilityChange(facility.id)}
+                        />}
+                        label={facility.name}
+                    />
+                </Grid>))}
+            </Grid>
+
+            <Divider sx={{my: 3}}/>
+
+
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={newBus.bookactivity.online || false}
+                            onChange={(e) => setNewBus(prev => ({
+                                ...prev, bookactivity: {
+                                    ...prev.bookactivity, online: e.target.checked
+                                }
+                            }))}
+                        />}
+                        label="Online Active"
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={newBus.bookactivity.counter || false}
+                            onChange={(e) => setNewBus(prev => ({
+                                ...prev, bookactivity: {
+                                    ...prev.bookactivity, counter: e.target.checked
+                                }
+                            }))}
+                        />}
+                        label="Agent Counter"
+                    />
+                </Grid>
+
+            </Grid>
 
         </div>
     </Box>);
@@ -1112,80 +1122,60 @@ const BusManagement = () => {
                                 <TableCell sx={{py: 0}} align="center">{bus.seats}</TableCell>
                                 <TableCell sx={{py: 0}} align="center">
 
-                          <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={bus.status}
-                                                onChange={() => {
-                                                    const L = startLoading()
-                                                    api.post("admin/bus/toggle-status", {id: bus.id})
-                                                        .then(res => {
-                                                            stopLoading(L)
-                                                            loadInfo()
-                                                        }).catch(err => {
-                                                        stopLoading(L)
-                                                        handleError(err)
-                                                    })
-                                                }}
-                                            />
-                                        }
-                                        label={bus.status ? "Active" : "Inactive"}
-                                    />
-                                        
-                            
+
                                     <FormControlLabel
                                         control={
                                             <Switch
-                                              checked={bus.status}
-                                              onChange={() => handleToggle(bus)}
+                                                checked={bus.status}
+                                                onChange={() => handleToggle(bus)}
                                             />
                                         }
                                         label={bus.status ? "Active" : "Inactive"}
                                     />
                                 </TableCell>
 
-                               <Modal
-                    open={openDialog}
-                    onClose={() => setOpenDialog(false)}
-                  >
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: "70%",
-                        maxWidth: "600px",
-                        maxHeight: "90vh",
-                        bgcolor: "background.paper",
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: "12px",
-                        border: "2px solid gray",
-                        overflow: "auto",
-                      }}
-                    >
-                      <Typography id="modal-title" variant="h6" sx={{ mb: 2 }}>
-                        Deactivate Bus
-                      </Typography>
-                      <TextField
-                        type="date"
-                        label="Select Date"
-                          value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        fullWidth
-                        InputLabelProps={{ shrink: true }}
-                        sx={{ mb: 3 }}
-                      />
-                      <Box display="flex" justifyContent="flex-end" gap={2}>
-                        <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-                        <Button variant="contained" onClick={handleConfirmDeactivate}>
-                          Confirm
-                        </Button>
-                      </Box>
-                    </Box>
-                  </Modal>
-                            
+                                <Modal
+                                    open={openDialog}
+                                    onClose={() => setOpenDialog(false)}
+                                >
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            top: "50%",
+                                            left: "50%",
+                                            transform: "translate(-50%, -50%)",
+                                            width: "70%",
+                                            maxWidth: "600px",
+                                            maxHeight: "90vh",
+                                            bgcolor: "background.paper",
+                                            boxShadow: 24,
+                                            p: 4,
+                                            borderRadius: "12px",
+                                            border: "2px solid gray",
+                                            overflow: "auto",
+                                        }}
+                                    >
+                                        <Typography id="modal-title" variant="h6" sx={{mb: 2}}>
+                                            Deactivate Bus
+                                        </Typography>
+                                        <TextField
+                                            type="date"
+                                            label="Select Date"
+                                            value={selectedDate}
+                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                            fullWidth
+                                            InputLabelProps={{shrink: true}}
+                                            sx={{mb: 3}}
+                                        />
+                                        <Box display="flex" justifyContent="flex-end" gap={2}>
+                                            <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+                                            <Button variant="contained" onClick={handleConfirmDeactivate}>
+                                                Confirm
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                </Modal>
+
                                 <TableCell sx={{py: 0}} align="right">
                                     <IconButton onClick={(e) => handleMenuOpen(e, bus)}>
                                         <MoreVertIcon/>
@@ -1213,9 +1203,9 @@ const BusManagement = () => {
                 onClose={handleMenuClose}
             >
                 <MenuItem onClick={handleEdit}>Edit</MenuItem>
-                     {!isHidden && (
-                <MenuItem onClick={handleDelete}>Delete</MenuItem>
-                       )}
+                {!isHidden && (
+                    <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                )}
                 <MenuItem onClick={handleManageSchedules}>Manage Bus Schedules</MenuItem>
                 <MenuItem onClick={handleManageCrew}>Manage Crew</MenuItem>
             </Menu>
