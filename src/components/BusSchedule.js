@@ -54,7 +54,7 @@ const months = [
 
 const BusSchedule = () => {
     // Sample passed/DB dates - can be dynamic
-    const dbDates = ["2025-06-13", "2025-06-15", "2025-06-17", "2025-06-19"];
+    // const dbDates = ["2025-06-13", "2025-06-15", "2025-06-17", "2025-06-19"];
     const [currentYear, setCurrentYear] = useState(dayjs().year());
     const [currentMonth, setCurrentMonth] = useState(dayjs().month()); // 0-indexed
 
@@ -161,7 +161,7 @@ const BusSchedule = () => {
     }, []);
 
     const [schedule, setSchedule] = useState([]);
-
+    const dbDates = schedule.map(i=>i.travelDate);
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedDates, setSelectedDates] = useState([]);
@@ -247,6 +247,8 @@ const BusSchedule = () => {
                 stopLoading(L)
                 loadInfo()
                 handleCloseAdd();
+                setCurrentMonth(dayjs().month())
+                setCurrentYear(dayjs().year())
                 sendAlert("new schedule added")
             })
             .catch(err => {

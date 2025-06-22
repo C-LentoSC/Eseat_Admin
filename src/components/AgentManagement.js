@@ -57,6 +57,8 @@ const AgentManagement = () => {
         status: true,
         assignedBuses: [],
         managerMobile: "",
+        bookingFee:"",
+        agentCode:"",
     };
 
     const [selectedName, setSelectedName] = useState("");
@@ -493,6 +495,8 @@ const AgentManagement = () => {
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
+                                value={newAgent.bookingFee}
+                                onChange={(e) => setNewAgent(prev => ({...prev, bookingFee: e.target.value}))}
                                 label="Booking Fee"
                             />
                         </Grid>
@@ -500,6 +504,8 @@ const AgentManagement = () => {
                             <TextField
                                 fullWidth
                                 label="Agent Code"
+                                value={newAgent.agentCode}
+                                onChange={(e) => setNewAgent(prev => ({...prev, agentCode: e.target.value}))}
                             />
                         </Grid>
                         </>
