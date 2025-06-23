@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, {useState, useCallback, useEffect, useRef} from 'react';
 import {
     Box,
     Container,
@@ -177,6 +177,7 @@ const AgentManagement = () => {
     }, []);
 
     const [closePermission,setClosePermission]=useState(false)
+    const permissions=useRef(null)
     const assignBus = useCallback((bus) => {
         if (!bus) return;
 
@@ -184,7 +185,7 @@ const AgentManagement = () => {
         const updatedAgent = {
             id: selectedAgent.id,
             assignedBuses: [...selectedAgent.assignedBuses, bus],
-            closePermission:closePermission,
+            closePermission:permissions.current.checked,
 
         };
         const L = startLoading()
@@ -612,6 +613,7 @@ const AgentManagement = () => {
                                      <FormControlLabel
                                         control={
                                             <Checkbox
+                                                ref={permissions}
                                                 checked={closePermission}
                                                 onChange={(e) => {
                                                     console.log(e.target.checked)
