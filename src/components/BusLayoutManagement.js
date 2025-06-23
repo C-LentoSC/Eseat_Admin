@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import {
     Box,
     Button,
@@ -37,19 +37,19 @@ const BusLayoutManagement = () => {
     // setLoading(true);
     // setLoading(false);
 
-    const {startLoading,stopLoading}=useLoading()
-    
+    const {startLoading, stopLoading} = useLoading()
+
 
     // Sample data
     const [layouts, setLayouts] = useState([]);
     const loadLayOuts = () => {
-        const L=startLoading()
+        const L = startLoading()
         api.get('admin/seat-layout/get-all')
             .then(res => {
                 stopLoading(L)
                 setLayouts(res.data)
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -72,9 +72,8 @@ const BusLayoutManagement = () => {
     });
     const [currentStep, setCurrentStep] = useState(1);
     const [alert, setAlert] = useState(null)
-    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
-
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
 
     const initialSeatDetails = {
@@ -159,26 +158,26 @@ const BusLayoutManagement = () => {
             if (newLayout.seatDetails[seatId] && newLayout.seatDetails[seatId].hasRelations !== undefined) {
                 if (newLayout.seatDetails[seatId].hasRelations === false) {
                     setNewLayout(prev => {
-                        const updatedDetails = { ...prev.seatDetails };
+                        const updatedDetails = {...prev.seatDetails};
                         if (updatedDetails[seatId]) {
                             delete updatedDetails[seatId];
                         } else {
-                            updatedDetails[seatId] = { seatNumber: "" };
+                            updatedDetails[seatId] = {seatNumber: ""};
                         }
-                        return { ...prev, seatDetails: updatedDetails };
+                        return {...prev, seatDetails: updatedDetails};
                     });
                 } else {
-                    setAlert({ message: "The selection cannot be removed. This seat is used", severity: "error" })
+                    setAlert({message: "The selection cannot be removed. This seat is used", severity: "error"})
                 }
             } else {
                 setNewLayout(prev => {
-                    const updatedDetails = { ...prev.seatDetails };
+                    const updatedDetails = {...prev.seatDetails};
                     if (updatedDetails[seatId]) {
                         delete updatedDetails[seatId];
                     } else {
-                        updatedDetails[seatId] = { seatNumber: "" };
+                        updatedDetails[seatId] = {seatNumber: ""};
                     }
-                    return { ...prev, seatDetails: updatedDetails };
+                    return {...prev, seatDetails: updatedDetails};
                 });
             }
             // if(newLayout.seatDetails[seatId].hasRelations === false){
@@ -207,7 +206,7 @@ const BusLayoutManagement = () => {
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setSeatDetails((prev) => ({
             ...prev,
             [name]: value
@@ -235,7 +234,7 @@ const BusLayoutManagement = () => {
                 //         layout.id === currentLayout.id ? { ...newLayout, id: layout.id } : layout
                 //     )
                 // );
-                const L=startLoading()
+                const L = startLoading()
                 api.post('admin/seat-layout/edit', newLayout)
                     .then(res => {
                         stopLoading(L)
@@ -252,7 +251,7 @@ const BusLayoutManagement = () => {
                         });
                         setCurrentStep(1);
                     })
-                    .catch(err=> {
+                    .catch(err => {
                         stopLoading(L)
                         handleError(err)
                     })
@@ -262,7 +261,7 @@ const BusLayoutManagement = () => {
                     id: layouts.length + 1,
                 };
                 // setLayouts(prev => [...prev, layoutToSave]);
-                const L=startLoading()
+                const L = startLoading()
                 api.post('admin/seat-layout/add-new', layoutToSave)
                     .then(res => {
                         stopLoading(L)
@@ -279,7 +278,7 @@ const BusLayoutManagement = () => {
                         });
                         setCurrentStep(1);
                     })
-                    .catch(err=> {
+                    .catch(err => {
                         stopLoading(L)
                         handleError(err)
                     })
@@ -291,15 +290,15 @@ const BusLayoutManagement = () => {
     // Step navigation handlers
     const handleNextStep = () => {
         if (!newLayout.layoutName.trim()) {
-            setAlert({ message: "Layout Name is required.", severity: "error" })
+            setAlert({message: "Layout Name is required.", severity: "error"})
             return;
         }
         if (!newLayout.busType) {
-            setAlert({ message: "Bus Type is required.", severity: "error" })
+            setAlert({message: "Bus Type is required.", severity: "error"})
             return;
         }
         if (Object.keys(newLayout.seatDetails).length === 0) {
-            setAlert({ message: "Please select at least one seat", severity: "error" })
+            setAlert({message: "Please select at least one seat", severity: "error"})
             return;
         }
         setCurrentStep(2);
@@ -326,14 +325,14 @@ const BusLayoutManagement = () => {
             maxHeight: '90vh',
             overflow: 'auto',
         }}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+            <Typography variant="h6" gutterBottom sx={{mb: 3}}>
                 {isEditMode ? 'Edit Layout' : 'Create New Layout'} - Step {currentStep}
             </Typography>
 
             {currentStep === 1 && (
                 <>
 
-                    <Grid container spacing={2} sx={{ mb: 3 }}>
+                    <Grid container spacing={2} sx={{mb: 3}}>
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -354,7 +353,7 @@ const BusLayoutManagement = () => {
                                 }))}
                                 options={busTypes}
                                 renderInput={(params) => (
-                                    <TextField {...params} label="Bus Type" />
+                                    <TextField {...params} label="Bus Type"/>
                                 )}
                             />
                         </Grid>
@@ -386,18 +385,18 @@ const BusLayoutManagement = () => {
                         Select Seats
                     </Typography>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-                        <Box sx={{ mb: 4, maxWidth: 700, width: '100%' }}>
+                    <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
+                        <Box sx={{mb: 4, maxWidth: 700, width: '100%'}}>
                             {renderSeatGrid()}
                         </Box>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                    <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={handleNextStep}
-                            sx={{ marginRight: "8px" }}
+                            sx={{marginRight: "8px"}}
                         >
                             Next Step
                         </Button>
@@ -416,7 +415,7 @@ const BusLayoutManagement = () => {
                                 });
                                 setCurrentStep(1);
                             }}
-                            sx={{ backgroundColor: 'gray' }}
+                            sx={{backgroundColor: 'gray'}}
                         >
                             Cancel
                         </Button>
@@ -427,20 +426,20 @@ const BusLayoutManagement = () => {
             {currentStep === 2 && (
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={12}>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-                            <Box sx={{ mb: 4, maxWidth: 700, width: '100%' }}>
+                        <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
+                            <Box sx={{mb: 4, maxWidth: 700, width: '100%'}}>
                                 {renderSeatGrid()}
                             </Box>
                         </Box>
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                             <Button
                                 variant="contained"
                                 color="secondary"
                                 onClick={handlePrevStep}
-                                sx={{ marginRight: "8px" }}
+                                sx={{marginRight: "8px"}}
                             >
                                 Back
                             </Button>
@@ -448,7 +447,7 @@ const BusLayoutManagement = () => {
                                 variant="contained"
                                 color="primary"
                                 onClick={handleSaveLayout}
-                                sx={{ marginRight: "8px" }}
+                                sx={{marginRight: "8px"}}
                             >
                                 Save Layout
                             </Button>
@@ -467,7 +466,7 @@ const BusLayoutManagement = () => {
                                     });
                                     setCurrentStep(1);
                                 }}
-                                sx={{ backgroundColor: 'gray' }}
+                                sx={{backgroundColor: 'gray'}}
                             >
                                 Cancel
                             </Button>
@@ -502,17 +501,19 @@ const BusLayoutManagement = () => {
                 // Add seat (selected or empty) to the grid
                 grid.push(
                     seatInfo ? (
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId} className="relative m-1" onClick={() => handleViewSeatDetails(seatInfo)}>
-                            <SeatIcon isSelected={!!seatInfo} />
+                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} key={seatId}
+                             className="relative m-1" onClick={() => handleViewSeatDetails(seatInfo)}>
+                            <SeatIcon isSelected={!!seatInfo}/>
                             {seatInfo?.seatNumber && (
-                                <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }} className="absolute text-xs font-medium cursor-pointer">
+                                <span style={{left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF"}}
+                                      className="absolute text-xs font-medium cursor-pointer">
                                     {seatInfo.seatNumber}
                                 </span>
                             )}
                         </div>
                     ) : (
-                        <div key={seatId} >
-                            <EmpltySeatIcon />
+                        <div key={seatId}>
+                            <EmpltySeatIcon/>
                         </div>
                     )
                 );
@@ -545,7 +546,7 @@ const BusLayoutManagement = () => {
     // Add the seat details display component
     const SeatDetailsDisplay = () => {
         if (!selectedViewSeat) return (
-            <Box sx={{ mt: 0, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
+            <Box sx={{mt: 0, p: 2, border: '1px solid #ccc', borderRadius: '4px'}}>
                 <Typography variant="h6" gutterBottom>
                     Selected Seat Details -
                 </Typography>
@@ -568,7 +569,7 @@ const BusLayoutManagement = () => {
         );
 
         return (
-            <Box sx={{ mt: 0, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
+            <Box sx={{mt: 0, p: 2, border: '1px solid #ccc', borderRadius: '4px'}}>
                 <Typography variant="h6" gutterBottom>
                     Selected Seat Details - {selectedViewSeat.seatNumber}
                 </Typography>
@@ -619,21 +620,21 @@ const BusLayoutManagement = () => {
 
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={8}>
-                        <Box sx={{ mb: 2 }}>
+                        <Box sx={{mb: 2}}>
                             {currentLayout && renderViewSeatGrid(currentLayout)}
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <SeatDetailsDisplay />
+                        <SeatDetailsDisplay/>
                     </Grid>
                 </Grid>
 
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                     <Button
                         variant="contained"
                         color="secondary"
                         onClick={handleClose}
-                        sx={{ backgroundColor: 'gray' }}
+                        sx={{backgroundColor: 'gray'}}
                     >
                         Cancel
                     </Button>
@@ -642,15 +643,17 @@ const BusLayoutManagement = () => {
         </Modal>
     );
 
-    const SeatIcon = ({ isSelected }) => (
+    const SeatIcon = ({isSelected}) => (
         <div className="relative flex flex-col items-center">
             <svg
                 viewBox="0 0 100 100"
                 className={`w-12 h-12 cursor-pointer transition-colors duration-200 ${isSelected ? 'text-green-600' : 'text-gray-000'
-                    }`}
+                }`}
             >
                 <g transform="translate(50,50) rotate(-90) translate(-50,-50)">
-                    <path d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z" fill="currentColor" />
+                    <path
+                        d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z"
+                        fill="currentColor"/>
                 </g>
             </svg>
         </div>
@@ -660,10 +663,12 @@ const BusLayoutManagement = () => {
             <svg
                 viewBox="0 0 100 100"
                 className={`w-12 h-12 cursor-pointer transition-colors duration-200}`}
-                style={{ visibility: "hidden" }}
+                style={{visibility: "hidden"}}
             >
                 <g transform="translate(50,50) rotate(-90) translate(-50,-50)">
-                    <path d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z" fill="currentColor" />
+                    <path
+                        d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z"
+                        fill="currentColor"/>
                 </g>
             </svg>
         </div>
@@ -682,26 +687,26 @@ const BusLayoutManagement = () => {
 
                 if (currentStep === 1) {
                     grid.push(
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                            key={seatId}
-                            className="relative m-1"
-                            onClick={() => handleSeatClick(seatId)}>
-                            <SeatIcon isSelected={!!seatInfo} />
-                            <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }}
-                                className="absolute text-xs font-medium cursor-pointer">
+                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+                             key={seatId}
+                             className="relative m-1"
+                             onClick={() => handleSeatClick(seatId)}>
+                            <SeatIcon isSelected={!!seatInfo}/>
+                            <span style={{left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF"}}
+                                  className="absolute text-xs font-medium cursor-pointer">
                                 {seatInfo?.seatNumber || ''}
                             </span>
                         </div>
                     );
                 } else if (currentStep === 2 && seatInfo) {
                     grid.push(
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                            key={seatId}
-                            className="relative m-1"
-                            onClick={() => handleSeatClick(seatId)}>
-                            <SeatIcon isSelected={true} />
-                            <span style={{ left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF" }}
-                                className="absolute text-xs font-medium cursor-pointer">
+                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+                             key={seatId}
+                             className="relative m-1"
+                             onClick={() => handleSeatClick(seatId)}>
+                            <SeatIcon isSelected={true}/>
+                            <span style={{left: "11px", bottom: "15px", fontWeight: "bold", color: "#FFFFFF"}}
+                                  className="absolute text-xs font-medium cursor-pointer">
                                 {seatInfo?.seatNumber || ''}
                             </span>
                         </div>
@@ -709,7 +714,7 @@ const BusLayoutManagement = () => {
                 } else {
                     grid.push(
                         <div key={seatId}>
-                            <EmpltySeatIcon />
+                            <EmpltySeatIcon/>
                         </div>
                     );
                 }
@@ -730,10 +735,26 @@ const BusLayoutManagement = () => {
         );
     };
 
-    // Filtered layouts based on selected bus type
-    const filteredLayouts = selectedBusType
-        ? layouts.filter(layout => layout.busType === selectedBusType)
+    const [selectedName, setSelectedName] = useState("")
+    const [selectedCount, setSelectedCount] = useState(null)
+    // const filteredLayouts = selectedBusType
+    //     ? layouts.filter(layout => layout.busType === selectedBusType)
+    //     : layouts;
+    const isBusTypeActive = !!selectedBusType;
+    const isNameActive = !!selectedName;
+    const isCountActive = selectedCount !== null && selectedCount !== undefined && selectedCount !== 0;
+
+    const hasActiveFilters = isBusTypeActive || isNameActive || isCountActive;
+
+    const filteredLayouts = hasActiveFilters
+        ? layouts.filter(layout =>
+            (!isBusTypeActive || layout.busType === selectedBusType) &&
+            (!isNameActive || layout.layoutName?.toLowerCase().includes(selectedName.toLowerCase())) &&
+            (!isCountActive || layout.seatsCount === Number.parseInt(selectedCount))
+        )
         : layouts;
+
+
 
     // Handlers
     const handleBusTypeChange = (event, newValue) => {
@@ -749,7 +770,7 @@ const BusLayoutManagement = () => {
     };
 
     const handleDelete = (id) => {
-        const L=startLoading()
+        const L = startLoading()
         api.post('admin/seat-layout/delete', {id})
 
             .then(res => {
@@ -757,7 +778,7 @@ const BusLayoutManagement = () => {
                 loadLayOuts()
                 sendAlert('deleted')
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -781,10 +802,10 @@ const BusLayoutManagement = () => {
             {/* <LoadingOverlay show={loading} /> */}
 
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                setOpen={setAlert} /> : <></>}
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
 
-                <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: "20px" }}>
+                <Typography variant="h5" sx={{fontWeight: 600, marginBottom: "20px"}}>
                     Layout Management for Bus Seat Structures
                 </Typography>
 
@@ -798,63 +819,72 @@ const BusLayoutManagement = () => {
                     mt: 3,
                 }}>
                     <Box>
-                    <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
-                        <Autocomplete
-                            value={selectedBusType}
-                            onChange={handleBusTypeChange}
-                            options={busTypes}
-                            renderInput={(params) => (
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={4}>
+                                <Autocomplete
+                                    value={selectedBusType}
+                                    onChange={handleBusTypeChange}
+                                    options={busTypes}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="Select Bus Type"
+                                            InputProps={{
+                                                ...params.InputProps,
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    height: '40px',
+                                                }
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={4}>
                                 <TextField
-                                    {...params}
-                                    label="Select Bus Type"
+                                    label="Layout Name"
+                                    value={selectedName}
+                                    onChange={(e) => setSelectedName(e.target.value)}
                                     InputProps={{
-                                        ...params.InputProps,
                                         startAdornment: (
-                                            <InputAdornment position="start">
-                                            </InputAdornment>
+                                            <InputAdornment position="start"></InputAdornment>
                                         ),
                                     }}
                                     sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            height: '40px',
-                                        }
+                                        "& .MuiOutlinedInput-root": {
+                                            height: "40px",
+                                        },
                                     }}
                                 />
-                            )}
-                        />
-                             </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Layout Name"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start"></InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      height: "40px",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Seats Count"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start"></InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      height: "40px",
-                    },
-                  }}
-                />
-              </Grid>
-            </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={4}>
+                                <TextField
+                                    label="Seats Count"
+                                    type="number"
+                                    value={selectedCount}
+                                    onChange={(e) => {
+                                        let value = e.target.value
+                                        setSelectedCount(value===""?null:value)
+                                    }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start"></InputAdornment>
+                                        ),
+                                    }}
+
+                                    sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                            height: "40px",
+                                        },
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
                     </Box>
 
                     <Button
@@ -881,12 +911,12 @@ const BusLayoutManagement = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                <TableCell sx={{ py: 1 }}>Layout Name</TableCell>
-                                <TableCell sx={{ py: 1 }}>Bus Type</TableCell>
-                                <TableCell sx={{ py: 1 }} align="center">Seats Count</TableCell>
-                                <TableCell sx={{ py: 1 }}>Description</TableCell>
-                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{py: 1}}>Layout Name</TableCell>
+                                <TableCell sx={{py: 1}}>Bus Type</TableCell>
+                                <TableCell sx={{py: 1}} align="center">Seats Count</TableCell>
+                                <TableCell sx={{py: 1}}>Description</TableCell>
+                                <TableCell sx={{py: 1}} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -894,30 +924,30 @@ const BusLayoutManagement = () => {
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((layout) => (
                                     <TableRow key={layout.id}>
-                                        <TableCell sx={{ py: 0 }}>{layout.layoutName}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{layout.busType}</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="center">{layout.seatsCount}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{layout.description}</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
+                                        <TableCell sx={{py: 0}}>{layout.layoutName}</TableCell>
+                                        <TableCell sx={{py: 0}}>{layout.busType}</TableCell>
+                                        <TableCell sx={{py: 0}} align="center">{layout.seatsCount}</TableCell>
+                                        <TableCell sx={{py: 0}}>{layout.description}</TableCell>
+                                        <TableCell sx={{py: 0}} align="right">
                                             <IconButton
                                                 color="info"
                                                 onClick={() => handleView(layout)}
-                                                sx={{ marginRight: "8px" }}
+                                                sx={{marginRight: "8px"}}
                                             >
-                                                <VisibilityIcon />
+                                                <VisibilityIcon/>
                                             </IconButton>
                                             <IconButton
                                                 color="primary"
                                                 onClick={() => handleEdit(layout)}
-                                                sx={{ marginRight: "8px" }}
+                                                sx={{marginRight: "8px"}}
                                             >
-                                                <EditIcon />
+                                                <EditIcon/>
                                             </IconButton>
                                             <IconButton
                                                 color="error"
                                                 onClick={() => handleDelete(layout.id)}
                                             >
-                                                <DeleteIcon />
+                                                <DeleteIcon/>
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
@@ -971,8 +1001,8 @@ const BusLayoutManagement = () => {
                     }}>
                         <Draggable
                             handle="#draggable-modal-header"
-                            positionOffset={{ x: '-50%', y: '-50%' }}
-                            defaultPosition={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }}
+                            positionOffset={{x: '-50%', y: '-50%'}}
+                            defaultPosition={{x: window.innerWidth / 2, y: window.innerHeight / 2}}
                         >
                             <Paper sx={{
                                 position: 'absolute',
@@ -1007,7 +1037,7 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
+                                            <Grid item xs={12} sm={6} sx={{display: 'none'}}>
                                                 <TextField
                                                     fullWidth
                                                     label="Service Charge CTB"
@@ -1024,7 +1054,7 @@ const BusLayoutManagement = () => {
                                                     }}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
+                                            <Grid item xs={12} sm={6} sx={{display: 'none'}}>
                                                 <TextField
                                                     fullWidth
                                                     label="Service Charge HGH"
@@ -1052,7 +1082,7 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid> */}
-                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
+                                            <Grid item xs={12} sm={6} sx={{display: 'none'}}>
                                                 <TextField
                                                     fullWidth
                                                     label="VAT"
@@ -1069,7 +1099,7 @@ const BusLayoutManagement = () => {
                                                     }}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
+                                            <Grid item xs={12} sm={6} sx={{display: 'none'}}>
                                                 <TextField
                                                     fullWidth
                                                     label="Discount"
@@ -1097,7 +1127,7 @@ const BusLayoutManagement = () => {
                                                     onChange={handleInputChange}
                                                 />
                                             </Grid> */}
-                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
+                                            <Grid item xs={12} sm={6} sx={{display: 'none'}}>
                                                 <TextField
                                                     fullWidth
                                                     label="Bank Charges"
@@ -1114,7 +1144,7 @@ const BusLayoutManagement = () => {
                                                     }}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
+                                            <Grid item xs={12} sm={6} sx={{display: 'none'}}>
                                                 <TextField
                                                     fullWidth
                                                     label="Service Charge 01"
@@ -1132,7 +1162,7 @@ const BusLayoutManagement = () => {
                                                 />
                                             </Grid>
 
-                                            <Grid item xs={12} sm={6} sx={{ display:'none' }}>
+                                            <Grid item xs={12} sm={6} sx={{display: 'none'}}>
                                                 <TextField
                                                     fullWidth
                                                     label="Service Charge 02"
@@ -1151,11 +1181,11 @@ const BusLayoutManagement = () => {
                                             </Grid>
                                         </Grid>
 
-                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                                        <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
                                             <Button
                                                 variant="contained"
                                                 onClick={handleSaveSeatDetails}
-                                                sx={{ marginRight: "8px" }}
+                                                sx={{marginRight: "8px"}}
                                             >
                                                 Save Seat
                                             </Button>
@@ -1163,7 +1193,7 @@ const BusLayoutManagement = () => {
                                                 variant="contained"
                                                 color="secondary"
                                                 onClick={handleClose}
-                                                sx={{ backgroundColor: 'gray' }}
+                                                sx={{backgroundColor: 'gray'}}
                                             >
                                                 Cancel
                                             </Button>
@@ -1177,7 +1207,7 @@ const BusLayoutManagement = () => {
 
                 </Modal>
 
-                <ViewModal />
+                <ViewModal/>
             </Box>
         </Container>
     );

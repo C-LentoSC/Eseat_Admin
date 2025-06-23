@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Button,
@@ -22,118 +22,121 @@ import {
     TablePagination,
     InputAdornment
 } from "@mui/material";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateCalendar, DatePicker } from '@mui/x-date-pickers';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {DateCalendar, DatePicker} from '@mui/x-date-pickers';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from 'dayjs';
-import { setroutval } from "./DashboardLayoutAccount";
+import {setroutval} from "./DashboardLayoutAccount";
 
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
 import {useLoading} from "../loading";
 
+
 // import LoadingOverlay from './Parts/LoadingOverlay';
 const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
 ];
 
 const BusSchedule = () => {
-     // Sample passed/DB dates - can be dynamic
-  const dbDates = ["2025-06-13", "2025-06-15", "2025-06-17", "2025-06-19"];
-  const [currentYear, setCurrentYear] = useState(dayjs().year());
-  const [currentMonth, setCurrentMonth] = useState(dayjs().month()); // 0-indexed
+    // Sample passed/DB dates - can be dynamic
+    // const dbDates = ["2025-06-13", "2025-06-15", "2025-06-17", "2025-06-19"];
+    const [currentYear, setCurrentYear] = useState(dayjs().year());
+    const [currentMonth, setCurrentMonth] = useState(dayjs().month()); // 0-indexed
 
-  // Calculate days for calendar
-  const currentMonthDayjs = dayjs().year(currentYear).month(currentMonth);
-  const daysInMonth = currentMonthDayjs.daysInMonth();
-  const firstDayIndex = currentMonthDayjs.startOf("month").day(); // Sun = 0
+    // Calculate days for calendar
+    const currentMonthDayjs = dayjs().year(currentYear).month(currentMonth);
+    const daysInMonth = currentMonthDayjs.daysInMonth();
+    const firstDayIndex = currentMonthDayjs.startOf("month").day(); // Sun = 0
 
-  // Build day array with blanks for offset
-  const calendarDays = [];
-  for (let i = 0; i < firstDayIndex; i++) calendarDays.push(null);
-  for (let d = 1; d <= daysInMonth; d++)
-    calendarDays.push(dayjs(currentMonthDayjs).date(d));
+    // Build day array with blanks for offset
+    const calendarDays = [];
+    for (let i = 0; i < firstDayIndex; i++) calendarDays.push(null);
+    for (let d = 1; d <= daysInMonth; d++)
+        calendarDays.push(dayjs(currentMonthDayjs).date(d));
 
-  const today = dayjs().startOf("day");
+    const today = dayjs().startOf("day");
 
-  // Toggle select date (multi-select)
-  const toggleDate = (date) => {
-    const formatted = date.format("YYYY-MM-DD");
+    // Toggle select date (multi-select)
+    const toggleDate = (date) => {
+        const formatted = date.format("YYYY-MM-DD");
 
-    if (isPast(date) || isDbDate(date)) return; // disabled dates cannot be selected
+        if (isPast(date) || isDbDate(date)) return; // disabled dates cannot be selected
 
-    if (selectedDates.includes(formatted)) {
-      setSelectedDates((prev) => prev.filter((d) => d !== formatted));
-    } else {
-      setSelectedDates((prev) => [...prev, formatted]);
-    }
-  };
+        if (selectedDates.includes(formatted)) {
+            setSelectedDates((prev) => prev.filter((d) => d !== formatted));
+        } else {
+            setSelectedDates((prev) => [...prev, formatted]);
+        }
+    };
 
-  const isDbDate = (date) => {
-    return dbDates.includes(date.format("YYYY-MM-DD"));
-  };
+    const isDbDate = (date) => {
+        return dbDates.includes(date.format("YYYY-MM-DD"));
+    };
 
-  const isSelected = (date) => {
-    return selectedDates.includes(date.format("YYYY-MM-DD"));
-  };
+    const isSelected = (date) => {
+        return selectedDates.includes(date.format("YYYY-MM-DD"));
+    };
 
-  const isPast = (date) => {
-    return date.isBefore(today, "day");
-  };
+    const isPast = (date) => {
+        return date.isBefore(today, "day");
+    };
 
-  // Change month and year handlers
-  const prevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentYear((y) => y - 1);
-      setCurrentMonth(11);
-    } else {
-      setCurrentMonth((m) => m - 1);
-    }
-  };
+    // Change month and year handlers
+    const prevMonth = () => {
+        if (currentMonth === 0) {
+            setCurrentYear((y) => y - 1);
+            setCurrentMonth(11);
+        } else {
+            setCurrentMonth((m) => m - 1);
+        }
+    };
 
-  const nextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentYear((y) => y + 1);
-      setCurrentMonth(0);
-    } else {
-      setCurrentMonth((m) => m + 1);
-    }
-  };
+    const nextMonth = () => {
+        if (currentMonth === 11) {
+            setCurrentYear((y) => y + 1);
+            setCurrentMonth(0);
+        } else {
+            setCurrentMonth((m) => m + 1);
+        }
+    };
 
-  const onYearChange = (e) => {
-    const val = parseInt(e.target.value);
-    if (!isNaN(val)) setCurrentYear(val);
-  };
+    const onYearChange = (e) => {
+        const val = parseInt(e.target.value);
+        if (!isNaN(val)) setCurrentYear(val);
+    };
 
 
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
     const {startLoading, stopLoading} = useLoading()
-    const [isHidden, setIsHidden] = useState(true);
+    const type = sessionStorage.getItem('user_type') ?? "";
+    const [isHidden, setIsHidden] = useState((!(type === "Admin" || type === "Super Admin")));
+
 
     const typeOptions = ["This Month", "3 Month", "1 Year", "All"];
-  const [selectedType, setSelectedType] = useState(typeOptions[0]);
+    const [selectedType, setSelectedType] = useState(typeOptions[0]);
 
     const BusID = sessionStorage.getItem('currentValueID');
 
     const [alert, setAlert] = useState(null);
-    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
     const [details, setDetails] = useState({
         routID: BusID, ScheduleNum: "", CityName: "", depot: ""
@@ -158,6 +161,7 @@ const BusSchedule = () => {
     }, []);
 
     const [schedule, setSchedule] = useState([]);
+    const dbDates = schedule.map(i=>i.travelDate);
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedDates, setSelectedDates] = useState([]);
@@ -237,18 +241,20 @@ const BusSchedule = () => {
                 closingDate: dayjs(formData.closingDate).format('YYYY-MM-DD')
             });
         }
-        const L =startLoading()
-            api.post('admin/bus/schedule/add-new', {schedules:arr})
-                .then(res => {
-                    stopLoading(L)
-                    loadInfo()
-                    handleCloseAdd();
-                    sendAlert("new schedule added")
-                })
-                .catch(err=> {
-                    stopLoading(L)
-                    handleError(err)
-                })
+        const L = startLoading()
+        api.post('admin/bus/schedule/add-new', {schedules: arr})
+            .then(res => {
+                stopLoading(L)
+                loadInfo()
+                handleCloseAdd();
+                setCurrentMonth(dayjs().month())
+                setCurrentYear(dayjs().year())
+                sendAlert("new schedule added")
+            })
+            .catch(err => {
+                stopLoading(L)
+                handleError(err)
+            })
         // arr.forEach(i => {
         //     const L =startLoading()
         //     api.post('admin/bus/schedule/add', i)
@@ -299,7 +305,7 @@ const BusSchedule = () => {
             endDate: dayjs(currentSchedule.endDate).format('YYYY-MM-DD'),
             closingDate: dayjs(currentSchedule.closingDate).format('YYYY-MM-DD')
         };
-        const L=startLoading()
+        const L = startLoading()
         api.post('admin/bus/schedule/edit', updatedSchedule)
             .then(res => {
                 stopLoading(L)
@@ -309,7 +315,7 @@ const BusSchedule = () => {
                 setBlockedSeats({});
                 setShowSeatLayout(false);
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -354,7 +360,7 @@ const BusSchedule = () => {
                 stopLoading(L)
                 loadInfo()
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -386,102 +392,101 @@ const BusSchedule = () => {
         </Box>
         {enableMultiDates && (
             <div className="calendar-container">
-          <h2 className="mb-5">Bus Schedule Calendar</h2>
+                <h2 className="mb-5">Bus Schedule Calendar</h2>
 
-          {/* Year & Month selectors */}
-          <div className="calendar-nav">
-            <button onClick={prevMonth} className="nav-btn">
-              ◀
-            </button>
+                {/* Year & Month selectors */}
+                <div className="calendar-nav">
+                    <button onClick={prevMonth} className="nav-btn">
+                        ◀
+                    </button>
 
-            <select
-              value={currentMonth}
-              onChange={(e) => setCurrentMonth(parseInt(e.target.value))}
-            >
-              {months.map((m, i) => (
-                <option key={i} value={i}>
-                  {m}
-                </option>
-              ))}
-            </select>
-            <input
-              type="number"
-              value={currentYear}
-              onChange={onYearChange}
-              min={1900}
-              max={2100}
-              className="year-input"
-              onKeyDown={(e) => e.preventDefault()}
-            />
+                    <select
+                        value={currentMonth}
+                        onChange={(e) => setCurrentMonth(parseInt(e.target.value))}
+                    >
+                        {months.map((m, i) => (
+                            <option key={i} value={i}>
+                                {m}
+                            </option>
+                        ))}
+                    </select>
+                    <input
+                        type="number"
+                        value={currentYear}
+                        onChange={onYearChange}
+                        min={1900}
+                        max={2100}
+                        className="year-input"
+                        onKeyDown={(e) => e.preventDefault()}
+                    />
 
-            <button onClick={nextMonth} className="nav-btn">
-              ▶
-            </button>
-          </div>
-
-          {/* Days of week */}
-          <div className="calendar-grid">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div key={day} className="day-name">
-                {day}
-              </div>
-            ))}
-
-            {/* Calendar days */}
-            {calendarDays.map((date, i) => {
-              if (!date) return <div key={i} className="empty-day" />;
-
-              const classes = ["calendar-day"];
-              if (isPast(date)) classes.push("past-date");
-              if (isDbDate(date)) classes.push("db-date");
-              if (isSelected(date)) classes.push("selected-date");
-
-              return (
-                <div
-                  key={i}
-                  className={classes.join(" ")}
-                  onClick={() => toggleDate(date)}
-                  title={date.format("YYYY-MM-DD")}
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  {date.date()}
+                    <button onClick={nextMonth} className="nav-btn">
+                        ▶
+                    </button>
                 </div>
-              );
-            })}
-          </div>
 
-          {/* Selected Dates chips */}
-          <div className="selected-chip-list">
-            {selectedDates.length === 0 && <p>No dates selected</p>}
-            {selectedDates.map((date) => (
-              <span key={date} className="chip">
+                {/* Days of week */}
+                <div className="calendar-grid">
+                    {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                        <div key={day} className="day-name">
+                            {day}
+                        </div>
+                    ))}
+
+                    {/* Calendar days */}
+                    {calendarDays.map((date, i) => {
+                        if (!date) return <div key={i} className="empty-day"/>;
+
+                        const classes = ["calendar-day"];
+                        if (isPast(date)) classes.push("past-date");
+                        if (isDbDate(date)) classes.push("db-date");
+                        if (isSelected(date)) classes.push("selected-date");
+
+                        return (
+                            <div
+                                key={i}
+                                className={classes.join(" ")}
+                                onClick={() => toggleDate(date)}
+                                title={date.format("YYYY-MM-DD")}
+                                style={{
+                                    width: "40px",
+                                    height: "40px",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}
+                            >
+                                {date.date()}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Selected Dates chips */}
+                <div className="selected-chip-list">
+                    {selectedDates.length === 0 && <p>No dates selected</p>}
+                    {selectedDates.map((date) => (
+                        <span key={date} className="chip">
                 {date}
-                <button
-                  onClick={() =>
-                    setSelectedDates((prev) => prev.filter((d) => d !== date))
-                  }
-                  className="close-btns"
-                >
+                            <button
+                                onClick={() =>
+                                    setSelectedDates((prev) => prev.filter((d) => d !== date))
+                                }
+                                className="close-btns"
+                            >
                   ✖
                 </button>
               </span>
-            ))}
-          </div>
-        </div>
-       
-          )}
+                    ))}
+                </div>
+            </div>
+
+        )}
     </Box>);
 
     const handleBackClick = () => {
         setroutval('/busManagement', '00');
     };
-
 
 
     const SeatIcon = ({isSelected, isBlocked, blockType}) => (<div className="relative flex flex-col items-center">
@@ -540,15 +545,15 @@ const BusSchedule = () => {
 
                 // Add seat (selected or empty) to the grid
                 grid.push(seatInfo ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId}
-                        onClick={() => handleSeatClick(seatId)} className="relative m-1">
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} key={seatId}
+                         onClick={() => handleSeatClick(seatId)} className="relative m-1">
                         <SeatIcon
                             isSelected={!!seatId}
                             isBlocked={blockedSeats[seatId]?.isBlocked}
                             blockType={blockedSeats[seatId]?.blockType}
                         />
-                        {seatInfo?.seatNumber && (<span style={{ left: "13px", fontWeight: "bold", color: "#FFFFFF" }}
-                            className="absolute text-xs font-medium cursor-pointer">
+                        {seatInfo?.seatNumber && (<span style={{left: "13px", fontWeight: "bold", color: "#FFFFFF"}}
+                                                        className="absolute text-xs font-medium cursor-pointer">
                             {seatInfo.seatNumber}
                         </span>)}
                     </div>) : (<div key={seatId}>
@@ -593,6 +598,32 @@ const BusSchedule = () => {
     const startIndex = page * rowsPerPage;
     //End Pagination
 
+    const filteredSchedules = schedule.filter(schedule => {
+        const now = new Date();
+        const travelDate = new Date(schedule.travelDate);
+
+        switch (selectedType) {
+            case "This Month":
+                return (
+                    travelDate.getMonth() === now.getMonth() &&
+                    travelDate.getFullYear() === now.getFullYear()
+                );
+
+            case "3 Month":
+                const startMonth = new Date(now.getFullYear(), now.getMonth() - 2, 1); // 1st day, 2 months ago
+                const endMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);   // last day of current month
+                return (
+                    travelDate >= startMonth &&
+                    travelDate <= endMonth
+                );
+            case "1 Year":
+                return travelDate.getFullYear() === now.getFullYear();
+
+            case "All":
+            default:
+                return true;
+        }
+    });
     return (<LocalizationProvider dateAdapter={AdapterDayjs}>
         <Container maxWidth="lg">
 
@@ -637,40 +668,40 @@ const BusSchedule = () => {
                     </Button>
                 </Box>
 
-             <Box sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                mb: 2,
-              mt: 5,
-                gap: 2
-            }}>
-                <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
-                   
-                    <Autocomplete
-                        value={selectedType}
-                        onChange={(_, value) => setSelectedType(value)}
-                        options={typeOptions}
-                        renderInput={(params) => (<TextField
-                            {...params}
-                            label="Type"
-                            InputProps={{
-                                ...params.InputProps, startAdornment: (<InputAdornment position="start">
-                                </InputAdornment>),
-                            }}
-                            sx={{
-                                width: 200, '& .MuiOutlinedInput-root': {
-                                    height: '40px',
-                                }
-                            }}
-                        />)}
-                    />
-                   
+                <Box sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    mb: 2,
+                    mt: 5,
+                    gap: 2
+                }}>
+                    <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
+
+                        <Autocomplete
+                            value={selectedType}
+                            onChange={(_, value) => setSelectedType(value)}
+                            options={typeOptions}
+                            renderInput={(params) => (<TextField
+                                {...params}
+                                label="Type"
+                                InputProps={{
+                                    ...params.InputProps, startAdornment: (<InputAdornment position="start">
+                                    </InputAdornment>),
+                                }}
+                                sx={{
+                                    width: 200, '& .MuiOutlinedInput-root': {
+                                        height: '40px',
+                                    }
+                                }}
+                            />)}
+                        />
+
+                    </Box>
+
                 </Box>
-               
-            </Box>
 
                 <TableContainer component={Paper}>
                     <Table>
@@ -689,48 +720,48 @@ const BusSchedule = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {schedule
+                            {filteredSchedules
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((item) => (
-                                    <TableRow key={item.id} 
-                                     style={{
-        backgroundColor: dayjs(`${item.endDate} ${item.endTime}`).isBefore(dayjs()) ? "#ffafaf" : "inherit"
-    }}
->
+                                    <TableRow key={item.id}
+                                              style={{
+                                                  backgroundColor: dayjs(`${item.endDate} ${item.endTime}`).isBefore(dayjs()) ? "#ffafaf" : "inherit"
+                                              }}
+                                    >
 
-                                    <TableCell sx={{py: 0}}>{item.from} - {item.to}</TableCell>
-                                    <TableCell sx={{py: 0}}>{item.travelDate}</TableCell>
-                                    <TableCell sx={{py: 0}}>{item.startTime}</TableCell>
-                                    <TableCell sx={{py: 0}}>{item.endDate}</TableCell>
-                                    <TableCell sx={{py: 0}}>{item.endTime}</TableCell>
-                                    <TableCell sx={{py: 0}}>{item.closingDate}</TableCell>
-                                    <TableCell sx={{py: 0}}>
-                                        {item.closingTime}
-                                    </TableCell>
-                                    <TableCell sx={{py: 0}} align="right">
+                                        <TableCell sx={{py: 0}}>{item.from} - {item.to}</TableCell>
+                                        <TableCell sx={{py: 0}}>{item.travelDate}</TableCell>
+                                        <TableCell sx={{py: 0}}>{item.startTime}</TableCell>
+                                        <TableCell sx={{py: 0}}>{item.endDate}</TableCell>
+                                        <TableCell sx={{py: 0}}>{item.endTime}</TableCell>
+                                        <TableCell sx={{py: 0}}>{item.closingDate}</TableCell>
+                                        <TableCell sx={{py: 0}}>
+                                            {item.closingTime}
+                                        </TableCell>
+                                        <TableCell sx={{py: 0}} align="right">
 
 
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => handleEdit(item)}
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleEdit(item)}
 
-                                            sx={{marginRight: "8px"}}
-                                        >
-                                            <EditIcon/>
+                                                sx={{marginRight: "8px"}}
+                                            >
+                                                <EditIcon/>
 
-                                        </IconButton>
+                                            </IconButton>
                                             {!isHidden && (
-                                        <IconButton
-                                            color="error"
-                                            onClick={() => handleDelete(item.id)}
-                                        >
+                                                <IconButton
+                                                    color="error"
+                                                    onClick={() => handleDelete(item.id)}
+                                                >
 
-                                            <DeleteIcon/>
+                                                    <DeleteIcon/>
 
-                                        </IconButton>
-                                                   )}
-                                    </TableCell>
-                                </TableRow>))}
+                                                </IconButton>
+                                            )}
+                                        </TableCell>
+                                    </TableRow>))}
                         </TableBody>
                     </Table>
                     <TablePagination
@@ -768,7 +799,6 @@ const BusSchedule = () => {
 
 
                         <Stack spacing={3}>
-
 
 
                             <Box sx={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2}}>

@@ -1016,6 +1016,7 @@ function DashboardLayoutAccount({ window, onLogout }) {
 
   useEffect(() => {
     api.get('/user').then(r=>{
+      sessionStorage.setItem('user_type', r.data.type);
       setSession({
         user:{
           name: r.data.username,
