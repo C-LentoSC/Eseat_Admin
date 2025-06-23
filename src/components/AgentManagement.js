@@ -614,7 +614,7 @@ const AgentManagement = () => {
                                             <Checkbox
                                                 checked={closePermission}
                                                 onChange={(e) => {
-                                                    console.log(closePermission)
+                                                    console.log(e.target.checked)
                                                     setClosePermission(e.target.checked)
                                                 }}
                                             />
