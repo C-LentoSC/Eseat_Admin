@@ -175,7 +175,7 @@ const AgentManagement = () => {
         setSelectedAgent({ ...agent });
         setBusModalOpen(true);
     }, []);
-    const permissions=false
+    let permissions=false
     const [closePermission,setClosePermission]=useState(permissions)
 
     const assignBus = useCallback((bus) => {
