@@ -175,9 +175,9 @@ const AgentManagement = () => {
         setSelectedAgent({ ...agent });
         setBusModalOpen(true);
     }, []);
+    const permissions=false
+    const [closePermission,setClosePermission]=useState(permissions)
 
-    const [closePermission,setClosePermission]=useState(false)
-    const permissions=useRef(null)
     const assignBus = useCallback((bus) => {
         if (!bus) return;
 
@@ -185,7 +185,7 @@ const AgentManagement = () => {
         const updatedAgent = {
             id: selectedAgent.id,
             assignedBuses: [...selectedAgent.assignedBuses, bus],
-            closePermission:permissions.current.checked,
+            closePermission:permissions,
 
         };
         const L = startLoading()
@@ -613,10 +613,10 @@ const AgentManagement = () => {
                                      <FormControlLabel
                                         control={
                                             <Checkbox
-                                                ref={permissions}
                                                 checked={closePermission}
                                                 onChange={(e) => {
                                                     console.log(e.target.checked)
+                                                    permissions=e.target.checked
                                                     setClosePermission(e.target.checked)
                                                 }}
                                             />
