@@ -176,16 +176,16 @@ const AgentManagement = () => {
         setBusModalOpen(true);
     }, []);
     // let permissions=false
-    const [closePermission, setClosePermission] = useState(false)
+    const [closePermission, setClosePermission] = useState(true)
 
-    const assignBus = useCallback((bus) => {
+    const assignBus = useCallback((bus,permission) => {
         if (!bus) return;
-
+        console.log(closePermission)
 
         const updatedAgent = {
             id: selectedAgent.id,
             assignedBuses: [...selectedAgent.assignedBuses, bus],
-            closePermission: closePermission,
+            closePermission: permission,
 
         };
         const L = startLoading()
@@ -623,7 +623,7 @@ const AgentManagement = () => {
                                 />
                                 <Button
                                     variant="contained"
-                                    onClick={() => assignBus(selectedBus)}
+                                    onClick={() => assignBus(selectedBus,closePermission)}
                                     disabled={!selectedBus}
                                     sx={{height: '40px'}}
                                     startIcon={<BusIcon/>}
