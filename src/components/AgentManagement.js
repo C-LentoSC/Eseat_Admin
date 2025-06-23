@@ -57,8 +57,8 @@ const AgentManagement = () => {
         status: true,
         assignedBuses: [],
         managerMobile: "",
-        bookingFee:"",
-        agentCode:"",
+        bookingFee: "",
+        agentCode: "",
     };
 
     const [selectedName, setSelectedName] = useState("");
@@ -162,8 +162,8 @@ const AgentManagement = () => {
                     sendAlert('new agent added')
                     loadAllAgents()
                     handleModalClose();
-                }).catch(err=> {
-                    stopLoading(L)
+                }).catch(err => {
+                stopLoading(L)
                 handleError(err)
             })
         }
@@ -172,11 +172,11 @@ const AgentManagement = () => {
     };
 
     const handleBusAssignment = useCallback((agent) => {
-        setSelectedAgent({ ...agent });
+        setSelectedAgent({...agent});
         setBusModalOpen(true);
     }, []);
-    let permissions=false
-    const [closePermission,setClosePermission]=useState(permissions)
+    // let permissions=false
+    const [closePermission, setClosePermission] = useState(false)
 
     const assignBus = useCallback((bus) => {
         if (!bus) return;
@@ -185,7 +185,7 @@ const AgentManagement = () => {
         const updatedAgent = {
             id: selectedAgent.id,
             assignedBuses: [...selectedAgent.assignedBuses, bus],
-            closePermission:permissions,
+            closePermission: closePermission,
 
         };
         const L = startLoading()
@@ -195,7 +195,7 @@ const AgentManagement = () => {
                 stopLoading(L)
                 loadAllAgents()
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -209,14 +209,14 @@ const AgentManagement = () => {
         const updatedAgent = {
             id: selectedAgent.id, busId: busId
         }
-        const L=startLoading()
+        const L = startLoading()
         api.post('admin/agent/remove-bus', updatedAgent)
             .then(res => {
                 stopLoading(L)
 
                 loadAllAgents()
             })
-            .catch(err=> {
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -234,8 +234,8 @@ const AgentManagement = () => {
         return availableBuses.filter(bus => !assignedBusIds.includes(bus.id));
     };
     const [alert, setAlert] = useState(null)
-    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
-    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
+    const sendAlert = (text) => setAlert({message: text, severity: "info"})
+    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
 
 
     //Pagination
@@ -349,13 +349,13 @@ const AgentManagement = () => {
                                         control={<Switch
                                             checked={agent.status}
                                             onChange={() => {
-                                                const L=startLoading()
+                                                const L = startLoading()
                                                 api.post('admin/agent/toggle-status', agent)
                                                     .then(res => {
                                                         stopLoading(L)
                                                         loadAllAgents()
                                                     })
-                                                    .catch(err=> {
+                                                    .catch(err => {
                                                         stopLoading(L)
                                                         handleError(err)
                                                     })
@@ -418,7 +418,7 @@ const AgentManagement = () => {
                     border: "2px solid gray",
                     maxHeight: "90vh",
                     overflow: "auto",
-                    
+
                 }}>
                     <Typography variant="h6" gutterBottom>
                         {newAgent.id ? 'Edit Agent' : 'Add New Agent'}
@@ -491,26 +491,26 @@ const AgentManagement = () => {
                                 renderInput={(params) => <TextField {...params} label="Agent Type"/>}
                             />
                         </Grid>
-                    {newAgent.agentType === "Private" && (
-                      <>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                value={newAgent.bookingFee}
-                                onChange={(e) => setNewAgent(prev => ({...prev, bookingFee: e.target.value}))}
-                                label="Booking Fee"
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Agent Code"
-                                value={newAgent.agentCode}
-                                onChange={(e) => setNewAgent(prev => ({...prev, agentCode: e.target.value}))}
-                            />
-                        </Grid>
-                        </>
-                    )}
+                        {newAgent.agentType === "Private" && (
+                            <>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        value={newAgent.bookingFee}
+                                        onChange={(e) => setNewAgent(prev => ({...prev, bookingFee: e.target.value}))}
+                                        label="Booking Fee"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Agent Code"
+                                        value={newAgent.agentCode}
+                                        onChange={(e) => setNewAgent(prev => ({...prev, agentCode: e.target.value}))}
+                                    />
+                                </Grid>
+                            </>
+                        )}
                         <Grid item xs={12} sm={6}>
                             <Autocomplete
                                 multiple
@@ -520,7 +520,7 @@ const AgentManagement = () => {
                                 renderInput={(params) => <TextField {...params} label="Payment Methods"/>}
                             />
                         </Grid>
-                          <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
                                 label="Manager Mobile Number"
@@ -610,19 +610,17 @@ const AgentManagement = () => {
                                     />)}
                                     sx={{flex: 1}}
                                 />
-                                     <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={closePermission}
-                                                onChange={(e) => {
-                                                    console.log(e.target.checked)
-                                                    permissions=e.target.checked
-                                                    setClosePermission(e.target.checked)
-                                                }}
-                                            />
-                                        }
-                                        label="Schedule Close Permission"
-                                    />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={closePermission}
+                                            onChange={(e) =>
+                                                setClosePermission(e.target.checked)
+                                            }
+                                        />
+                                    }
+                                    label="Schedule Close Permission"
+                                />
                                 <Button
                                     variant="contained"
                                     onClick={() => assignBus(selectedBus)}
@@ -675,7 +673,7 @@ const AgentManagement = () => {
                                                 Bus ID: {bus.id}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                   Has Schedule Close Permission: {bus.close_permission?"Yes":"No"}
+                                                Has Schedule Close Permission: {bus.close_permission ? "Yes" : "No"}
                                             </Typography>
                                         </Stack>
                                     </Paper>
