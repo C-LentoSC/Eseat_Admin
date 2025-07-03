@@ -916,7 +916,10 @@ const BusSchedule = () => {
                                     />
                                 </Box>
 
-                                {renderSeatLayout(selectedLayout)}
+                               <Box sx={{ display: "flex", justifyContent: "center" }}>
+                      <img src="/wheel.png" style={{ width: "40px", height: "40px", marginTop: "18px", marginRight: "10px", rotate: "-90deg" }} />
+                      {renderSeatLayout(selectedLayout)}
+                    </Box>
                             </Box>)}
 
 
