@@ -330,7 +330,7 @@ const SeatTransfer = () => {
             </div>))}
     </Box>);
 
-    const  = (layout) => {
+    const renderSeatLayout = (layout) => {
         const rows = 6;
         const cols = 13;
         const grid = [];
