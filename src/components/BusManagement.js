@@ -779,7 +779,8 @@ const BusManagement = () => {
         {selectedLayout && (<>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={8}>
-                    <Box sx={{mt: 3}}>
+                    <Box sx={{ display: "flex", alignItems: "flex-start", mt: 3}}>
+                        <img src="/wheel.png" style={{ width: "40px", height: "40px", marginTop: "18px", marginRight: "10px", rotate: "-90deg" }} />
                         {renderViewSeatGrid(selectedLayout)}
                     </Box>
                 </Grid>
