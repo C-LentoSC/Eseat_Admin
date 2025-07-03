@@ -952,7 +952,8 @@ const BulkSeatTransfer = () => {
                         <Box sx={{
                             width: "100%", display: "flex", justifyContent: "center", alignItems: "center"
                         }}>
-                            <Box sx={{width: "100%", maxWidth: "800px"}}>
+                            <Box sx={{display: "flex", justifyContent: "center", width: "100%", maxWidth: "800px"}}>
+                                <img src="/wheel.png" style={{ width: "40px", height: "40px", marginTop: "18px", marginRight: "10px", rotate: "-90deg" }} />
                                 {renderSeatLayout(selectedSchedule)}
                             </Box>
                         </Box>
