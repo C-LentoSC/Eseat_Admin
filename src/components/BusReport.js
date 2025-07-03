@@ -816,7 +816,11 @@ const BusReport = () => {
                   </Box>
 
                   <Box sx={{ mb: 3, display: "flex", justifyContent: "center" }}>
-                    {selectedBus && renderSeatLayout(selectedBus)}
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                      <img src="/wheel.png" style={{ width: "40px", height: "40px", marginTop: "18px", marginRight: "10px", rotate: "-90deg" }} />
+                      {selectedBus && renderSeatLayout(selectedBus)}
+                    </Box>
+                  
                   </Box>
                 </div>
 
