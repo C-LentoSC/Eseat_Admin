@@ -610,17 +610,20 @@ const AgentManagement = () => {
                                     />)}
                                     sx={{flex: 1}}
                                 />
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={closePermission}
-                                            onChange={(e) =>
-                                                setClosePermission(e.target.checked)
-                                            }
-                                        />
-                                    }
-                                    label="Schedule Close Permission"
-                                />
+
+                                     <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={closePermission}
+                                                onChange={(e) => {
+                                                    console.log(e.target.checked)
+                                                    setClosePermission(e.target.checked)
+                                                }}
+                                            />
+                                        }
+                                        label="Schedule Close Permission"
+                                    />
+
                                 <Button
                                     variant="contained"
                                     onClick={() => assignBus(selectedBus,closePermission)}
