@@ -386,7 +386,8 @@ const BusLayoutManagement = () => {
                     </Typography>
 
                     <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
-                        <Box sx={{mb: 4, maxWidth: 700, width: '100%'}}>
+                        <Box sx={{display: "flex", alignItems: "flex-start", mb: 4, maxWidth: 700, width: '100%'}}>
+                           <img src="/wheel.png" style={{ width: "40px", height: "40px", marginTop: "18px", marginRight: "10px", rotate: "-90deg" }} />
                             {renderSeatGrid()}
                         </Box>
                     </Box>
@@ -427,7 +428,8 @@ const BusLayoutManagement = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={12}>
                         <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
-                            <Box sx={{mb: 4, maxWidth: 700, width: '100%'}}>
+                            <Box sx={{display: "flex", alignItems: "flex-start", mb: 4, maxWidth: 700, width: '100%'}}>
+                                <img src="/wheel.png" style={{ width: "40px", height: "40px", marginTop: "18px", marginRight: "10px", rotate: "-90deg" }} />
                                 {renderSeatGrid()}
                             </Box>
                         </Box>
@@ -620,7 +622,8 @@ const BusLayoutManagement = () => {
 
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={8}>
-                        <Box sx={{mb: 2}}>
+                        <Box sx={{display: "flex", alignItems: "flex-start", mb: 2}}>
+                            <img src="/wheel.png" style={{ width: "40px", height: "40px", marginTop: "18px", marginRight: "10px", rotate: "-90deg" }} />
                             {currentLayout && renderViewSeatGrid(currentLayout)}
                         </Box>
                     </Grid>
