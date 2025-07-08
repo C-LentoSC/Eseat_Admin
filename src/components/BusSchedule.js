@@ -125,14 +125,14 @@ const BusSchedule = () => {
     // setLoading(true);
     // setLoading(false);
     const {startLoading, stopLoading} = useLoading()
-    const type = sessionStorage.getItem('user_type') ?? "";
+    const type = localStorage.getItem('user_type') ?? "";
     const [isHidden, setIsHidden] = useState((!(type === "Admin" || type === "Super Admin")));
 
 
     const typeOptions = ["This Month", "3 Month", "1 Year", "All"];
     const [selectedType, setSelectedType] = useState(typeOptions[0]);
 
-    const BusID = sessionStorage.getItem('currentValueID');
+    const BusID = localStorage.getItem('currentValueID');
 
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({message: text, severity: "info"})

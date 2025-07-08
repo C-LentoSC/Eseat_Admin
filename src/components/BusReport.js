@@ -259,9 +259,9 @@ const BusReport = () => {
         .then(res=>{
           stopLoading(L)
           sendAlert("status changed")
-          sessionStorage.setItem("toBeChanged",scheduleId)
+          localStorage.setItem("toBeChanged",scheduleId)
           console.log(scheduleId)
-          sessionStorage.setItem("currentPath","/bulkSeatTransfer")
+          localStorage.setItem("currentPath","/bulkSeatTransfer")
           window.location.reload()
           loadAll()
         })

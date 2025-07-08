@@ -16,11 +16,10 @@ const App = () => {
 }
 
 const AppMain = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(sessionStorage.getItem("isAuthenticated") === "true");
+    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated") === "true");
 
     useEffect(() => {
         const handleActivity = () => {
-
             clearTimeout(window.inactivityTimeout);
             window.inactivityTimeout = setTimeout(() => {
                 handleLogout();
@@ -30,10 +29,33 @@ const AppMain = () => {
         window.addEventListener("mousemove", handleActivity);
         window.addEventListener("keydown", handleActivity);
 
+        // Tab tracking logic
+        const onBeforeUnload = () => {
+            let tabCount = parseInt(localStorage.getItem('openTabs') || '0', 10);
+            tabCount = Math.max(0, tabCount - 1);
+            localStorage.setItem('openTabs', tabCount);
+            if (tabCount === 0) {
+                handleLogout();
+            }
+        };
+
+        const onLoad = () => {
+            let tabCount = parseInt(localStorage.getItem('openTabs') || '0', 10);
+            localStorage.setItem('openTabs', tabCount + 1);
+        };
+
+        window.addEventListener('beforeunload', onBeforeUnload);
+        window.addEventListener('load', onLoad);
+
+        // Initial load
+        onLoad();
+
         return () => {
             clearTimeout(window.inactivityTimeout);
             window.removeEventListener("mousemove", handleActivity);
             window.removeEventListener("keydown", handleActivity);
+            window.removeEventListener('beforeunload', onBeforeUnload);
+            window.removeEventListener('load', onLoad);
         };
     }, []);
 
@@ -47,11 +69,11 @@ const AppMain = () => {
                         return
                     }
 
-                    sessionStorage.setItem('token', d.token)
-                    sessionStorage.setItem('otp', "0")
+                    localStorage.setItem('token', d.token)
+                    localStorage.setItem('otp', "0")
                     window.location.reload()
                     // setIsAuthenticated(true)
-                    // sessionStorage.setItem('isAuthenticated', 'true')
+                    // localStorage.setItem('isAuthenticated', 'true')
                 } else {
                     console.log(d)
                 }
@@ -62,8 +84,8 @@ const AppMain = () => {
     // Function to handle logout
     const handleLogout = () => {
         setIsAuthenticated(false);
-        sessionStorage.removeItem("isAuthenticated");
-        sessionStorage.removeItem("token");
+        localStorage.removeItem("isAuthenticated");
+        localStorage.removeItem("token");
     };
 
 

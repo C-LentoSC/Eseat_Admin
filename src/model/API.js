@@ -12,17 +12,16 @@ const api = axios.create({
         'Accept': 'application/json',
     },
 });
-
 // Set authorization header if token exists
 api.interceptors.request.use(async (config) => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (token) {
         const decoded = jwtDecode(token);
         const currentTime = Date.now() / 1000;
 
         if (decoded.exp < currentTime) {
-            sessionStorage.removeItem('token');
-            sessionStorage.setItem('isAuthenticated','false')
+            localStorage.removeItem('token');
+            localStorage.setItem('isAuthenticated','false')
             alert('Session expired. Please log in again.');
             window.location.href = '/signin';
             throw new Error('Token expired');
@@ -47,14 +46,14 @@ export const api2 = axios.create({
 
 // Set authorization header if token exists
 api2.interceptors.request.use(async (config) => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (token) {
         const decoded = jwtDecode(token);
         const currentTime = Date.now() / 1000;
 
         if (decoded.exp < currentTime) {
-            sessionStorage.removeItem('token');
-            sessionStorage.setItem('isAuthenticated','false')
+            localStorage.removeItem('token');
+            localStorage.setItem('isAuthenticated','false')
             alert('Session expired. Please log in again.');
             window.location.href = '/signin';
             throw new Error('Token expired');

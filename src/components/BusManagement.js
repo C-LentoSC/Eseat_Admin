@@ -41,10 +41,10 @@ const BusManagement = () => {
     // const [loading, setLoading] = useState(false);
     // setLoading(true);
     // setLoading(false);
-    const type = sessionStorage.getItem('user_type') ?? "";
+    const type = localStorage.getItem('user_type') ?? "";
     const [isHidden, setIsHidden] = useState((!(type === "Admin" || type === "Super Admin")));
 
-    const DepotID = sessionStorage.getItem('currentValueID');
+    const DepotID = localStorage.getItem('currentValueID');
 
     const {startLoading, stopLoading} = useLoading()
     // const DepotID = 2;
@@ -95,16 +95,16 @@ const BusManagement = () => {
     });
     const loadInfo = () => {
 
-        let id= sessionStorage.getItem('depotId')
+        let id= localStorage.getItem('depotId')
         if (DepotID === '00') {
             if (id === null || id === '00' || id === undefined) {
                 handleBackClick()
             } else {
-                sessionStorage.setItem('currentValueID', id);
+                localStorage.setItem('currentValueID', id);
                 window.location.reload()
             }
 
-        } else sessionStorage.setItem('depotId', DepotID);
+        } else localStorage.setItem('depotId', DepotID);
 
 
         const L = startLoading()
