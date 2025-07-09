@@ -43,7 +43,7 @@ const ManageBusFareBreaks = () => {
     // setLoading(false);
 
 
-    const RouteID = localStorage.getItem('currentValueID');
+    const RouteID = sessionStorage.getItem('currentValueID');
 
     const [details, setDetails] = useState({
         id: RouteID,

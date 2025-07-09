@@ -848,7 +848,7 @@ const demoTheme = createTheme({
 
 
 function DemoPageContent({ pathname }) {
-  localStorage.setItem('currentPath', pathname);
+  sessionStorage.setItem('currentPath', pathname);
 
   let content;
 
@@ -990,12 +990,12 @@ DemoPageContent.propTypes = {
 };
 
 
-let routval = localStorage.getItem('currentPath') || '/';
+let routval = sessionStorage.getItem('currentPath') || '/';
 
 export function setroutval(newRoute, RouteID) {
   routval = newRoute;
-  localStorage.setItem('currentPath', newRoute);
-  localStorage.setItem('currentValueID', RouteID);
+  sessionStorage.setItem('currentPath', newRoute);
+  sessionStorage.setItem('currentValueID', RouteID);
   window.location.reload();
 }
 
@@ -1016,7 +1016,7 @@ function DashboardLayoutAccount({ window, onLogout }) {
 
   useEffect(() => {
     api.get('/user').then(r=>{
-      localStorage.setItem('user_type', r.data.type);
+      sessionStorage.setItem('user_type', r.data.type);
       setSession({
         user:{
           name: r.data.username,

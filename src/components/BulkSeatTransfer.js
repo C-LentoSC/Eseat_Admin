@@ -322,7 +322,7 @@ const BulkSeatTransfer = () => {
             .then(res => {
                 stopLoading(L)
                 setAllSchedules(res.data)
-                let id=(localStorage.getItem("toBeChanged"))
+                let id=(sessionStorage.getItem("toBeChanged"))
                 console.log(id)
                 if(id){
                     id=Number.parseInt(id)
@@ -348,7 +348,7 @@ const BulkSeatTransfer = () => {
                             search.current.click()
 
                         },500)
-                        localStorage.removeItem("toBeChanged")
+                        sessionStorage.removeItem("toBeChanged")
                     }
 
                 }
