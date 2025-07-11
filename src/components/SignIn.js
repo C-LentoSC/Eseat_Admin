@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
@@ -169,6 +169,7 @@ const OTPLoginDialog = ({open, handleClose, handleConfirm,handleError}) => {
                 stopLoading(id)
                 sessionStorage.removeItem('otp')
                 sessionStorage.setItem('isAuthenticated', 'true')
+                sessionStorage.setItem('token', res.data.token)
                 window.location.reload()
             })
             .catch(err=>{
@@ -225,6 +226,10 @@ const SignInPage = ({onSignIn}) => {
         setOtpLoginOpen(false);
         // onSignIn(); 
     };
+    const {clearLoading}=useLoading()
+    useEffect(() => {
+        clearLoading()
+    })
 
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")

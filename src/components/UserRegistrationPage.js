@@ -59,6 +59,9 @@ const UserRegistrationPage = () => {
         api.get('admin/get-roles').then(r => {
             stopLoading(id)
             setRoles(r.data)
+        }).catch(err=>{
+            handleError(err)
+            stopLoading(id)
         })
         loadAllUsers()
 

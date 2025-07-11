@@ -5,6 +5,7 @@ import LoadingOverlay from "./components/Parts/LoadingOverlay";
 const LoadingContext = createContext({
     startLoading: () => "",
     stopLoading: () => {},
+    clearLoading: () => {},
 });
 
 // Provider Component
@@ -17,12 +18,16 @@ export const LoadingProvider = ({ children }) => {
         return id;
     };
 
+
+
     const stopLoading = (id) => {
         setLoadingIds((prev) => prev.filter((loadingId) => loadingId !== id));
     };
-
+    const clearLoading=()=>{
+        setLoadingIds([]);
+    }
     return (
-        <LoadingContext.Provider value={{ startLoading, stopLoading }}>
+        <LoadingContext.Provider value={{ startLoading, stopLoading,clearLoading }}>
             <LoadingOverlay show={loadingIds.length > 0} />
             {children}
         </LoadingContext.Provider>
