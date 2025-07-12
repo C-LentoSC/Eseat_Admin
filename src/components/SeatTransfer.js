@@ -174,7 +174,8 @@ const SeatTransfer = () => {
         if (busFare === 0) return 0;
 
         let totalCost = 0;
-
+        console.log(totalCost)
+        console.log(selectedSeat)
         // Loop through all selected seats and calculate their total cost
         selectedSeat.forEach((seat) => {
             const ctbCharge = seat.serviceChargeCTB || 0;
@@ -204,7 +205,7 @@ const SeatTransfer = () => {
             const finalTotal = afterBankChargePrice + serviceCharge1 + serviceCharge2;
             totalCost += finalTotal;  // Accumulate the total cost for all selected seats
         });
-
+        console.log(totalCost)
         // Return the total cost for all seats
         return totalCost.toFixed(2);
     };
