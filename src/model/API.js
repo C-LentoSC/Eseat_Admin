@@ -4,7 +4,7 @@ import {jwtDecode} from "jwt-decode";
 // Create Axios instance
 const api = axios.create({
      // baseURL: 'http://3.15.2.57:8000/api/',
-    // baseURL: 'http://127.0.0.1:8000/api/',
+    //baseURL: 'http://127.0.0.1:8000/api/',
     // baseURL: 'https://modernliving.lk/api/',
     baseURL:"http://ec2-13-212-24-240.ap-southeast-1.compute.amazonaws.com:8000/api/",
     headers: {
@@ -37,8 +37,8 @@ api.interceptors.request.use(async (config) => {
 export const api2 = axios.create({
     // baseURL: 'https://mintberryco.com/api/',
     // baseURL: 'http://127.0.0.1:8000/api/',
-     baseURL: 'https://modernliving.lk/api/',
-    // baseURL:"http://ec2-13-212-24-240.ap-southeast-1.compute.amazonaws.com:8000/api/",
+    // baseURL: 'https://modernliving.lk/api/',
+     baseURL:"http://ec2-13-212-24-240.ap-southeast-1.compute.amazonaws.com:8000/api/",
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
