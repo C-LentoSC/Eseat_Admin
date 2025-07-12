@@ -107,7 +107,7 @@ const PointsManagement = () => {
                 handleClose();
             })
             .catch(err=> {
-                stopLoading(err)
+                stopLoading(id)
                 handleError(err)
             })
     };
