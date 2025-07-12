@@ -155,7 +155,7 @@ const ManageDepots = () => {
                 })
             // Reset form
 
-        }
+        }else sendAlert('Please fill the required fields')
     };
 
     // Open edit modal
