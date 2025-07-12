@@ -67,7 +67,11 @@ const SeatTransfer = () => {
                 // selectedSeats.push({ seatNumber: no, seatId: null, seatCost: '', balanceToPay: '' });
             } else {
                 // Seat found, check if it's available
-
+                if(selectedSeats.filter(s=>s.seatNumber===no).length>0){
+                    sendAlert(`Seat ${no} is already selected`);
+                    allSeatsAvailable = false;
+                    return;
+                }
                 if (selectedSeat.status !== "available") {
                     sendAlert(`Seat ${no} is not available`);
                     allSeatsAvailable = false;
