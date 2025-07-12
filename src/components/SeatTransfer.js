@@ -76,7 +76,8 @@ const SeatTransfer = () => {
                         seatNumber: selectedSeat.seatNumber,
                         seatId: selectedSeat.id,
                         seatCost: selectedSeat.cost ?? '',
-                        balanceToPay: selectedSeat.balanceToPay ?? ''
+                        balanceToPay: selectedSeat.balanceToPay ?? '',
+                        ...selectedSeat
                     });
                     newIds.push(selectedSeat.id);
                 }
