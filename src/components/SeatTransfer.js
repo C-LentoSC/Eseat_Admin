@@ -264,6 +264,7 @@ const SeatTransfer = () => {
             })
     };
     const handleRouteChange = (data) => {
+
         setPoints(data?.brake)
         setTransferDetails({
             ...transferDetails, scheduleId: data?.id
@@ -560,6 +561,7 @@ const SeatTransfer = () => {
                             }).filter(s => s.date === selectedNewDate?.format('YYYY-MM-DD'))}
                             getOptionLabel={(option) => `${option.date} ${option.time} - ${option.route} (${option.busNo})`}
                             onChange={(_, value) => {
+                                console.log(value)
                                 setSelectedSchedule(value);
                                 setShowSeatLayout(value !== null);
                                 handleRouteChange(value)
