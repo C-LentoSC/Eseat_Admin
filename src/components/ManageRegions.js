@@ -101,6 +101,8 @@ const ManageRegions = () => {
                     handleError(err)
                 })
 
+        }else {
+            sendAlert('Please fill the required fields')
         }
     };
 
