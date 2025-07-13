@@ -543,7 +543,11 @@ const BulkSeatTransfer = () => {
                 // selectedSeats.push({ seatNumber: no, seatId: null, seatCost: '', balanceToPay: '' });
             } else {
                 // Seat found, check if it's available
-
+                if(selectedSeats.filter(s=>s.seatNumber===no).length>0){
+                    sendAlert(`Seat ${no} is already selected`);
+                    allSeatsAvailable = false;
+                    return;
+                }
                 if (selectedSeat.status !== "available") {
                     sendAlert(`Seat ${no} is not available`);
                     allSeatsAvailable = false;
@@ -552,7 +556,8 @@ const BulkSeatTransfer = () => {
                         seatNumber: selectedSeat.seatNumber,
                         seatId: selectedSeat.id,
                         seatCost: selectedSeat.cost ?? '',
-                        balanceToPay: selectedSeat.balanceToPay ?? ''
+                        balanceToPay: selectedSeat.balanceToPay ?? '',
+                        ...selectedSeat
                     });
                     newIds.push(selectedSeat.id);
                 }
@@ -568,6 +573,7 @@ const BulkSeatTransfer = () => {
                 newSeatIds: newIds,
                 seatCost: selectedSeats.reduce((total, seat) => total + parseFloat(seat.seatCost || 0), 0), // Sum up seat costs
                 balanceToPay: selectedSeats.reduce((total, seat) => total + parseFloat(seat.balanceToPay || 0), 0) // Sum up balance to pay
+
             };
         }
 
