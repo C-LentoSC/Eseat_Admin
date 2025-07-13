@@ -323,7 +323,9 @@ const BusManagement = () => {
                 oi.push(r)
             } else oi.push(otherImages[i])
         }
-
+        if(!mainImage){
+            return sendAlert('please select main image')
+        }
         const formattedBus = {
             id: newBus.id || Math.max(...buses.map(b => b.id)) + 1,
             scheduleNumber: newBus.scheduleNumber,
@@ -365,16 +367,16 @@ const BusManagement = () => {
                     busModel: "",
                     status: true,
                     paymentMethods: {
-                        card: false, cash: false, bank: false, ezcash: false, reload: false
-                    },
-                    bookactivity: {
-                        online: false, counter: false
+                        card: true, cash: false, bank: false, ezcash: false, reload: false
                     },
                     facilities: {
                         wifi: false, usb: false, seatBelt: false, phoneCharger: false
                     },
+                    bookactivity: {
+                        online: true, counter: true
+                    },
                     settings: {
-                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: false
+                        onlineActive: true, agentCounter: true, autoClose: true, manualClose: true
                     }
                 });
                 setEditMode(false)
@@ -406,16 +408,16 @@ const BusManagement = () => {
                     busModel: "",
                     status: true,
                     paymentMethods: {
-                        card: false, cash: false, bank: false, ezcash: false, reload: false
+                        card: true, cash: false, bank: false, ezcash: false, reload: false
                     },
                     facilities: {
                         wifi: false, usb: false, seatBelt: false, phoneCharger: false
                     },
                     bookactivity: {
-                        online: false, counter: false
+                        online: true, counter: true
                     },
                     settings: {
-                        onlineActive: true, agentCounter: false, autoClose: false, manualClose: true
+                        onlineActive: true, agentCounter: true, autoClose: true, manualClose: true
                     }
                 });
                 setEditMode(false)
