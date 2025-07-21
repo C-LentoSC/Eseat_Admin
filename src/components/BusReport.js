@@ -212,7 +212,20 @@ const BusReport = () => {
         setBookingAction(status === "opened" ? "close" : "open");
         console.log(status)
         if (status === "closed") {
-            handleBookingConfirm()
+            const L = startLoading()
+            api.post("admin/schedule-report/toggle-status", {
+                action: bookingAction, conductorMobile, ...bus
+            }).then(res => {
+                stopLoading(L)
+
+                sendAlert("status changed")
+                loadAll()
+            })
+                .catch(err => {
+                    stopLoading(L)
+                    handleError(err)
+                })
+
             return
         }
         setIsBookingStatusModalOpen(true);
