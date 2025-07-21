@@ -308,11 +308,10 @@ const BusReport = () => {
 
     const handleSendSMS = (bus) => {
         const L = startLoading()
-        api.post("admin/schedule-report/send-sms", bus)
+        api.post("admin/schedule-report/send-sms", {id:bus.id})
             .then(res => {
                 stopLoading(L)
                 sendAlert("sms sent")
-                loadAll()
             })
             .catch(err => {
                 stopLoading(L)
