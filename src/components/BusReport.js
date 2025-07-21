@@ -306,7 +306,19 @@ const BusReport = () => {
             </DialogActions>
         </Dialog>);
 
-    const handleSendSMS = () => {
+    const handleSendSMS = (bus) => {
+        const L = startLoading()
+        api.post("admin/schedule-report/send-sms", bus)
+            .then(res => {
+                stopLoading(L)
+                sendAlert("sms sent")
+                loadAll()
+            })
+            .catch(err => {
+                stopLoading(L)
+                handleError(err)
+            })
+
     };
 
     const handleView = (bus) => {
@@ -772,7 +784,7 @@ const BusReport = () => {
 
                                 <div className="remButton">
                                     <Box sx={{mt: 2, display: "flex", gap: 2, justifyContent: "center"}}>
-                                        <Button variant="contained" onClick={handleSendSMS()}>
+                                        <Button variant="contained" onClick={handleSendSMS(selectedBus)}>
                                             <span className="setpadding01">Send SMS to Conductor</span>
                                         </Button>
 
