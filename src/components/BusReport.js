@@ -210,12 +210,11 @@ const BusReport = () => {
 
     const handleBookingToggle = React.useCallback((status, bus) => () => {
         setBookingAction(status === "opened" ? "close" : "open");
-
-        if (status !== "opened") {
+        console.log(status)
+        if (status === "closed") {
             handleBookingConfirm()
             return
         }
-
         setIsBookingStatusModalOpen(true);
     }, []);
 
