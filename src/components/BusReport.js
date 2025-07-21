@@ -784,7 +784,9 @@ const BusReport = () => {
 
                                 <div className="remButton">
                                     <Box sx={{mt: 2, display: "flex", gap: 2, justifyContent: "center"}}>
-                                        <Button variant="contained" onClick={handleSendSMS(selectedBus)}>
+                                        <Button variant="contained" onClick={()=>{
+                                            handleSendSMS(selectedBus)
+                                        }}>
                                             <span className="setpadding01">Send SMS to Conductor</span>
                                         </Button>
 
