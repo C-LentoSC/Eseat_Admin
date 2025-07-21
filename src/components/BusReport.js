@@ -241,13 +241,14 @@ const BusReport = () => {
 
             sendAlert("status changed")
             loadAll()
+            setIsBookingStatusModalOpen(false);
         })
             .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
 
-        setIsBookingStatusModalOpen(false);
+
     };
 
     const handleStatusChangeClick = (scheduleId, newStatus, oldStatus) => {
