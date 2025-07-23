@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box, Container, Typography, Table, TableBody, TableCell,
     TableContainer, TableHead, TableRow, Paper, Grid,
     TextField, InputAdornment, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TablePagination
 } from '@mui/material';
-import { FileDownload, CheckCircle, HourglassEmpty } from '@mui/icons-material';
+import {FileDownload, CheckCircle, HourglassEmpty} from '@mui/icons-material';
 import dayjs from 'dayjs';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
@@ -18,7 +18,7 @@ const TicketMarkingSystem = () => {
     // setLoading(true);
     // setLoading(false);
 
-    const {startLoading,stopLoading}=useLoading()
+    const {startLoading, stopLoading} = useLoading()
     // Sample initial data
     const [tickets, setTickets] = useState([]);
     const [alert, setAlert] = useState(null);
@@ -34,11 +34,11 @@ const TicketMarkingSystem = () => {
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const loadAll=()=>{
+    const loadAll = () => {
 
-        const L=startLoading()
+        const L = startLoading()
         api.get('admin/ticket-marking/get-all')
-            .then(res=>{
+            .then(res => {
                 stopLoading(L)
 
                 setTickets(res.data)
@@ -47,7 +47,7 @@ const TicketMarkingSystem = () => {
                 }
             })
 
-            .catch(err=>{
+            .catch(err => {
                 stopLoading(L)
 
                 handleError(err)
@@ -56,6 +56,7 @@ const TicketMarkingSystem = () => {
     useEffect(() => {
         loadAll()
     }, []);
+
     function generateUniqueId() {
         return `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     }
@@ -122,7 +123,7 @@ const TicketMarkingSystem = () => {
         ].join('\n');
 
         const BOM = '\uFEFF';
-        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([BOM + csvContent], {type: 'text/csv;charset=utf-8;'});
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.setAttribute('href', url);
@@ -147,19 +148,19 @@ const TicketMarkingSystem = () => {
         }));
     };
 
-    const handleConfirmSeat = (ticket, seatNo,vCode) => {
-        const L=startLoading()
+    const handleConfirmSeat = (ticket, seatNo, vCode) => {
+        const L = startLoading()
         api.post('admin/ticket-marking/confirm', {
             ...ticket,
             seatNo: seatNo,
             vCode
         })
-            .then(res=>{
+            .then(res => {
                 stopLoading(L)
                 sendAlert("seat marked")
                 loadAll()
             })
-            .catch(err=>{
+            .catch(err => {
                 stopLoading(L)
 
                 handleError(err)
@@ -191,11 +192,11 @@ const TicketMarkingSystem = () => {
     return (
         <Container component="main" maxWidth="lg">
 
-            <LoadingOverlay show={loading} />
+            <LoadingOverlay show={loading}/>
             {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                setOpen={setAlert} /> : <></>}
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+                                  setOpen={setAlert}/> : <></>}
+            <Box sx={{display: "flex", flexDirection: "column", gap: 3}}>
+                <Typography variant="h5" sx={{fontWeight: 600, mb: 3}}>
                     Ticket Marking System
                 </Typography>
 
@@ -270,7 +271,7 @@ const TicketMarkingSystem = () => {
                 }}>
                     <Button
                         variant="contained"
-                        startIcon={<FileDownload />}
+                        startIcon={<FileDownload/>}
                         onClick={handleExport}
                         disabled={filteredTickets.length === 0}
                     >
@@ -282,45 +283,49 @@ const TicketMarkingSystem = () => {
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow sx={{ backgroundColor: '#7cdffa4b' }}>
-                                <TableCell sx={{ py: 1 }}>Ref No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Ticket Type</TableCell>
-                                <TableCell sx={{ py: 1 }}>Seat No</TableCell>
-                                <TableCell sx={{ py: 1 }}>Depot</TableCell>
-                                <TableCell sx={{ py: 1 }}>Schedule No</TableCell>
-                                <TableCell sx={{ py: 1 }}>V-Code</TableCell>
-                                <TableCell sx={{ py: 1 }}>Mode of Pay</TableCell>
-                                <TableCell sx={{ py: 1 }}>Route</TableCell>
-                                <TableCell sx={{ py: 1 }}>NIC</TableCell>
-                                <TableCell sx={{ py: 1 }}>Booked By</TableCell>
-                                <TableCell sx={{ py: 1 }}>Booked Date</TableCell>
-                                <TableCell sx={{ py: 1 }} align="right">Actions</TableCell>
+                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                                <TableCell sx={{py: 1}}>Ref No</TableCell>
+                                <TableCell sx={{py: 1}}>Ticket Type</TableCell>
+                                <TableCell sx={{py: 1}}>Seat No</TableCell>
+                                <TableCell sx={{py: 1}}>Depot</TableCell>
+                                <TableCell sx={{py: 1}}>Schedule No</TableCell>
+                                <TableCell sx={{py: 1}}>V-Code</TableCell>
+                                <TableCell sx={{py: 1}}>Mode of Pay</TableCell>
+                                <TableCell sx={{py: 1}}>Route</TableCell>
+                                <TableCell sx={{py: 1}}>NIC</TableCell>
+                                <TableCell sx={{py: 1}}>Booked By</TableCell>
+                                <TableCell sx={{py: 1}}>Booked Date</TableCell>
+                                <TableCell sx={{py: 1}} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {filteredTickets
+                                .filter(s => {
+                                    return !(depot === "" || scheduleNo === "")
+                                })
                                 .slice(startIndex, startIndex + rowsPerPage)
                                 .map((ticket) => (
                                     <TableRow key={ticket.id}>
-                                        <TableCell sx={{ py: 0 }}>{ticket.refNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.ticketType}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.seatNoDetails.map(s => s.seatNo).join(', ')}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.depot}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.scheduleNo}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.vCode}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.modeOfPay}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.route}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.nic}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.bookedBy}</TableCell>
-                                        <TableCell sx={{ py: 0 }}>{ticket.bookedDate}</TableCell>
-                                        <TableCell sx={{ py: 0 }} align="right">
+                                        <TableCell sx={{py: 0}}>{ticket.refNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{ticket.ticketType}</TableCell>
+                                        <TableCell
+                                            sx={{py: 0}}>{ticket.seatNoDetails.map(s => s.seatNo).join(', ')}</TableCell>
+                                        <TableCell sx={{py: 0}}>{ticket.depot}</TableCell>
+                                        <TableCell sx={{py: 0}}>{ticket.scheduleNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{ticket.vCode}</TableCell>
+                                        <TableCell sx={{py: 0}}>{ticket.modeOfPay}</TableCell>
+                                        <TableCell sx={{py: 0}}>{ticket.route}</TableCell>
+                                        <TableCell sx={{py: 0}}>{ticket.nic}</TableCell>
+                                        <TableCell sx={{py: 0}}>{ticket.bookedBy}</TableCell>
+                                        <TableCell sx={{py: 0}}>{ticket.bookedDate}</TableCell>
+                                        <TableCell sx={{py: 0}} align="right">
                                             {allSeatsConfirmed(ticket) ? (
                                                 <IconButton>
-                                                    <CheckCircle color="success" />
+                                                    <CheckCircle color="success"/>
                                                 </IconButton>
                                             ) : (
                                                 <IconButton onClick={() => handleViewSeats(ticket)} color="primary">
-                                                    <HourglassEmpty />
+                                                    <HourglassEmpty/>
                                                 </IconButton>
                                             )}
                                         </TableCell>
@@ -343,42 +348,48 @@ const TicketMarkingSystem = () => {
             </Box>
 
             {selectedTicket && (
-                <Box sx={{ display: "flex", width: "100%", justifyContent: "center" }}>
-                    <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} sx={{ width: "100%" }}>
+                <Box sx={{display: "flex", width: "100%", justifyContent: "center"}}>
+                    <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} sx={{width: "100%"}}>
                         <DialogTitle>Seat Confirmation Details</DialogTitle>
                         <DialogContent>
 
                             {selectedTicket.seatNoDetails.map(s => (
-                                <div key={s.seatNo} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginTop:"10px" }}>
-                                    <Typography sx={{ marginTop:"4px" }}>{s.seatNo}</Typography>
+                                <div key={s.seatNo} style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: "8px",
+                                    marginTop: "10px"
+                                }}>
+                                    <Typography sx={{marginTop: "4px"}}>{s.seatNo}</Typography>
                                     <Typography>{s.confirmed}</Typography>
                                     {!s.confirmed && (
                                         <TextField
-                                          size="small"
-                                          label="V Code"
-                                          value={vCodes[s.seatNo] || ""}
-                                          onChange={(e) => handleVCodeChange(s.seatNo, e.target.value)}
-                                          sx={{
-                                            // width: 80,
-                                            "& .MuiInputBase-input": {
-                                              padding: "6px 8px",
-                                              fontSize: "0.75rem",
-                                            },
-                                            "& .MuiInputLabel-root": {
-                                              fontSize: "0.75rem",
-                                            },
-                                          }}
+                                            size="small"
+                                            label="V Code"
+                                            value={vCodes[s.seatNo] || ""}
+                                            onChange={(e) => handleVCodeChange(s.seatNo, e.target.value)}
+                                            sx={{
+                                                // width: 80,
+                                                "& .MuiInputBase-input": {
+                                                    padding: "6px 8px",
+                                                    fontSize: "0.75rem",
+                                                },
+                                                "& .MuiInputLabel-root": {
+                                                    fontSize: "0.75rem",
+                                                },
+                                            }}
                                         />
-                                      )}
+                                    )}
                                     <IconButton
-                                        onClick={() => handleConfirmSeat(selectedTicket, s.seatNo,vCodes[s.seatNo])}
-                                        sx={{ color: s.confirmed ? "success" : "primary" }}
+                                        onClick={() => handleConfirmSeat(selectedTicket, s.seatNo, vCodes[s.seatNo])}
+                                        sx={{color: s.confirmed ? "success" : "primary"}}
                                         disabled={s.confirmed}
                                     >
                                         {s.confirmed ?
-                                            <CheckCircle color="success" />
+                                            <CheckCircle color="success"/>
                                             :
-                                            <HourglassEmpty color='primary' />
+                                            <HourglassEmpty color='primary'/>
                                         }
 
                                     </IconButton>
