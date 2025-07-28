@@ -130,6 +130,7 @@ const ManageFare = () => {
         api.get("admin/bulk-fare/charges")
             .then(res => {
                 setCharges(res.data)
+                sendAlert("successful");
                 stopLoading(id)
             }).catch(err => {
             stopLoading(id)
