@@ -703,7 +703,9 @@ const ManageFare = () => {
                                             api.post("admin/bulk-fare/save-charges", charges)
                                                 .then(()=>{
                                                     stopLoading(id)
+                                                    sendAlert("success")
                                                     loadCharges()
+                                                    handleClose()
                                                 }).catch(err=>{
                                                 stopLoading(id)
                                                 handleError(err)
