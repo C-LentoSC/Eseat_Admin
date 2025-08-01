@@ -49,7 +49,7 @@ const BusReport = () => {
     const [schedules, setSchedules] = useState([]);
     const loadAll = () => {
         const L = startLoading()
-        api.get('admin/schedule-report/get-all')
+        api.get(`admin/schedule-report/get-all?page=${page++}&count=${rowsPerPage}`)
             .then(res => {
                 stopLoading(L)
                 setSchedules(res.data);
