@@ -694,7 +694,7 @@ const BusReport = () => {
                                     <TableCell sx={{py: 1}}>Start Point</TableCell>
                                     <TableCell sx={{py: 1}}>End Point</TableCell>
                                     <TableCell sx={{py: 1}}>Route No</TableCell>
-                                    <TableCell sx={{py: 1}}>Bus Type</TableCell>
+                                    {/*<TableCell sx={{py: 1}}>Bus Type</TableCell>*/}
                                     <TableCell sx={{py: 1}}>Bus No</TableCell>
                                     <TableCell sx={{py: 1}}>Conductor No</TableCell>
                                     <TableCell sx={{py: 1}}>Deport</TableCell>
@@ -711,7 +711,7 @@ const BusReport = () => {
                                         <TableCell sx={{py: 0}}>{schedule.startPoint}</TableCell>
                                         <TableCell sx={{py: 0}}>{schedule.endPoint}</TableCell>
                                         <TableCell sx={{py: 0}}>{schedule.routeNo}</TableCell>
-                                        <TableCell sx={{py: 0}}>{schedule.busType}</TableCell>
+                                        {/*<TableCell sx={{py: 0}}>{schedule.busType}</TableCell>*/}
                                         <TableCell sx={{py: 0}}>{schedule.busNo}</TableCell>
                                         <TableCell sx={{py: 0}}>{schedule.conductorNo}</TableCell>
                                         <TableCell sx={{py: 0}}>{schedule.depot}</TableCell>
