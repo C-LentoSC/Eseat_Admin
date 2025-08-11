@@ -871,6 +871,12 @@ const BusReport = () => {
                                             <Typography sx={{ml: 1}}
                                                         variant="body2">{selectedBus?.endPoint}</Typography>
                                         </Grid>
+                                        <Grid item xs={6} md={4}
+                                              sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                                            <Typography variant="subtitle2">Time :</Typography>
+                                            <Typography sx={{ml: 1}}
+                                                        variant="body2">{selectedBus?.startTime}</Typography>
+                                        </Grid>
                                     </Grid>
 
                                     <TableContainer component={Paper}>
