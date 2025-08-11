@@ -851,7 +851,7 @@ const BusReport = () => {
                                         <Grid item xs={6} md={4}
                                               sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                                             <Typography variant="subtitle2">Schedule No :</Typography>
-                                            <Typography sx={{ml: 1}} variant="body2">{selectedBus?.shn??""}</Typography>
+                                            <Typography sx={{ml: 1}} variant="body2">{selectedBus?.shn??selectedBus?.busNo}</Typography>
                                         </Grid>
                                         <Grid item xs={6} md={4}
                                               sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
