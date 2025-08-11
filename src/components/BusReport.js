@@ -48,34 +48,71 @@ const BusReport = () => {
     const {startLoading, stopLoading} = useLoading()
     const [schedules, setSchedules] = useState([]);
     const loadAll = () => {
+        // const L = startLoading()
+        // api.get('admin/schedule-report/get-all')
+        //     .then(res => {
+        //         stopLoading(L)
+        //         setSchedules(res.data);
+        //         if (!isModalOpen) return
+        //         let s = (res.data.filter(s => s.id === selectedBus.id)[0])
+        //         if (s) {
+        //             setSelectedBus(s)
+        //         }
+        //     })
+        //     .catch(err => {
+        //         stopLoading(L)
+        //         handleError(err)
+        //     })
+        let data = [selectedRoute, selectedDepot, selectedTime, selectedDate.toISOString(), rowsPerPage, page]
+        console.log(data)
+        const params = [
+            { name: 'page', value: page + 1 },
+            { name: 'date', value: selectedDate.toISOString() }
+        ];
+        let url=buildUrl('admin/schedule-report/get-all-new',params)
+        console.log(url)
         const L = startLoading()
-        api.get('admin/schedule-report/get-all')
+        api.get(url)
             .then(res => {
                 stopLoading(L)
-                setSchedules(res.data);
+                setSchedules(res.data.data);
+                setSize(res.data.size)
                 if (!isModalOpen) return
-                let s = (res.data.filter(s => s.id === selectedBus.id)[0])
-                if (s) {
-                    setSelectedBus(s)
-                }
+                        let s = (res.data.data.filter(s => s.id === selectedBus.id)[0])
+                        if (s) {
+                            setSelectedBus(s)
+                        }else{
+                            setIsModalOpen(false);
+                        }
             })
             .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
-
     }
-    useEffect(() => {
-        loadAll()
-    }, []);
+
+    function buildUrl(baseUrl, paramsArray) {
+        const query = paramsArray
+            .map(({ name, value }) => `${encodeURIComponent(name)}=${encodeURIComponent(value)}`)
+            .join('&');
+
+        return query ? `${baseUrl}?${query}` : baseUrl;
+    }
     const [alert, setAlert] = useState(null);
     const sendAlert = (text) => setAlert({message: text, severity: "info"})
     const handleError = (err) => setAlert({message: err?.response?.data?.message ?? "error", severity: "error"})
 
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(dayjs());
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDepot, setSelectedDepot] = useState(null);
     const [selectedRoute, setSelectedRoute] = useState(null);
+    //Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [size, setSize] = useState(1000);
+    useEffect(() => {
+        loadAll()
+    }, [   selectedDate, rowsPerPage, page])
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedBus, setSelectedBus] = useState(null);
     const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
@@ -95,12 +132,11 @@ const BusReport = () => {
 
     // Filter schedules based on selected filters
     const filteredSchedules = schedules.filter(schedule => {
-        const dateMatch = !selectedDate || dayjs(schedule.startDate).isSame(selectedDate, 'day');
         const timeMatch = !selectedTime || schedule.startTime.includes(selectedTime);
         const depotMatch = !selectedDepot || schedule.depot === selectedDepot;
         const routeMatch = !selectedRoute || schedule.routeNo === selectedRoute;
 
-        return dateMatch && timeMatch && depotMatch && routeMatch;
+        return  timeMatch && depotMatch && routeMatch;
     });
 
     useEffect(() => {
@@ -129,84 +165,84 @@ const BusReport = () => {
     };
 
     const TransferModal = () => (<Modal
-            open={isTransferModalOpen}
-            onClose={() => setIsTransferModalOpen(false)}
-            sx={{overflow: "auto", py: 2}}
-        >
-            <Box sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: "90%",
-                maxWidth: 1200,
-                bgcolor: "background.paper",
-                boxShadow: 24,
-                p: 4,
-                maxHeight: "90vh",
-                overflow: "auto",
-                borderRadius: "10px",
-                border: "2px solid gray",
-            }}>
-                <Typography variant="h6" sx={{mb: 3}}>
-                    Transfer Details - {selectedTransferBus?.scheduleNo}
-                </Typography>
+        open={isTransferModalOpen}
+        onClose={() => setIsTransferModalOpen(false)}
+        sx={{overflow: "auto", py: 2}}
+    >
+        <Box sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "90%",
+            maxWidth: 1200,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            maxHeight: "90vh",
+            overflow: "auto",
+            borderRadius: "10px",
+            border: "2px solid gray",
+        }}>
+            <Typography variant="h6" sx={{mb: 3}}>
+                Transfer Details - {selectedTransferBus?.scheduleNo}
+            </Typography>
 
-                <TableContainer component={Paper}>
-                    <Table size="small">
-                        <TableHead>
-                            <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
-                                <TableCell sx={{py: 1}}>Ref No</TableCell>
-                                <TableCell sx={{py: 1}}>Seat No</TableCell>
-                                <TableCell sx={{py: 1}}>V-Code</TableCell>
-                                <TableCell sx={{py: 1}}>Mode Of Pay</TableCell>
-                                <TableCell sx={{py: 1}}>Route</TableCell>
-                                <TableCell sx={{py: 1}}>NIC</TableCell>
-                                <TableCell sx={{py: 1}}>Book By</TableCell>
-                                <TableCell sx={{py: 1}}>Book Date</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {selectedTransferBus?.bookings
-                                .slice(startIndex, startIndex + rowsPerPage)
-                                .map((row, index) => ((row.seatStatus === 'transfer' && row.isActive === true) ? (
-                                        <TableRow key={index}>
-                                            <TableCell sx={{py: 0}}>{row.refNo}</TableCell>
-                                            <TableCell sx={{py: 0}}>{row.seatNo}</TableCell>
-                                            <TableCell sx={{py: 0}}>{row.vCode}</TableCell>
-                                            <TableCell sx={{py: 0}}>{row.modeOfPay}</TableCell>
-                                            <TableCell sx={{py: 0}}>{row.route}</TableCell>
-                                            <TableCell sx={{py: 0}}>{row.nic}</TableCell>
-                                            <TableCell sx={{py: 0}}>{row.bookedBy}</TableCell>
-                                            <TableCell sx={{py: 0}}>{row.bookedDate}</TableCell>
-                                        </TableRow>) : null))}
-                        </TableBody>
-                    </Table>
-                    <TablePagination
-                        showFirstButton
-                        showLastButton
-                        component="div"
-                        count={selectedTransferBus?.bookings.length}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
-                    />
-                </TableContainer>
+            <TableContainer component={Paper}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow sx={{backgroundColor: '#7cdffa4b'}}>
+                            <TableCell sx={{py: 1}}>Ref No</TableCell>
+                            <TableCell sx={{py: 1}}>Seat No</TableCell>
+                            <TableCell sx={{py: 1}}>V-Code</TableCell>
+                            <TableCell sx={{py: 1}}>Mode Of Pay</TableCell>
+                            <TableCell sx={{py: 1}}>Route</TableCell>
+                            <TableCell sx={{py: 1}}>NIC</TableCell>
+                            <TableCell sx={{py: 1}}>Book By</TableCell>
+                            <TableCell sx={{py: 1}}>Book Date</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {selectedTransferBus?.bookings
+                            .slice(startIndex, startIndex + rowsPerPage)
+                            .map((row, index) => ((row.seatStatus === 'transfer' && row.isActive === true) ? (
+                                <TableRow key={index}>
+                                    <TableCell sx={{py: 0}}>{row.refNo}</TableCell>
+                                    <TableCell sx={{py: 0}}>{row.seatNo}</TableCell>
+                                    <TableCell sx={{py: 0}}>{row.vCode}</TableCell>
+                                    <TableCell sx={{py: 0}}>{row.modeOfPay}</TableCell>
+                                    <TableCell sx={{py: 0}}>{row.route}</TableCell>
+                                    <TableCell sx={{py: 0}}>{row.nic}</TableCell>
+                                    <TableCell sx={{py: 0}}>{row.bookedBy}</TableCell>
+                                    <TableCell sx={{py: 0}}>{row.bookedDate}</TableCell>
+                                </TableRow>) : null))}
+                    </TableBody>
+                </Table>
+                <TablePagination
+                    showFirstButton
+                    showLastButton
+                    component="div"
+                    count={selectedTransferBus?.bookings.length}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    rowsPerPageOptions={[10, 25, 50, 100]}
+                />
+            </TableContainer>
 
-                <Box sx={{mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2}}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => setIsTransferModalOpen(false)}
-                        sx={{backgroundColor: 'gray'}}
-                    >
-                        Close
-                    </Button>
-                </Box>
+            <Box sx={{mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2}}>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => setIsTransferModalOpen(false)}
+                    sx={{backgroundColor: 'gray'}}
+                >
+                    Close
+                </Button>
             </Box>
-        </Modal>);
+        </Box>
+    </Modal>);
 
     const handleBookingToggle = React.useCallback((status, bus) => () => {
         setBookingAction(status === "opened" ? "close" : "open");
@@ -217,7 +253,6 @@ const BusReport = () => {
                 action: bookingAction, conductorMobile, ...bus
             }).then(res => {
                 stopLoading(L)
-
                 sendAlert("status changed")
                 loadAll()
             })
@@ -284,31 +319,31 @@ const BusReport = () => {
     };
 
     const StatusChangeConfirmation = () => (<Dialog
-            open={statusChangeDialog.open}
-            onClose={handleStatusChangeCancel}
-            maxWidth="sm"
-            fullWidth
-        >
-            <DialogTitle>Confirm Bus Close</DialogTitle>
-            <DialogContent>
-                <Typography>
-                    Are you sure you want to change the Bus status from "{statusChangeDialog.oldStatus}" to
-                    "{statusChangeDialog.newStatus}"?
-                </Typography>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleStatusChangeCancel}>
-                    No
-                </Button>
-                <Button onClick={handleStatusChangeConfirm} autoFocus>
-                    Yes
-                </Button>
-            </DialogActions>
-        </Dialog>);
+        open={statusChangeDialog.open}
+        onClose={handleStatusChangeCancel}
+        maxWidth="sm"
+        fullWidth
+    >
+        <DialogTitle>Confirm Bus Close</DialogTitle>
+        <DialogContent>
+            <Typography>
+                Are you sure you want to change the Bus status from "{statusChangeDialog.oldStatus}" to
+                "{statusChangeDialog.newStatus}"?
+            </Typography>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={handleStatusChangeCancel}>
+                No
+            </Button>
+            <Button onClick={handleStatusChangeConfirm} autoFocus>
+                Yes
+            </Button>
+        </DialogActions>
+    </Dialog>);
 
     const handleSendSMS = (bus) => {
         const L = startLoading()
-        api.post("admin/schedule-report/send-sms", {id:bus.id})
+        api.post("admin/schedule-report/send-sms", {id: bus.id})
             .then(res => {
                 stopLoading(L)
                 sendAlert("sms sent")
@@ -413,42 +448,41 @@ const BusReport = () => {
         };
 
         return (<div className="relative flex flex-col items-center">
-                <svg
-                    viewBox="0 0 100 100"
-                    className={`w-${Setwidth ? Setwidth : '12'}  h-${Setheight ? Setheight : '12'} cursor-pointer transition-colors duration-200`}
-                >
-                    <g transform="translate(50,50) rotate(-90) translate(-50,-50)">
-                        <path
-                            d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z"
-                            fill={colors[status]}/>
-                    </g>
-                </svg>
-            </div>);
-    };
-
-    const EmpltySeatIcon = () => (<div className="relative flex flex-col items-center">
             <svg
                 viewBox="0 0 100 100"
-                className={`w-12 h-12 cursor-pointer transition-colors duration-200}`}
-                style={{visibility: "hidden"}}
+                className={`w-${Setwidth ? Setwidth : '12'}  h-${Setheight ? Setheight : '12'} cursor-pointer transition-colors duration-200`}
             >
                 <g transform="translate(50,50) rotate(-90) translate(-50,-50)">
                     <path
                         d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z"
-                        fill="currentColor"/>
+                        fill={colors[status]}/>
                 </g>
             </svg>
         </div>);
+    };
+
+    const EmpltySeatIcon = () => (<div className="relative flex flex-col items-center">
+        <svg
+            viewBox="0 0 100 100"
+            className={`w-12 h-12 cursor-pointer transition-colors duration-200}`}
+            style={{visibility: "hidden"}}
+        >
+            <g transform="translate(50,50) rotate(-90) translate(-50,-50)">
+                <path
+                    d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z"
+                    fill="currentColor"/>
+            </g>
+        </svg>
+    </div>);
 
     const SeatLegend = () => (<Box className="flex gap-4 justify-center mb-5">
-            {[{status: 'available', label: 'Available'}, {status: 'hold', label: 'Reserved (Hold)'}, {
-                status: 'blocked',
-                label: 'Blocked'
-            }].map(({status, label}) => (<div key={status} className="flex items-center gap-2">
-                    <SeatIcon status={status} Setwidth="6" Setheight="6"/>
-                    <span className="setpadding01">{label}</span>
-                </div>))}
-        </Box>);
+        {[{status: 'available', label: 'Available'}, {status: 'hold', label: 'Reserved (Hold)'}, {
+            status: 'blocked', label: 'Blocked'
+        }].map(({status, label}) => (<div key={status} className="flex items-center gap-2">
+            <SeatIcon status={status} Setwidth="6" Setheight="6"/>
+            <span className="setpadding01">{label}</span>
+        </div>))}
+    </Box>);
 
     // const renderSeatLayout = (layout) => {
     //   const rows = 6;
@@ -508,44 +542,42 @@ const BusReport = () => {
 
                 // Add seat (selected or empty) to the grid
                 grid.push(seatInfo ? (<div
+                    style={{
+                        display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    }}
+                    key={seatId}
+                    className="relative m-1"
+                >
+                    <SeatIcon status={seatInfo.status || "default"}/>
+                    {seatInfo.seatNumber && (<span
                         style={{
-                            display: 'flex', justifyContent: 'center', alignItems: 'center',
+                            left: "11px", fontWeight: "bold", color: "#FFFFFF",
                         }}
-                        key={seatId}
-                        className="relative m-1"
+                        className="setpadding01 absolute text-xs font-medium cursor-pointer"
                     >
-                        <SeatIcon status={seatInfo.status || "default"}/>
-                        {seatInfo.seatNumber && (<span
-                                style={{
-                                    left: "11px", fontWeight: "bold", color: "#FFFFFF",
-                                }}
-                                className="setpadding01 absolute text-xs font-medium cursor-pointer"
-                            >
                   {String(seatInfo.seatNumber)}
                 </span>)}
-                    </div>) : (<div key={seatId}>
-                        <EmpltySeatIcon/>
-                    </div>));
+                </div>) : (<div key={seatId}>
+                    <EmpltySeatIcon/>
+                </div>));
             }
         }
 
         return (<div
-                style={{
-                    display: 'grid',
-                    gridTemplateRows: `repeat(${rows}, 1fr)`,
-                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                    marginTop: '10px',
-                    maxWidth: '800px',
-                    maxHeight: '400px',
-                }}
-            >
-                {grid}
-            </div>);
+            style={{
+                display: 'grid',
+                gridTemplateRows: `repeat(${rows}, 1fr)`,
+                gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                marginTop: '10px',
+                maxWidth: '800px',
+                maxHeight: '400px',
+            }}
+        >
+            {grid}
+        </div>);
     };
 
-    //Pagination
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -580,7 +612,7 @@ const BusReport = () => {
                                     textField: {
                                         fullWidth: true, InputProps: {
                                             startAdornment: (<InputAdornment position="start">
-                                                </InputAdornment>),
+                                            </InputAdornment>),
                                         }, sx: {
                                             width: '100%', '& .MuiOutlinedInput-root': {
                                                 height: '40px'
@@ -611,14 +643,14 @@ const BusReport = () => {
                                 options={depots}
                                 // renderInput={(params) => <TextField {...params} label="Depot" />}
                                 renderInput={(params) => (<TextField
-                                        {...params}
-                                        label="Depot"
-                                        InputProps={{
-                                            ...params.InputProps, startAdornment: (<InputAdornment position="start">
-                                                </InputAdornment>),
-                                        }}
+                                    {...params}
+                                    label="Depot"
+                                    InputProps={{
+                                        ...params.InputProps, startAdornment: (<InputAdornment position="start">
+                                        </InputAdornment>),
+                                    }}
 
-                                    />)}
+                                />)}
                                 sx={{
                                     '& .MuiOutlinedInput-root': {
                                         height: '40px'
@@ -634,14 +666,14 @@ const BusReport = () => {
                                 options={routes}
                                 // renderInput={(params) => <TextField {...params} label="Route" />}
                                 renderInput={(params) => (<TextField
-                                        {...params}
-                                        label="Route"
-                                        InputProps={{
-                                            ...params.InputProps, startAdornment: (<InputAdornment position="start">
-                                                </InputAdornment>),
-                                        }}
+                                    {...params}
+                                    label="Route"
+                                    InputProps={{
+                                        ...params.InputProps, startAdornment: (<InputAdornment position="start">
+                                        </InputAdornment>),
+                                    }}
 
-                                    />)}
+                                />)}
                                 sx={{
                                     '& .MuiOutlinedInput-root': {
                                         height: '40px'
@@ -672,52 +704,51 @@ const BusReport = () => {
                             </TableHead>
                             <TableBody>
                                 {filteredSchedules
-                                    .slice(startIndex, startIndex + rowsPerPage)
                                     .map((schedule) => (<TableRow key={schedule.id}>
-                                            <TableCell sx={{py: 0}}>{schedule.scheduleNo}</TableCell>
-                                            <TableCell sx={{py: 0}}>{schedule.startDate}</TableCell>
-                                            <TableCell sx={{py: 0}}>{schedule.startTime}</TableCell>
-                                            <TableCell sx={{py: 0}}>{schedule.startPoint}</TableCell>
-                                            <TableCell sx={{py: 0}}>{schedule.endPoint}</TableCell>
-                                            <TableCell sx={{py: 0}}>{schedule.routeNo}</TableCell>
-                                            <TableCell sx={{py: 0}}>{schedule.busType}</TableCell>
-                                            <TableCell sx={{py: 0}}>{schedule.busNo}</TableCell>
-                                            <TableCell sx={{py: 0}}>{schedule.conductorNo}</TableCell>
-                                            <TableCell sx={{py: 0}}>{schedule.depot}</TableCell>
-                                            <TableCell sx={{py: 0}} align="center">
-                                                <Select
-                                                    size="small"
-                                                    value={schedule.tripStatus}
-                                                    onChange={(e) => handleStatusChangeClick(schedule.id, e.target.value, schedule.tripStatus)}
-                                                    sx={{height: 30}}
-                                                >
-                                                    {tripStatuses.map((status) => (
-                                                        <MenuItem key={status} value={status}>
-                                                            {status}
-                                                        </MenuItem>))}
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell sx={{py: 0}} align="right">
-                                                <IconButton onClick={() => handleView(schedule)}>
-                                                    <VisibilityIcon/>
-                                                </IconButton>
-                                                {schedule?.bookings.filter(booking => {
-                                                    const matchingBookings = schedule.bookings.filter(b => b.refNo === booking.refNo);
-                                                    return matchingBookings.length >= 2;
-                                                }).length > 0 && (
-                                                    <Button size="small" variant="contained" sx={{ml: 1, height: 25}}
-                                                            onClick={() => handleTransfer(schedule)}>
-                                                        Transfer
-                                                    </Button>)}
-                                            </TableCell>
-                                        </TableRow>))}
+                                        <TableCell sx={{py: 0}}>{schedule.scheduleNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{schedule.startDate}</TableCell>
+                                        <TableCell sx={{py: 0}}>{schedule.startTime}</TableCell>
+                                        <TableCell sx={{py: 0}}>{schedule.startPoint}</TableCell>
+                                        <TableCell sx={{py: 0}}>{schedule.endPoint}</TableCell>
+                                        <TableCell sx={{py: 0}}>{schedule.routeNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{schedule.busType}</TableCell>
+                                        <TableCell sx={{py: 0}}>{schedule.busNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{schedule.conductorNo}</TableCell>
+                                        <TableCell sx={{py: 0}}>{schedule.depot}</TableCell>
+                                        <TableCell sx={{py: 0}} align="center">
+                                            <Select
+                                                size="small"
+                                                value={schedule.tripStatus}
+                                                onChange={(e) => handleStatusChangeClick(schedule.id, e.target.value, schedule.tripStatus)}
+                                                sx={{height: 30}}
+                                            >
+                                                {tripStatuses.map((status) => (<MenuItem key={status} value={status}>
+                                                    {status}
+                                                </MenuItem>))}
+                                            </Select>
+                                        </TableCell>
+                                        <TableCell sx={{py: 0}} align="right">
+                                            <IconButton onClick={() => handleView(schedule)}>
+                                                <VisibilityIcon/>
+                                            </IconButton>
+                                            {schedule?.bookings.filter(booking => {
+                                                const matchingBookings = schedule.bookings.filter(b => b.refNo === booking.refNo);
+                                                return matchingBookings.length >= 2;
+                                            }).length > 0 && (
+                                                <Button size="small" variant="contained" sx={{ml: 1, height: 25}}
+                                                        onClick={() => handleTransfer(schedule)}>
+                                                    Transfer
+                                                </Button>)}
+                                        </TableCell>
+                                    </TableRow>))}
                             </TableBody>
                         </Table>
                         <TablePagination
                             showFirstButton
                             showLastButton
                             component="div"
-                            count={filteredSchedules.length}
+
+                            count={size}
                             page={page}
                             onPageChange={handleChangePage}
                             rowsPerPage={rowsPerPage}
@@ -783,7 +814,7 @@ const BusReport = () => {
 
                                 <div className="remButton">
                                     <Box sx={{mt: 2, display: "flex", gap: 2, justifyContent: "center"}}>
-                                        <Button variant="contained" onClick={()=>{
+                                        <Button variant="contained" onClick={() => {
                                             handleSendSMS(selectedBus)
                                         }}>
                                             <span className="setpadding01">Send SMS to Conductor</span>
@@ -851,7 +882,8 @@ const BusReport = () => {
                                         <Grid item xs={6} md={4}
                                               sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
                                             <Typography variant="subtitle2">Schedule No :</Typography>
-                                            <Typography sx={{ml: 1}} variant="body2">{selectedBus?.shn??selectedBus?.busNo}</Typography>
+                                            <Typography sx={{ml: 1}}
+                                                        variant="body2">{selectedBus?.shn ?? selectedBus?.busNo}</Typography>
                                         </Grid>
                                         <Grid item xs={6} md={4}
                                               sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
@@ -896,23 +928,23 @@ const BusReport = () => {
                                             <TableBody>
                                                 {selectedBus?.bookings
                                                     .map((booking, index) => (<TableRow key={index}>
-                                                            <TableCell
-                                                                className="setpadding01">{booking.refNo}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{booking.seatNo}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{booking.vCode}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{booking.modeOfPay}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{booking.route}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{booking.nic}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{booking.bookedBy}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{booking.bookedDate}</TableCell>
-                                                        </TableRow>))}
+                                                        <TableCell
+                                                            className="setpadding01">{booking.refNo}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{booking.seatNo}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{booking.vCode}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{booking.modeOfPay}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{booking.route}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{booking.nic}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{booking.bookedBy}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{booking.bookedDate}</TableCell>
+                                                    </TableRow>))}
                                             </TableBody>
                                         </Table>
 
@@ -939,19 +971,19 @@ const BusReport = () => {
                                             <TableBody>
                                                 {selectedBus?.summary
                                                     .map((summary, index) => (<TableRow key={index}>
-                                                            <TableCell
-                                                                className="setpadding01">{summary.bookedBy}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{summary.modeOfPay}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{summary.route}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{summary.busFare}</TableCell>
-                                                            <TableCell
-                                                                className="setpadding01">{summary.noOfSeate}</TableCell>
-                                                            <TableCell className="setpadding01"
-                                                                       align="right">{summary.totalBusFare}</TableCell>
-                                                        </TableRow>))}
+                                                        <TableCell
+                                                            className="setpadding01">{summary.bookedBy}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{summary.modeOfPay}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{summary.route}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{summary.busFare}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{summary.noOfSeate}</TableCell>
+                                                        <TableCell className="setpadding01"
+                                                                   align="right">{summary.totalBusFare}</TableCell>
+                                                    </TableRow>))}
                                             </TableBody>
                                         </Table>
 
