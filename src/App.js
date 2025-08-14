@@ -17,70 +17,9 @@ const App = () => {
 
 const AppMain = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(sessionStorage.getItem("isAuthenticated") === "true");
-    const [isDuplicateTab, setIsDuplicateTab] = useState(false);
 
-    useEffect(() => {
-        const currentTabId = sessionStorage.getItem('tabId') || Math.random().toString(36).substring(7);
-        sessionStorage.setItem('tabId', currentTabId);
 
-        const getOpenTabs = () => {
-            let openTabs = [];
-            try {
-                const storedTabs = localStorage.getItem('openTabs');
-                if (storedTabs) {
-                    openTabs = JSON.parse(storedTabs);
-                }
-            } catch (e) {
-                console.error("Error parsing openTabs from localStorage", e);
-                openTabs = [];
-            }
-            return Array.isArray(openTabs) ? openTabs : [];
-        };
 
-        const checkTabs = () => {
-            const openTabs = getOpenTabs();
-            if (openTabs.length > 0 && openTabs[0] !== currentTabId) {
-                setIsDuplicateTab(true);
-            }
-        };
-
-        const addTab = () => {
-            const openTabs = getOpenTabs();
-            if (!openTabs.includes(currentTabId)) {
-                openTabs.push(currentTabId);
-                localStorage.setItem('openTabs', JSON.stringify(openTabs));
-            }
-        };
-
-        const removeTab = () => {
-            let openTabs = getOpenTabs();
-            const updatedTabs = openTabs.filter(tabId => tabId !== currentTabId);
-            localStorage.setItem('openTabs', JSON.stringify(updatedTabs));
-        };
-
-        const handleStorageChange = (e) => {
-            if (e.key === 'openTabs') {
-                checkTabs();
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        window.addEventListener('load', addTab);
-        window.addEventListener('beforeunload', removeTab);
-
-        addTab();
-        checkTabs();
-
-        const interval = setInterval(checkTabs, 1000);
-
-        return () => {
-            removeTab();
-            window.removeEventListener('storage', handleStorageChange);
-            window.removeEventListener('load', addTab);
-            window.removeEventListener('beforeunload', removeTab);
-            clearInterval(interval);
-        };
-    }, []);
 
     const handleSignIn = (username, password, setAlert) => {
         api.post("admin/sign-in", {username, password}).then(r => r.data)
@@ -107,19 +46,7 @@ const AppMain = () => {
         sessionStorage.removeItem("token");
     };
 
-    if (isDuplicateTab) {
-        return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                fontSize: '24px'
-            }}>
-                This application is already open in another tab. To ensure a smooth experience, please use the existing tab or close this one.
-            </div>
-        );
-    }
+
 
 
     return (<>
