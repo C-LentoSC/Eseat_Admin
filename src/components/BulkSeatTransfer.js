@@ -923,9 +923,22 @@ const BulkSeatTransfer = () => {
                                 getOptionKey={opt => opt.id}
                                 getOptionLabel={(option) => `${option.time} - ${option.route} (${option.busNo})`}
                                 onChange={(event, value, reason) => {
-                                    setSelectedSchedule(value);
-                                    setShowSeatLayout(value !== null);
-                                    setPoints(value?.fare)
+                                    // setSelectedSchedule(value);
+                                    const id=startLoading()
+                                    if(value !== null) {
+                                        api.get('admin/bulk-seat-transfer/get/'+value.id)
+                                            .then(res => {
+                                                stopLoading(id)
+                                                console.log(res.data)
+                                                console.log(value)
+                                                setSelectedSchedule(res.data);
+                                                setShowSeatLayout(value !== null);
+                                                setPoints(res.data?.fare)
+                                            }).catch(err=>{
+                                                stopLoading(id)
+                                                handleError(err)
+                                        })
+                                    }
                                     setTransferDetails(prevState => {
                                         return {
                                             ...prevState,
