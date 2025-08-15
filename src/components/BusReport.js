@@ -142,7 +142,7 @@ const BusReport = () => {
     useEffect(() => {
         if (selectedBus) {
             setConductorMobile(selectedBus.conductorNo || "");
-            setBusNumber(selectedBus.busNo || "");
+            setBusNumber(selectedBus.shn || "");
         }
     }, [selectedBus]);
     const loadInf = () => {
@@ -270,7 +270,9 @@ const BusReport = () => {
         // Add your logic here to handle the status change
         const L = startLoading()
         api.post("admin/schedule-report/toggle-status", {
-            action: bookingAction, conductorMobile, ...selectedBus
+            action: bookingAction, conductorMobile,
+            finalBusNo:busNumber,
+            ...selectedBus
         }).then(res => {
             stopLoading(L)
 
@@ -919,6 +921,7 @@ const BusReport = () => {
                                                     <TableCell className="setpadding01">Seat no</TableCell>
                                                     <TableCell className="setpadding01">V-Code</TableCell>
                                                     <TableCell className="setpadding01">Mode of Pay</TableCell>
+                                                    <TableCell className="setpadding01">To Pay</TableCell>
                                                     <TableCell className="setpadding01">Route</TableCell>
                                                     <TableCell className="setpadding01">NIC</TableCell>
                                                     <TableCell className="setpadding01">Booked By</TableCell>
@@ -936,6 +939,8 @@ const BusReport = () => {
                                                             className="setpadding01">{booking.vCode}</TableCell>
                                                         <TableCell
                                                             className="setpadding01">{booking.modeOfPay}</TableCell>
+                                                        <TableCell
+                                                            className="setpadding01">{booking.toPay??0}</TableCell>
                                                         <TableCell
                                                             className="setpadding01">{booking.route}</TableCell>
                                                         <TableCell

@@ -504,6 +504,7 @@ const BulkSeatTransfer = () => {
                     }, droppingPoint: '', newSeatNumber: '', seatCost: '', oldSeatCost: 0, balanceToPay: ''
                 })
                 loadAll()
+                handleSearch()
                 sendAlert('transfer success')
 
             })
@@ -572,7 +573,7 @@ const BulkSeatTransfer = () => {
                 selectedSeats: selectedSeats,
                 newSeatIds: newIds,
                 seatCost: selectedSeats.reduce((total, seat) => total + parseFloat(seat.seatCost || 0), 0), // Sum up seat costs
-                balanceToPay: selectedSeats.reduce((total, seat) => total + parseFloat(seat.balanceToPay || 0), 0) // Sum up balance to pay
+                balanceToPay: selectedSeats.reduce((total, seat) => total + parseFloat(seat.balanceToPay || 0), 0)
 
             };
         }
