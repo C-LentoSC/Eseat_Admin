@@ -567,10 +567,19 @@ const SeatTransfer = () => {
                             }).filter(s => s.date === selectedNewDate?.format('YYYY-MM-DD'))}
                             getOptionLabel={(option) => `${option.date} ${option.time} - ${option.route} (${option.busNo}) ${option.number??""}`}
                             onChange={(_, value) => {
-                                console.log(value)
-                                setSelectedSchedule(value);
-                                setShowSeatLayout(value !== null);
-                                handleRouteChange(value)
+
+                                const id=startLoading()
+                                api.get(`admin/seat-transfer/schedule/${value.id}`)
+                                    .then(res=>{
+                                        setSelectedSchedule(res.data);
+                                        setShowSeatLayout(res.data !== null);
+                                        handleRouteChange(res.data)
+                                        stopLoading(id)
+                                    })
+                                    .catch(err=>{
+                                        stopLoading(id)
+                                        handleError(err)
+                                    })
                             }}
                             onClose={(evt, reason) => {
                                 if (reason === 'clear') {
