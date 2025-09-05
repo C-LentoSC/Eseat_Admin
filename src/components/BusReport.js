@@ -36,7 +36,8 @@ import { jsPDF } from 'jspdf';
 import api from "../model/API";
 import CustomAlert from "./Parts/CustomAlert";
 import { useLoading } from "../loading";
-
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 // import LoadingOverlay from './Parts/LoadingOverlay';
 
 const BusReport = () => {
@@ -46,7 +47,9 @@ const BusReport = () => {
     // setLoading(false);
 
     const [openConfirm, setOpenConfirm] = useState(false);
-
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    dayjs.tz.setDefault("Asia/Colombo");
 
 
     const { startLoading, stopLoading } = useLoading()
@@ -67,11 +70,11 @@ const BusReport = () => {
         //         stopLoading(L)
         //         handleError(err)
         //     })
-        let data = [selectedRoute, selectedDepot, selectedTime, selectedDate.toISOString(), rowsPerPage, page]
+        let data = [selectedRoute, selectedDepot, selectedTime, dayjs(selectedDate).tz("Asia/Colombo").format("YYYY-MM-DDTHH:mm:ss"), rowsPerPage, page]
         console.log(data)
         const params = [
             { name: 'page', value: page + 1 },
-            { name: 'date', value: selectedDate.toISOString() }
+            { name: 'date', value: dayjs(selectedDate).tz("Asia/Colombo").format("YYYY-MM-DDTHH:mm:ss") }
         ];
         let url = buildUrl('admin/schedule-report/get-all-new', params)
         console.log(url)
@@ -263,6 +266,7 @@ const BusReport = () => {
                 sendAlert("status changed")
                 console.log(bus)
                 setSelectedDate(selectedDate)
+
             })
                 .catch(err => {
                     stopLoading(L)
@@ -290,7 +294,6 @@ const BusReport = () => {
             stopLoading(L)
 
             sendAlert("status changed")
-            loadAll()
             loadAll()
             setIsBookingStatusModalOpen(false);
         })
