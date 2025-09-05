@@ -261,7 +261,8 @@ const BusReport = () => {
             }).then(res => {
                 stopLoading(L)
                 sendAlert("status changed")
-                loadAll()
+                console.log(bus)
+                setSelectedDate(selectedDate)
             })
                 .catch(err => {
                     stopLoading(L)
@@ -289,6 +290,7 @@ const BusReport = () => {
             stopLoading(L)
 
             sendAlert("status changed")
+            loadAll()
             loadAll()
             setIsBookingStatusModalOpen(false);
         })
@@ -731,7 +733,7 @@ const BusReport = () => {
                                     <TableCell sx={{ py: 0 }}>{schedule.busNo}</TableCell>
                                     <TableCell sx={{ py: 0 }}>{schedule.conductorNo}</TableCell>
                                     <TableCell sx={{ py: 0 }}>{schedule.depot}</TableCell>
-                                    <TableCell sx={{ py: 0 }}></TableCell>
+                                    <TableCell sx={{ py: 0 }}>{schedule.closeAgent??""}</TableCell>
                                     <TableCell sx={{ py: 0 }} align="center">
                                         <Select
                                             size="small"
