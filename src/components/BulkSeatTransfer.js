@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Box,
     Container,
@@ -20,17 +20,17 @@ import {
     Autocomplete,
     InputAdornment,
 } from '@mui/material';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import {LocalizationProvider, DatePicker} from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import dayjs, {Dayjs} from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 
 import LoadingOverlay from './Parts/LoadingOverlay';
 import CustomAlert from "./Parts/CustomAlert";
 import api from "../model/API";
-import {useLoading} from "../loading";
+import { useLoading } from "../loading";
 import Alert from "@mui/material/Alert";
 
 const BulkSeatTransfer = () => {
@@ -42,11 +42,11 @@ const BulkSeatTransfer = () => {
     const loading = false;
 
 
-    const {startLoading,stopLoading}=useLoading()
+    const { startLoading, stopLoading } = useLoading()
 
     const [alert, setAlert] = useState(null);
-    const sendAlert = (text) => setAlert({message: text, severity: "info"})
-    const handleError = (err) => setAlert({message: err.response.data.message, severity: "error"})
+    const sendAlert = (text) => setAlert({ message: text, severity: "info" })
+    const handleError = (err) => setAlert({ message: err.response.data.message, severity: "error" })
     const [depots, setDepots] = useState([]);
     const [schedules, setSchedules] = useState([]);
     const [points, setPoints] = useState([]);
@@ -78,7 +78,7 @@ const BulkSeatTransfer = () => {
 
     const [selectedSeat, setSelectedSeat] = useState([]);
 
-    const SeatIcon = ({status, Setwidth, Setheight}) => {
+    const SeatIcon = ({ status, Setwidth, Setheight }) => {
         const colors = {
             available: "#CCCCCC", processing: "#4CAF50", counter: "#FF9800", blocked: "#F44336"
         };
@@ -91,7 +91,7 @@ const BulkSeatTransfer = () => {
                 <g transform="translate(50,50) rotate(-90) translate(-50,-50)">
                     <path
                         d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z"
-                        fill={colors[status]}/>
+                        fill={colors[status]} />
                 </g>
             </svg>
         </div>);
@@ -101,22 +101,22 @@ const BulkSeatTransfer = () => {
         <svg
             viewBox="0 0 100 100"
             className={`w-12 h-12 cursor-pointer transition-colors duration-200}`}
-            style={{visibility: "hidden"}}
+            style={{ visibility: "hidden" }}
         >
             <g transform="translate(50,50) rotate(-90) translate(-50,-50)">
                 <path
                     d="M90.443,34.848c-2.548,0-4.613,2.065-4.613,4.614v31.534c-0.284,0.098-0.57,0.179-0.846,0.313c-0.081,0.037-4.414,2.11-11.406,4.046c-2.226-1.561-5.054-2.257-7.933-1.7c-10.579,2.052-20.845,2.078-31.411,0.065c-2.85-0.537-5.646,0.146-7.857,1.68c-6.969-1.933-11.286-4.014-11.414-4.076c-0.259-0.128-0.526-0.205-0.792-0.297V39.46c0-2.547-2.065-4.614-4.614-4.614c-2.548,0-4.613,2.066-4.613,4.614v37.678c0,0.222,0.034,0.431,0.064,0.644c0.096,2.447,1.456,4.772,3.804,5.939c0.398,0.196,5.779,2.828,14.367,5.164c1.438,2.634,3.997,4.626,7.174,5.233c6.498,1.235,13.021,1.863,19.394,1.863c6.521,0,13.2-0.655,19.851-1.944c3.143-0.607,5.675-2.575,7.109-5.173c8.575-2.324,13.97-4.931,14.369-5.127c2.187-1.073,3.54-3.146,3.805-5.396c0.104-0.385,0.179-0.784,0.179-1.202V39.46C95.059,36.913,92.992,34.848,90.443,34.848z M20.733,37.154l-0.001,29.092c0.918,0.355,2.034,0.771,3.371,1.215c3.577-1.812,7.759-2.428,11.756-1.672c9.628,1.837,18.689,1.814,28.359-0.063c4.035-0.78,8.207-0.165,11.794,1.641c1.23-0.411,2.274-0.793,3.151-1.132l0.017-29.083c0-5.198,3.85-9.475,8.843-10.226V12.861c0-2.548-1.927-3.75-4.613-4.615c0,0-14.627-4.23-33.165-4.23c-18.543,0-33.739,4.23-33.739,4.23c-2.619,0.814-4.614,2.065-4.614,4.615v14.066C16.883,27.678,20.733,31.956,20.733,37.154z"
-                    fill="currentColor"/>
+                    fill="currentColor" />
             </g>
         </svg>
     </div>);
 
     const SeatLegend = () => (<Box className="flex gap-4 justify-center mb-5">
-        {[{status: 'available', label: 'Available'}, {
+        {[{ status: 'available', label: 'Available' }, {
             status: 'processing', label: 'Processing'
-        }, {status: 'counter', label: 'Counter'}, {status: 'blocked', label: 'Blocked'}].map(({status, label}) => (
+        }, { status: 'counter', label: 'Counter' }, { status: 'blocked', label: 'Blocked' }].map(({ status, label }) => (
             <div key={status} className="flex items-center gap-2">
-                <SeatIcon status={status} Setwidth="8" Setheight="10"/>
+                <SeatIcon status={status} Setwidth="8" Setheight="10" />
                 <span>{label}</span>
             </div>))}
     </Box>);
@@ -133,16 +133,16 @@ const BulkSeatTransfer = () => {
 
                 // Add seat (selected or empty) to the grid
                 grid.push(seatInfo ? (
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} key={seatId}
-                         className="relative m-1">
-                        <SeatIcon status={seatInfo.status}/>
-                        {seatInfo?.seatNumber && (<span style={{left: "13px", fontWeight: "bold", color: "#FFFFFF"}}
-                                                        className="absolute text-xs font-medium cursor-pointer">
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} key={seatId}
+                        className="relative m-1">
+                        <SeatIcon status={seatInfo.status} />
+                        {seatInfo?.seatNumber && (<span style={{ left: "13px", fontWeight: "bold", color: "#FFFFFF" }}
+                            className="absolute text-xs font-medium cursor-pointer">
                             {seatInfo.seatNumber}
                         </span>)}
                     </div>) : (<div key={seatId}>
-                    <EmpltySeatIcon/>
-                </div>));
+                        <EmpltySeatIcon />
+                    </div>));
             }
         }
 
@@ -305,7 +305,7 @@ const BulkSeatTransfer = () => {
 
     }
     const loadAllDepots = () => {
-        const L=startLoading()
+        const L = startLoading()
         api.get('admin/bulk-seat-transfer/get-all-depots')
             .then(res => {
                 stopLoading(L)
@@ -317,22 +317,22 @@ const BulkSeatTransfer = () => {
             })
     }
     const loadAll = () => {
-        const L=startLoading()
+        const L = startLoading()
         api.get('admin/bulk-seat-transfer/get-all')
             .then(res => {
                 stopLoading(L)
                 setAllSchedules(res.data)
-                let id=(sessionStorage.getItem("toBeChanged"))
+                let id = (sessionStorage.getItem("toBeChanged"))
                 console.log(id)
-                if(id){
-                    id=Number.parseInt(id)
+                if (id) {
+                    id = Number.parseInt(id)
                     console.log(res.data)
-                    let fl= res.data.filter(s=>
-                        s.id===id
+                    let fl = res.data.filter(s =>
+                        s.id === id
                     )
                     console.log(fl)
-                    if(fl[0]){
-                        let s=fl[0]
+                    if (fl[0]) {
+                        let s = fl[0]
 
 
                         setFilterData(prevState => {
@@ -340,14 +340,14 @@ const BulkSeatTransfer = () => {
                                 ...prevState,
                                 depot: s.depot,
                                 schedule: s,
-                                data:dayjs(s.date)
+                                data: dayjs(s.date)
                             }
                         })
 
-                        setTimeout(()=>{
+                        setTimeout(() => {
                             search.current.click()
 
-                        },500)
+                        }, 500)
                         sessionStorage.removeItem("toBeChanged")
                     }
 
@@ -384,7 +384,7 @@ const BulkSeatTransfer = () => {
         const csvContent = [headers, ...csvData].map(row => row.join(',')).join('\n');
 
         // Create and trigger download
-        const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
@@ -397,8 +397,8 @@ const BulkSeatTransfer = () => {
 
     // Handle seat hold
     const handleSeatHold = () => {
-        const L=startLoading()
-        api.post('admin/bulk-seat-transfer/hold', {id: selectedBooking.id})
+        const L = startLoading()
+        api.post('admin/bulk-seat-transfer/hold', { id: selectedBooking.id })
             .then(res => {
                 stopLoading(L)
                 sendAlert('booking was put on hold')
@@ -422,8 +422,8 @@ const BulkSeatTransfer = () => {
     const handleRefundSubmit = () => {
         // Handle refund logic here
 
-        const L=startLoading()
-        api.post('admin/bulk-seat-transfer/refund', {...refundDetails, id: selectedBooking.id})
+        const L = startLoading()
+        api.post('admin/bulk-seat-transfer/refund', { ...refundDetails, id: selectedBooking.id })
             .then(res => {
                 stopLoading(L)
                 sendAlert('refund request is registered')
@@ -438,11 +438,11 @@ const BulkSeatTransfer = () => {
                 handleError(err)
             })
     };
-    const search=useRef()
+    const search = useRef()
 
     // Handle search
     const handleSearch = () => {
-        const L=startLoading()
+        const L = startLoading()
         console.error(filterData)
         api.post('admin/bulk-seat-transfer/search', {
             id: filterData.schedule?.id,
@@ -486,11 +486,11 @@ const BulkSeatTransfer = () => {
             sendAlert('select a valid fare break first');
             return
         }
-        const L=startLoading()
+        const L = startLoading()
         api.post('admin/bulk-seat-transfer/transfer', {
             ...transferDetails,
-            id:selectedBooking.id,
-            scheduleId:selectedSchedule.id,
+            id: selectedBooking.id,
+            scheduleId: selectedSchedule.id,
         })
             .then(res => {
                 stopLoading(L)
@@ -508,7 +508,7 @@ const BulkSeatTransfer = () => {
                 sendAlert('transfer success')
 
             })
-            .catch(err=>{
+            .catch(err => {
                 stopLoading(L)
                 handleError(err)
             })
@@ -523,7 +523,7 @@ const BulkSeatTransfer = () => {
             return;
         }
 
-        let updatedDetails = {...transferDetails, newSeatNumber: nos}; // Store multiple seat numbers
+        let updatedDetails = { ...transferDetails, newSeatNumber: nos }; // Store multiple seat numbers
         const seatDetails = selectedSchedule?.seatDetails ?? {};
         const entry = Object.entries(seatDetails).map(e => e[1]);
 
@@ -544,7 +544,7 @@ const BulkSeatTransfer = () => {
                 // selectedSeats.push({ seatNumber: no, seatId: null, seatCost: '', balanceToPay: '' });
             } else {
                 // Seat found, check if it's available
-                if(selectedSeats.filter(s=>s.seatNumber===no).length>0){
+                if (selectedSeats.filter(s => s.seatNumber === no).length > 0) {
                     sendAlert(`Seat ${no} is already selected`);
                     allSeatsAvailable = false;
                     return;
@@ -566,7 +566,7 @@ const BulkSeatTransfer = () => {
         });
 
         if (!allSeatsAvailable) {
-            updatedDetails = {...updatedDetails};
+            updatedDetails = { ...updatedDetails };
         } else {
             updatedDetails = {
                 ...updatedDetails,
@@ -641,7 +641,7 @@ const BulkSeatTransfer = () => {
             boardingPoint: '', newSeatNumber: '', seatCost: '', oldSeatCost: '', balanceToPay: ''
         });
     };
-    const dateInput=useRef()
+    const dateInput = useRef()
 
     const filteredList = allschedules
         .filter(schedule =>
@@ -651,12 +651,12 @@ const BulkSeatTransfer = () => {
 
     return (<LocalizationProvider dateAdapter={AdapterDayjs}>
 
-        <LoadingOverlay show={loading}/>
+        <LoadingOverlay show={loading} />
         {alert ? <CustomAlert severity={alert.severity} message={alert.message} open={alert}
-                              setOpen={setAlert}/> : <></>}
+            setOpen={setAlert} /> : <></>}
         <Container maxWidth="lg">
-            <Box sx={{marginBottom: 4}}>
-                <Typography variant="h5" sx={{fontWeight: 600}}>
+            <Box sx={{ marginBottom: 4 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
                     Bulk Seat Transfer
                 </Typography>
             </Box>
@@ -671,7 +671,7 @@ const BulkSeatTransfer = () => {
                 flexWrap: "wrap",
                 gap: 2
             }}>
-                <Box sx={{display: "flex", gap: 2, flexWrap: "wrap", flex: 1}}>
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", flex: 1 }}>
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={4}>
                             <DatePicker
@@ -681,7 +681,7 @@ const BulkSeatTransfer = () => {
                                 onChange={(newValue) => setFilterData({
                                     ...filterData, date: newValue, schedule: null
                                 })}
-                                renderInput={(params) => <TextField {...params} fullWidth/>}
+                                renderInput={(params) => <TextField {...params} fullWidth />}
                                 slotProps={{
                                     textField: {
                                         fullWidth: true, InputProps: {
@@ -736,7 +736,7 @@ const BulkSeatTransfer = () => {
                                 getOptionLabel={(params) => params.number}
                                 getOptionKey={(p) => p.id}
                                 value={filterData.schedule}
-                                onChange={(_, value) => setFilterData({...filterData, schedule: value})}
+                                onChange={(_, value) => setFilterData({ ...filterData, schedule: value })}
                                 // renderInput={(params) => <TextField {...params} label="Bus Schedule" />}
                                 renderInput={(params) => (<TextField
                                     {...params}
@@ -778,8 +778,8 @@ const BulkSeatTransfer = () => {
             </Box>
 
             {/* Schedule Details */}
-            {scheduleDetails && (<Paper sx={{p: 3, mb: 4}}>
-                <Typography variant="h6" sx={{mb: 2}}>Schedule Details</Typography>
+            {scheduleDetails && (<Paper sx={{ p: 3, mb: 4 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>Schedule Details</Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={6} md={2}>
                         <Typography variant="subtitle2" fontWeight="bold">Depot:</Typography>
@@ -808,10 +808,10 @@ const BulkSeatTransfer = () => {
                 </Grid>
             </Paper>)}
 
-            <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1}}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Typography variant="h6"></Typography>
                 {bookings.length > 0 && (<Button
-                    startIcon={<FileDownloadIcon/>}
+                    startIcon={<FileDownloadIcon />}
                     onClick={exportToCSV}
                     sx={{
                         ml: 2,
@@ -857,7 +857,7 @@ const BulkSeatTransfer = () => {
                             <TableCell>{booking.status}</TableCell>
                             <TableCell>
                                 <IconButton onClick={(e) => handleMenuOpen(e, booking)}>
-                                    <MoreVertIcon/>
+                                    <MoreVertIcon />
                                 </IconButton>
                             </TableCell>
                         </TableRow>))}
@@ -880,7 +880,7 @@ const BulkSeatTransfer = () => {
             <Modal
                 open={transferModalOpen}
                 onClose={handleTransferModalClose}
-                sx={{overflow: "auto", py: 2}}
+                sx={{ overflow: "auto", py: 2 }}
             >
                 <Box
                     sx={{
@@ -900,7 +900,7 @@ const BulkSeatTransfer = () => {
                     }}
                 >
 
-                    <Typography variant="h6" sx={{mb: 3}}>
+                    <Typography variant="h6" sx={{ mb: 3 }}>
                         Transfer Request - ({selectedBooking?.refNo || 'N/A'})
                     </Typography>
 
@@ -914,8 +914,8 @@ const BulkSeatTransfer = () => {
                                     setSelectedSchedule(null);
                                     setShowSeatLayout(false);
                                 }}
-                                renderInput={(params) => <TextField {...params} fullWidth/>}
-                                sx={{width: "100%"}}
+                                renderInput={(params) => <TextField {...params} fullWidth />}
+                                sx={{ width: "100%" }}
                             />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -925,9 +925,9 @@ const BulkSeatTransfer = () => {
                                 getOptionLabel={(option) => `${option.time} - ${option.route} (${option.busNo})`}
                                 onChange={(event, value, reason) => {
                                     // setSelectedSchedule(value);
-                                    const id=startLoading()
-                                    if(value !== null) {
-                                        api.get('admin/bulk-seat-transfer/get/'+value.id)
+                                    const id = startLoading()
+                                    if (value !== null) {
+                                        api.get('admin/bulk-seat-transfer/get/' + value.id)
                                             .then(res => {
                                                 stopLoading(id)
                                                 console.log(res.data)
@@ -935,10 +935,10 @@ const BulkSeatTransfer = () => {
                                                 setSelectedSchedule(res.data);
                                                 setShowSeatLayout(value !== null);
                                                 setPoints(res.data?.fare)
-                                            }).catch(err=>{
+                                            }).catch(err => {
                                                 stopLoading(id)
                                                 handleError(err)
-                                        })
+                                            })
                                     }
                                     setTransferDetails(prevState => {
                                         return {
@@ -966,19 +966,36 @@ const BulkSeatTransfer = () => {
                         </Grid>
                     </Grid>
 
-                    {showSeatLayout && (<Box sx={{marginTop: "80px"}}>
-                        <SeatLegend/>
+                    {showSeatLayout && (<Box sx={{ marginTop: "80px" }}>
+
+                        <SeatLegend />
+
+                        <Typography variant="h6" sx={{ mb: 1, textAlign: "center", marginTop: "40px" }}>
+                            Old Layout
+                        </Typography>
 
                         <Box sx={{
                             width: "100%", display: "flex", justifyContent: "center", alignItems: "center"
                         }}>
-                            <Box sx={{display: "flex", justifyContent: "center", width: "100%", maxWidth: "800px"}}>
+                            <Box sx={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: "800px" }}>
                                 <img src="/wheel.png" style={{ width: "40px", height: "40px", marginTop: "18px", marginRight: "10px", rotate: "-90deg" }} />
                                 {renderSeatLayout(selectedSchedule)}
                             </Box>
                         </Box>
 
-                        <Box sx={{marginTop: "80px"}}>
+                        <Typography variant="h6" sx={{ mb: 1, textAlign: "center", marginTop: "40px" }}>
+                            New Layout
+                        </Typography>
+                        <Box sx={{
+                            width: "100%", display: "flex", justifyContent: "center", alignItems: "center"
+                        }}>
+                            <Box sx={{ display: "flex", justifyContent: "center", width: "100%", maxWidth: "800px" }}>
+                                <img src="/wheel.png" style={{ width: "40px", height: "40px", marginTop: "18px", marginRight: "10px", rotate: "-90deg" }} />
+                                {renderSeatLayout(selectedSchedule)}
+                            </Box>
+                        </Box>
+
+                        <Box sx={{ marginTop: "80px" }}>
                             <Grid container spacing={3}>
                                 <Grid item xs={12} md={6}>
                                     <Autocomplete
@@ -989,7 +1006,7 @@ const BulkSeatTransfer = () => {
                                         onChange={(_, value) => setTransferDetails({
                                             ...transferDetails, boardingPoint: value
                                         })}
-                                        renderInput={(params) => <TextField {...params} label="Fare Break"/>}
+                                        renderInput={(params) => <TextField {...params} label="Fare Break" />}
                                     />
                                 </Grid>
 
@@ -1042,12 +1059,12 @@ const BulkSeatTransfer = () => {
                         </Box>
                     </Box>)}
 
-                    <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={handleTransferSubmit}
-                            sx={{marginRight: '8px'}}
+                            sx={{ marginRight: '8px' }}
                         >
                             Transfer
                         </Button>
@@ -1055,7 +1072,7 @@ const BulkSeatTransfer = () => {
                             variant="contained"
                             color="secondary"
                             onClick={handleTransferModalClose}
-                            sx={{backgroundColor: 'gray'}}
+                            sx={{ backgroundColor: 'gray' }}
                         >
                             Cancel
                         </Button>
@@ -1067,7 +1084,7 @@ const BulkSeatTransfer = () => {
             <Modal
                 open={refundModalOpen}
                 onClose={() => setRefundModalOpen(false)}
-                sx={{overflow: "auto", py: 2}}
+                sx={{ overflow: "auto", py: 2 }}
             >
                 <Box
                     sx={{
@@ -1086,7 +1103,7 @@ const BulkSeatTransfer = () => {
                         border: "2px solid gray",
                     }}
                 >
-                    <Typography variant="h6" sx={{mb: 2}}>
+                    <Typography variant="h6" sx={{ mb: 2 }}>
                         Refund Request - ({selectedBooking?.refNo || 'N/A'})
                     </Typography>
 
@@ -1127,12 +1144,12 @@ const BulkSeatTransfer = () => {
                         </Grid>
                     </Grid>
 
-                    <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 2}}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                         <Button
                             variant="contained"
                             color="primary"
                             onClick={handleRefundSubmit}
-                            sx={{marginRight: '8px'}}
+                            sx={{ marginRight: '8px' }}
                         >
                             Save
                         </Button>
@@ -1140,7 +1157,7 @@ const BulkSeatTransfer = () => {
                             variant="contained"
                             color="secondary"
                             onClick={() => setRefundModalOpen(false)}
-                            sx={{backgroundColor: 'gray'}}
+                            sx={{ backgroundColor: 'gray' }}
                         >
                             Cancel
                         </Button>
