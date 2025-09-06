@@ -155,9 +155,11 @@ const AgentManagement = () => {
         const depot = depotFilter?.trim().toLowerCase();
         const time = timeFilter?.trim().toLowerCase();
         const schedule = scheduleFilter?.trim().toLowerCase();
+        console.log(time)
         return arr.filter(bus => {
             const depotOk = !depot || (bus.depot ?? '').toString().toLowerCase().includes(depot);
-            const timeOk = !time || (bus.time ?? '').toString().toLowerCase().includes(time);
+            // const timeOk = !time || (bus.time ?? '').toString().toLowerCase().includes(time);
+            const timeOk = !time || (bus.time ?? []).some(t => t.toLowerCase().includes(time.toLowerCase()));
             const scheduleOk = !schedule || (bus.schedule ?? '').toString().toLowerCase().includes(schedule);
             return depotOk && timeOk && scheduleOk;
         });
